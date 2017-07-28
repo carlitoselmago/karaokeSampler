@@ -6,12 +6,15 @@ import pyaudio
 from synth import synth
 from time import sleep
 import wave
+import threading
+import struct
+import audioop
 
 class karaokesampler():
     
     #config
     Vdevice = 1
-    synth = True
+    synth = False
     #end config
     windowName = "karaoke"
 
@@ -31,8 +34,18 @@ class karaokesampler():
     noteTargets=[] #the notes we are gonna try to record
     recordings=[]
     isrecording=False
+    volume=5
+    checkingVolume=False
+    
+    amountToAvergeVolume=2
+    averageCounter=0
+    lastVolumes=[]
+    paint="graph" #none,graph
     
     graph = []
+    
+    finished_threads=[]
+    event = threading.Event()
     
     def __init__(self):
         
@@ -44,7 +57,8 @@ class karaokesampler():
         self.capW = int(self.cap.get(3))
         self.capH = int(self.cap.get(4))
         
-        
+        for i in range(self.amountToAvergeVolume+1):
+            self.lastVolumes.append(0)
 
         #init window
         ret_val, img = self.cap.read()
@@ -102,6 +116,53 @@ class karaokesampler():
             WAVEDATA = WAVEDATA + chr(128)
         return WAVEDATA
     
+    def calculateVolume(self,CHUNK,audiobuffer):
+        #if not self.checkingVolume:
+        self.checkingVolume=True
+        #for i in range(int(10*44100/buffer_size)): #go for a few seconds
+        data = np.fromstring(audiobuffer, dtype=np.int16)
+        peak = np.average(np.abs(data)) * 2
+        volume = (50 * peak / 2 ** 16)
+        volume = self.remap(volume, 12.0, 28.0, 0.0, 1.0)
+        #self.volume=volume
+        #print("checking volume")
+        self.volume=volume
+        #sleep(1)
+        #self.checkingVolume=False
+        self.checkingVolume=False
+        """
+        thisthread = threading.current_thread()
+        self.finished_threads.append(thisthread)
+        if len(self.finished_threads) > 1 and self.finished_threads[1] == thisthread:
+            #yay we are number two!
+            self.checkingVolume=False
+            self.event.set()
+        """
+            
+    
+    def get_rms(self, block ):
+        SHORT_NORMALIZE = (0.00003051757)
+        # RMS amplitude is defined as the square root of the 
+        # mean over time of the square of the amplitude.
+        # so we need to convert this string of bytes into 
+        # a string of 16-bit samples...
+
+        # we will get one short out for each 
+        # two chars in the string.
+        count = len(block)/2
+        format = "%dh"%(count)
+        shorts = struct.unpack( format, block )
+
+        # iterate over the block.
+        sum_squares = 0.0
+        for sample in shorts:
+            # sample is a signed short in +/- 32768. 
+            # normalize it to 1.0
+            n = sample * SHORT_NORMALIZE
+            sum_squares += n*n
+
+        return math.sqrt( sum_squares / count )
+    
     def singKaraoke(self):
         
         if self.synth:
@@ -121,8 +182,8 @@ class karaokesampler():
                              output=True)
                         
         #recorder
-        filename = self.recordingsFolder + "test.wav"
-        outputsink = aubio.sink(filename, samplerate)
+        #filename = self.recordingsFolder + "test.wav"
+        #outputsink = aubio.sink(filename, samplerate)
 
         # setup pitch
         tolerance = 0.8
@@ -133,33 +194,56 @@ class karaokesampler():
         pitch_o.set_tolerance(tolerance)
         
         print("*** starting recording")
-        volume = 0
+
         pitch = 0
+        
+        
+        
+        
         while True:
             #image
             ret_val, originalImage = self.cap.read()
             img = originalImage.copy()
             
-            img=self.drawNoteTargets(img)
+            if self.paint=="graph":
+                img=self.drawNoteTargets(img)
             
             #audio
             audiobuffer = stream.read(buffer_size)
             signal = np.fromstring(audiobuffer, dtype=np.float32)
-            volume = np.sum(signal ** 2) / len(signal)
-
+            
+            #volume = np.sum(signal ** 2) / len(signal)
+            
+            """
+            self.lastVolumes[self.averageCounter]=volume
+            self.averageCounter+=1
+            if self.averageCounter>self.amountToAvergeVolume:
+                self.averageCounter=0
+            """
+            
+            #volume=np.average(self.lastVolumes)
+            #volume = self.get_rms( audiobuffer )
+            #print(volume)
+            #self.volume = np.sum(signal ** 2) / len(signal)
+            #self.volume=audioop.max(signal, 4)
+            #self.volume =( audioop.rms(audiobuffer, 2))
+            #self.volume=(self.remap(self.volume, 11904, 1800, 0.0, self.capH))
+            
+            #outputsink(signal, len(signal))
            
             #print("{:10.4f}".format(energy))
             
-
-            
-            
-            
-            #for i in range(int(10*44100/buffer_size)): #go for a few seconds
-            data = np.fromstring(stream.read(CHUNK), dtype=np.int16)
-            peak = np.average(np.abs(data)) * 2
-            volume = (50 * peak / 2 ** 16)
-            volume = self.remap(volume, 12.0, 28.0, 0.0, 1.0)
-            
+            #self.calculateVolume(CHUNK,audiobuffer)
+            if not self.checkingVolume:
+                threading.Thread(target=self.calculateVolume, args = (CHUNK,audiobuffer)).start()
+                #t = threading.Thread(target=self.calculateVolume, args = (CHUNK,audiobuffer))
+                #t.start()
+            #data=stream.read(CHUNK)
+            #rms = audioop.rms(data,2)
+            #rms=self.rms(signal)
+            #print rms
+            print (self.volume)
+            volume=self.volume
             #pitch Value
             pitch = pitch_o(signal)[0]
             confidence = pitch_o.get_confidence()
@@ -169,11 +253,10 @@ class karaokesampler():
                 self.lastPitchConfidence = confidence
             else:
                 pitch = self.lastPitch
-            outputsink(signal, len(signal))
+            
             if volume > self.lowCut and pitch>self.lowToneCut:
                 
                 #record if match
-                
                 
                 if int(pitch) in self.noteTargets:
                     if not self.isrecording:
@@ -181,18 +264,18 @@ class karaokesampler():
                         print ("started recording")
                         self.recordings.append(str(int(pitch))+"_"+str(len(self.recordings)))
                         filename = self.recordingsFolder + str(int(pitch))+"_"+str(len(self.recordings))+".wav"
-                        #outputsink = aubio.sink(filename, samplerate)
+                        outputsink = aubio.sink(filename, samplerate)
                         self.isrecording=True
                     else:
                         print("#keep recording")
                         if outputsink:
                             pass
-                            #outputsink(signal, len(signal))
+                            outputsink(signal, len(signal))
                 else:
                    if self.isrecording:
                        self.isrecording=False
-                       print("#stop recording")
-                       #outputsink.close()
+                       #print("#stop recording")
+                       outputsink.close()
   
                 
                 #end record if match
@@ -201,25 +284,22 @@ class karaokesampler():
                 #print (volH)
                 lineV1 = (200, volH)
                 lineV2 = (400, volH)
-                cv2.line(img, lineV1, lineV2, [255, 0, 255], 2)
+                if self.paint=="graph":
+                    cv2.line(img, lineV1, lineV2, [255, 0, 255], 2)
                 
                 #   pitch
                 pitchH = int(self.remap(pitch, self.pitchGL, self.pitchGH, 0.0, self.capH))
                 #print pitchH
                 lineP1 = (500, pitchH)
                 lineP2 = (700, pitchH)
-
-                cv2.line(img, lineP1, lineP2, [255, 255, 255], 3)
+                if self.paint=="graph":
+                    cv2.line(img, lineP1, lineP2, [255, 255, 255], 3)
                 
                 #if self.synth:
                     #synthPitch = pitch
                     #print ("synthPitch", synthPitch)
                     #self.S.modulateSynth(volume,pitch)
-                    #sleep(0.01)
             
-            if self.synth:
-                #self.S.modulateSynth(0,0)
-                pass
             
             #self.S.out()
             self.lastPitch = 0
