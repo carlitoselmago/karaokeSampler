@@ -1,0 +1,4 @@
+/src/recordings/*
+*.pyc
+/src/aubio
+/nbproject/
