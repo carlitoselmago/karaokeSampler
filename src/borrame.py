@@ -1,130 +1,75 @@
-#!/usr/bin/python
 
-# open a microphone in pyAudio and listen for taps
-
-import pyaudio
-import struct
-import math
+# This is a simple demonstration on how to stream
+# audio from microphone and then extract the pitch
+# and volume directly with help of PyAudio and Aubio
+# Python libraries. The PyAudio is used to interface
+# the computer microphone. While the Aubio is used as
+# a pitch detection object. There is also NumPy
+# as well to convert format between PyAudio into
+# the Aubio.
 import aubio
-import numpy as np
+import numpy as num
+import pyaudio
+import sys
 
-INITIAL_TAP_THRESHOLD = 0.010
-FORMAT = pyaudio.paInt16 
-SHORT_NORMALIZE = (1.0/32768.0)
-CHANNELS = 2
-RATE = 44100  
-INPUT_BLOCK_TIME = 0.05
-INPUT_FRAMES_PER_BLOCK = int(RATE*INPUT_BLOCK_TIME)
-# if we get this many noisy blocks in a row, increase the threshold
-OVERSENSITIVE = 15.0/INPUT_BLOCK_TIME                    
-# if we get this many quiet blocks in a row, decrease the threshold
-UNDERSENSITIVE = 120.0/INPUT_BLOCK_TIME 
-# if the noise was longer than this many blocks, it's not a 'tap'
-MAX_TAP_BLOCKS = 0.15/INPUT_BLOCK_TIME
+import cv2
 
-def get_rms( block ):
-    # RMS amplitude is defined as the square root of the 
-    # mean over time of the square of the amplitude.
-    # so we need to convert this string of bytes into 
-    # a string of 16-bit samples...
+# Some constants for setting the PyAudio and the
+# Aubio.
+BUFFER_SIZE             = 2048
+CHANNELS                = 1
+FORMAT                  = pyaudio.paFloat32
+METHOD                  = "default"
+SAMPLE_RATE             = 44100
+HOP_SIZE                = BUFFER_SIZE//2
+PERIOD_SIZE_IN_FRAME    = HOP_SIZE
 
-    # we will get one short out for each 
-    # two chars in the string.
-    count = len(block)/2
-    format = "%dh"%(count)
-    shorts = struct.unpack( format, block )
+def main(args):
 
-    # iterate over the block.
-    sum_squares = 0.0
-    for sample in shorts:
-        # sample is a signed short in +/- 32768. 
-        # normalize it to 1.0
-        n = sample * SHORT_NORMALIZE
-        sum_squares += n*n
+    # Initiating PyAudio object.
+    pA = pyaudio.PyAudio()
+    # Open the microphone stream.
+    mic = pA.open(format=FORMAT, channels=CHANNELS,
+        rate=SAMPLE_RATE, input=True,
+        frames_per_buffer=PERIOD_SIZE_IN_FRAME)
 
-    return math.sqrt( sum_squares / count )
+    # Initiating Aubio's pitch detection object.
+    pDetection = aubio.pitch(METHOD, BUFFER_SIZE,
+        HOP_SIZE, SAMPLE_RATE)
+    # Set unit.
+    pDetection.set_unit("Hz")
+    # Frequency under -40 dB will considered
+    # as a silence.
+    pDetection.set_silence(-40)
 
-class TapTester(object):
-    def __init__(self):
-        self.pa = pyaudio.PyAudio()
-        self.stream = self.open_mic_stream()
-        self.tap_threshold = INITIAL_TAP_THRESHOLD
-        self.noisycount = MAX_TAP_BLOCKS+1 
-        self.quietcount = 0 
-        self.errorcount = 0
-
-    def stop(self):
-        self.stream.close()
-
-    def find_input_device(self):
-        device_index = None            
-        for i in range( self.pa.get_device_count() ):     
-            devinfo = self.pa.get_device_info_by_index(i)   
-            print( "Device %d: %s"%(i,devinfo["name"]) )
-
-            for keyword in ["mic","input"]:
-                if keyword in devinfo["name"].lower():
-                    print( "Found an input: device %d - %s"%(i,devinfo["name"]) )
-                    device_index = i
-                    return device_index
-
-        if device_index == None:
-            print( "No preferred input found; using default input device." )
-
-        return device_index
-
-    def open_mic_stream( self ):
-        device_index = self.find_input_device()
-
-        stream = self.pa.open(   format = FORMAT,
-                                 channels = CHANNELS,
-                                 rate = RATE,
-                                 input = True,
-                                 input_device_index = device_index,
-                                 frames_per_buffer = INPUT_FRAMES_PER_BLOCK)
-
-        return stream
-
-    def tapDetected(self):
-        print ("Tap!")
-
-    def listen(self,outputsink):
-        try:
-            block = self.stream.read(INPUT_FRAMES_PER_BLOCK)
-        except IOError, e:
-            # dammit. 
-            self.errorcount += 1
-            print( "(%d) Error recording: %s"%(self.errorcount,e) )
-            self.noisycount = 1
-            return
-            
-        signal = np.fromstring(block, dtype=np.float32)
-        outputsink(signal, len(signal))
-        amplitude = get_rms( block )
-        print amplitude
-        if amplitude > self.tap_threshold:
-            # noisy block
-            self.quietcount = 0
-            self.noisycount += 1
-            if self.noisycount > OVERSENSITIVE:
-                # turn down the sensitivity
-                self.tap_threshold *= 1.1
-        else:            
-            # quiet block.
-
-            if 1 <= self.noisycount <= MAX_TAP_BLOCKS:
-                self.tapDetected()
-            self.noisycount = 0
-            self.quietcount += 1
-            if self.quietcount > UNDERSENSITIVE:
-                # turn up the sensitivity
-                self.tap_threshold *= 0.9
-
-if __name__ == "__main__":
-    tt = TapTester()
-    outputsink = aubio.sink("testttt.wav", 44100)
-    for i in range(300):
+    # Infinite loop!
     
-        volume=tt.listen(outputsink)
-      
-    tt.stop()
+    cap = cv2.VideoCapture(0)
+    
+    while True:
+        ret_val, img = cap.read()
+        
+        # Always listening to the microphone.
+        data = mic.read(PERIOD_SIZE_IN_FRAME)
+        # Convert into number that Aubio understand.
+        samples = num.fromstring(data,
+            dtype=aubio.float_type)
+        # Finally get the pitch.
+        pitch = pDetection(samples)[0]
+        # Compute the energy (volume)
+        # of the current frame.
+        volume = num.sum(samples**2)/len(samples)
+        # Format the volume output so it only
+        # displays at most six numbers behind 0.
+        volume = "{:6f}".format(volume)
+
+        # Finally print the pitch and the volume.
+        print(str(pitch) + " " + str(volume))
+        
+        cv2.imshow("test", img)
+        if cv2.waitKey(1) == 27: 
+            break  # esc to quit
+        
+    cv2.destroyAllWindows()
+
+if __name__ == "__main__": main(sys.argv)

@@ -6,14 +6,13 @@ import pyaudio
 from synth import synth
 from time import sleep
 import wave
-import threading
 import struct
 import audioop
 
 class karaokesampler():
     
     #config
-    Vdevice = 1
+    Vdevice = 0
     synth = False
     #end config
     windowName = "karaoke"
@@ -44,8 +43,8 @@ class karaokesampler():
     
     graph = []
     
-    finished_threads=[]
-    event = threading.Event()
+    #finished_threads=[]
+    #event = threading.Event()
     
     def __init__(self):
         
@@ -61,8 +60,8 @@ class karaokesampler():
             self.lastVolumes.append(0)
 
         #init window
-        ret_val, img = self.cap.read()
-        cv2.imshow(self.windowName, img)
+        #ret_val, img = self.cap.read()
+        #cv2.imshow(self.windowName, img)
         
     
     def createNoteTargets(self):
@@ -93,7 +92,7 @@ class karaokesampler():
         numdevices = info.get('deviceCount')
         for i in range(0, numdevices):
             #if (self.p.get_device_info_by_host_api_device_index(0, i).get('maxInputChannels')) > 0:
-            print "Input Device id ", i, " - ", self.p.get_device_info_by_host_api_device_index(0, i).get('name')
+            print ("Input Device id ", i, " - ", self.p.get_device_info_by_host_api_device_index(0, i).get('name'))
     
     def generateTone(self, FREQUENCY=500):
         BITRATE = 44100     #number of frames per second/frameset.      
@@ -169,6 +168,7 @@ class karaokesampler():
             print("SYNTH ENABLED")
         
         # open stream
+        """
         buffer_size = 1024
         CHUNK = buffer_size * 2
         pyaudio_format = pyaudio.paFloat32
@@ -186,6 +186,7 @@ class karaokesampler():
         #outputsink = aubio.sink(filename, samplerate)
 
         # setup pitch
+        
         tolerance = 0.8
         win_s = 4096 # fft size
         hop_s = buffer_size # hop size
@@ -196,9 +197,33 @@ class karaokesampler():
         print("*** starting recording")
 
         pitch = 0
+        """
         
-        
-        
+        # Some constants for setting the PyAudio and the
+        # Aubio.
+        BUFFER_SIZE             = 2048
+        CHANNELS                = 1
+        FORMAT                  = pyaudio.paFloat32
+        METHOD                  = "default"
+        SAMPLE_RATE             = 44100
+        HOP_SIZE                = BUFFER_SIZE//2
+        PERIOD_SIZE_IN_FRAME    = HOP_SIZE
+
+        # Initiating PyAudio object.
+        pA = pyaudio.PyAudio()
+        # Open the microphone stream.
+        mic = pA.open(format=FORMAT, channels=CHANNELS,
+            rate=SAMPLE_RATE, input=True,
+            frames_per_buffer=PERIOD_SIZE_IN_FRAME)
+
+        # Initiating Aubio's pitch detection object.
+        pDetection = aubio.pitch(METHOD, BUFFER_SIZE,
+            HOP_SIZE, SAMPLE_RATE)
+        # Set unit.
+        pDetection.set_unit("Hz")
+        # Frequency under -40 dB will considered
+        # as a silence.
+        pDetection.set_silence(-40)
         
         while True:
             #image
@@ -209,9 +234,25 @@ class karaokesampler():
                 img=self.drawNoteTargets(img)
             
             #audio
+            # Always listening to the microphone.
+            data = mic.read(PERIOD_SIZE_IN_FRAME)
+            # Convert into number that Aubio understand.
+            samples = np.fromstring(data,
+                dtype=aubio.float_type)
+            # Finally get the pitch.
+            pitch = pDetection(samples)[0]
+            # Compute the energy (volume)
+            # of the current frame.
+            volume = np.sum(samples**2)/len(samples)
+            # Format the volume output so it only
+            # displays at most six numbers behind 0.
+            vol=("{:6f}".format(volume))
+            print(str(pitch) + " " + str(vol))
+            confidence=1
+            """
             audiobuffer = stream.read(buffer_size)
             signal = np.fromstring(audiobuffer, dtype=np.float32)
-            
+            """
             #volume = np.sum(signal ** 2) / len(signal)
             
             """
@@ -234,30 +275,30 @@ class karaokesampler():
             #print("{:10.4f}".format(energy))
             
             #self.calculateVolume(CHUNK,audiobuffer)
-            if not self.checkingVolume:
-                threading.Thread(target=self.calculateVolume, args = (CHUNK,audiobuffer)).start()
+            #if not self.checkingVolume:
+                #threading.Thread(target=self.calculateVolume, args = (CHUNK,audiobuffer)).start()
                 #t = threading.Thread(target=self.calculateVolume, args = (CHUNK,audiobuffer))
                 #t.start()
             #data=stream.read(CHUNK)
             #rms = audioop.rms(data,2)
             #rms=self.rms(signal)
             #print rms
-            print (self.volume)
-            volume=self.volume
+            #print (self.volume)
+            #volume=self.volume
             #pitch Value
-            pitch = pitch_o(signal)[0]
-            confidence = pitch_o.get_confidence()
-
+            #pitch = pitch_o(signal)[0]
+            #confidence = pitch_o.get_confidence()
+            """
             if confidence > self.lastPitchConfidence:
                 self.lastPitch = pitch
                 self.lastPitchConfidence = confidence
             else:
                 pitch = self.lastPitch
-            
+            """
             if volume > self.lowCut and pitch>self.lowToneCut:
                 
                 #record if match
-                
+                """
                 if int(pitch) in self.noteTargets:
                     if not self.isrecording:
                         #start recording
@@ -276,10 +317,10 @@ class karaokesampler():
                        self.isrecording=False
                        #print("#stop recording")
                        outputsink.close()
-  
+                """
                 
                 #end record if match
-         
+                """
                 volH = int(self.remap(volume, 0.0, 1.0, 0.0, self.capH))
                 #print (volH)
                 lineV1 = (200, volH)
@@ -294,6 +335,8 @@ class karaokesampler():
                 lineP2 = (700, pitchH)
                 if self.paint=="graph":
                     cv2.line(img, lineP1, lineP2, [255, 255, 255], 3)
+                """
+                
                 
                 #if self.synth:
                     #synthPitch = pitch
@@ -308,9 +351,9 @@ class karaokesampler():
             #if pitch > 0:
             #    stream.write(self.generateTone(pitch))
             
-            cv2.imshow(self.windowName, img)
-            if cv2.waitKey(1) == 27: 
-                break  # esc to quit
+            #cv2.imshow(self.windowName, img)
+            #if cv2.waitKey(1) == 27: 
+            #    break  # esc to quit
         
         print("*** done recording")
         print (self.recordings)
