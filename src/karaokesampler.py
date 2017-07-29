@@ -3,7 +3,7 @@ import cv2
 import math
 import numpy as np
 import pyaudio
-from synth import synth
+#from synth import synth
 from time import sleep
 import wave
 import struct
@@ -78,7 +78,7 @@ class karaokesampler():
         return img
     
     def remap(self, value, OldMin, OldMax, NewMin, NewMax):
-        NewValue = (((value - OldMin) * (NewMax - NewMin)) / (OldMax - OldMin)) + NewMin
+        NewValue = (abs(abs(value - OldMin) * abs(NewMax - NewMin)) / abs(OldMax - OldMin)) + abs(NewMin)
         if NewValue < NewMin:
             #print("refine oldMin in remap")
             NewValue = 0.0
@@ -168,7 +168,7 @@ class karaokesampler():
             print("SYNTH ENABLED")
         
         # open stream
-        """
+        
         buffer_size = 1024
         CHUNK = buffer_size * 2
         pyaudio_format = pyaudio.paFloat32
@@ -185,19 +185,8 @@ class karaokesampler():
         #filename = self.recordingsFolder + "test.wav"
         #outputsink = aubio.sink(filename, samplerate)
 
-        # setup pitch
+       
         
-        tolerance = 0.8
-        win_s = 4096 # fft size
-        hop_s = buffer_size # hop size
-        pitch_o = aubio.pitch("default", win_s, hop_s, samplerate)
-        pitch_o.set_unit("midi")
-        pitch_o.set_tolerance(tolerance)
-        
-        print("*** starting recording")
-
-        pitch = 0
-        """
         
         # Some constants for setting the PyAudio and the
         # Aubio.
@@ -209,6 +198,19 @@ class karaokesampler():
         HOP_SIZE                = BUFFER_SIZE//2
         PERIOD_SIZE_IN_FRAME    = HOP_SIZE
 
+         # setup pitch
+        
+        tolerance = 0.8
+        win_s = 4096 # fft size
+        hop_s = buffer_size # hop size
+        pitch_o = aubio.pitch("default", win_s, hop_s, samplerate)
+        pitch_o.set_unit("midi")
+        pitch_o.set_tolerance(tolerance)
+        
+        print("*** starting recording")
+
+        pitch = 0
+        
         # Initiating PyAudio object.
         pA = pyaudio.PyAudio()
         # Open the microphone stream.
@@ -240,14 +242,16 @@ class karaokesampler():
             samples = np.fromstring(data,
                 dtype=aubio.float_type)
             # Finally get the pitch.
-            pitch = pDetection(samples)[0]
+            #pitch = pDetection(samples)[0]
+            pitch=pitch_o(signal)[0]
             # Compute the energy (volume)
             # of the current frame.
-            volume = np.sum(samples**2)/len(samples)
+            volume = float(np.sum(samples**2)/len(samples))
             # Format the volume output so it only
             # displays at most six numbers behind 0.
-            vol=("{:6f}".format(volume))
-            print(str(pitch) + " " + str(vol))
+            volume=float("{:6f}".format(volume))
+            volume=2
+            print(str(pitch) + " " + str(volume))
             confidence=1
             """
             audiobuffer = stream.read(buffer_size)
@@ -320,8 +324,8 @@ class karaokesampler():
                 """
                 
                 #end record if match
-                """
-                volH = int(self.remap(volume, 0.0, 1.0, 0.0, self.capH))
+                
+                volH = int(self.remap(volume, 0.0, 0.2, 0.0, self.capH))
                 #print (volH)
                 lineV1 = (200, volH)
                 lineV2 = (400, volH)
@@ -335,7 +339,7 @@ class karaokesampler():
                 lineP2 = (700, pitchH)
                 if self.paint=="graph":
                     cv2.line(img, lineP1, lineP2, [255, 255, 255], 3)
-                """
+                
                 
                 
                 #if self.synth:
@@ -351,9 +355,9 @@ class karaokesampler():
             #if pitch > 0:
             #    stream.write(self.generateTone(pitch))
             
-            #cv2.imshow(self.windowName, img)
-            #if cv2.waitKey(1) == 27: 
-            #    break  # esc to quit
+            cv2.imshow(self.windowName, img)
+            if cv2.waitKey(1) == 27: 
+                break  # esc to quit
         
         print("*** done recording")
         print (self.recordings)
