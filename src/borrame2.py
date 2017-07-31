@@ -1,30 +1,40 @@
-recordings=[['55_20', 116], ['60_2', 102], ['55_19', 74], ['57_9', 72], ['54_4', 45], ['54_10', 33], ['58_0', 33], ['53_13', 22], ['61_7', 11], ['58_16', 10], ['53_5', 10], ['54_11', 7], ['61_17', 3], ['56_14', 1], ['58_18', 0], ['57_15', 0], ['102_12', 0], ['108_8', 0], ['62_6', 0], ['55_3', 0], ['109_1', 0]]
+#!/usr/bin/env python
 
-selectLimit=3
-selected=[]
+# example1.py is an extremely simple text-based karaoke application that
+#  runs on the console. It doesn't play any music, just shows the lyrics. 
+# This adds music to example1.py using the power of pygame. 
+# Requires: pygame. 
 
-def findFarestNoteWithLongestDuration(index,recordings):
-    
-    bestScore=0
-    bestIndex=index
-    
-    baseNote=int(recordings[index][0].split("_")[0])
-    
-    for i,rec in enumerate(recordings):
-        note=int(rec[0].split("_")[0])
-        duration=rec[1]
-        noteDistance=abs(baseNote-note)
-        score= (noteDistance)*(duration/5)
-        if score>bestScore:
-            bestScore=score
-            bestIndex=i
-            
-    return bestIndex
-    
+from tools import midifile
+import time, datetime, sys
+import pygame
 
-while len(selected)<selectLimit:
-    candidateIndex= findFarestNoteWithLongestDuration(0,recordings)
-    selected.append(recordings[candidateIndex])
-    del recordings[candidateIndex]
-    
-print selected
+filename=raw_input('Please enter filename of .mid or .kar file:')
+m=midifile.midifile()
+m.load_file(filename)
+
+pygame.mixer.init()
+pygame.mixer.music.load(filename)
+pygame.mixer.music.play(0,0) # Start song at 0 and don't loop
+start=datetime.datetime.now()
+
+if not m.karfile:
+    print "This is not a karaoke file. I'll just play it"
+    while pygame.mixer.music.get_busy():
+        time.sleep(1)
+    sys.exit(0)
+
+
+#start=start-datetime.timedelta(0,90) # To start lyrics at a later point
+dt=0.
+while pygame.mixer.music.get_busy():
+    dt=(datetime.datetime.now()-start).total_seconds()
+    m.update_karaoke(dt)
+
+    print ''
+    print 't=',dt,' of ',max(m.kartimes)
+    for iline in range(3):
+        print m.karlinea[iline]+'__'+m.karlineb[iline]
+    print ''
+
+    time.sleep(.1)

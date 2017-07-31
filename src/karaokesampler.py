@@ -13,6 +13,7 @@ from operator import itemgetter
 import glob
 import shutil
 import os
+from pydub import AudioSegment
 
 class karaokesampler():
     
@@ -21,6 +22,7 @@ class karaokesampler():
     synth = False
     #end config
     windowName = "karaoke"
+    selectLimit=3 #number of audio samples to collect after recording
 
     recordingsFolder = "recordings/"
     samplersFolder="samplers/"
@@ -337,7 +339,7 @@ class karaokesampler():
         
     def findFarestNoteWithLongestDuration(self,recordings):
         
-        selectLimit=3
+        selectLimit=self.selectLimit
         
         selected=[int(recordings[0][0].split("_")[0])]
         selectedFiles=[recordings[0][0]]
@@ -373,38 +375,49 @@ class karaokesampler():
         print("***Process recordings")
         recFolder=self.recordingsFolder
         
-        recordings=list(reversed(sorted(recordings, key=itemgetter(1))))
+        if len(recordings)>self.selectLimit:
+        
+            recordings=list(reversed(sorted(recordings, key=itemgetter(1))))
 
-        #now fill the list
-        selected,selectedFiles=self.findFarestNoteWithLongestDuration(recordings)
+            #now fill the list
+            selected,selectedFiles=self.findFarestNoteWithLongestDuration(recordings)
 
-        #prepare sampler folder
-        numOfSamplers=len(os.walk(self.samplersFolder).next()[1])
-        newsamplerDir=self.samplersFolder+str(numOfSamplers)
-        
-        #createfolder
-        if not os.path.exists(newsamplerDir):
-            os.makedirs(newsamplerDir)
+            #prepare sampler folder
+            numOfSamplers=len(os.walk(self.samplersFolder).next()[1])
+            newsamplerDir=self.samplersFolder+str(numOfSamplers)
+
+            #createfolder
+            if not os.path.exists(newsamplerDir):
+                os.makedirs(newsamplerDir)
+
+            sleep(0.5)
+
+            #move good files
+            for s in selectedFiles:
+                #print (recFolder+s)
+                source=recFolder+s+".wav"
+                destination=newsamplerDir+"/"+s+".wav"
+                os.rename(source,destination)
+                source=recFolder+s+".jpg"
+                destination=newsamplerDir+"/"+s+".jpg"
+                os.rename(source,destination)
+
+            #remove all files in recordings folder
+            shutil.rmtree(recFolder)
+            os.makedirs(recFolder)
+
+            print ("selected",selected)
+            print ("selected files",selectedFiles)
+            #print ("all recordings",recordings)
+            return True
             
-        sleep(0.5)
-            
-        #move good files
-        for s in selectedFiles:
-            #print (recFolder+s)
-            source=recFolder+s+".wav"
-            destination=newsamplerDir+"/"+s+".wav"
-            os.rename(source,destination)
-            source=recFolder+s+".jpg"
-            destination=newsamplerDir+"/"+s+".jpg"
-            os.rename(source,destination)
-        
-        #remove all files in recordings folder
-        shutil.rmtree(recFolder)
-        os.makedirs(recFolder)
-        
-        print ("selected",selected)
-        print ("selected files",selectedFiles)
-        #print ("all recordings",recordings)
+        else:
+            print ("not enough samples recorded!!!!!! sampler won't be created")
+            #remove all files in recordings folder
+            shutil.rmtree(recFolder)
+            os.makedirs(recFolder)
+            return False
+                
 
         
         
