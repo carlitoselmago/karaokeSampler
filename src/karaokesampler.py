@@ -8,6 +8,11 @@ from time import sleep
 import wave
 import struct
 import audioop
+import threading
+from operator import itemgetter
+import glob
+import shutil
+import os
 
 class karaokesampler():
     
@@ -18,8 +23,9 @@ class karaokesampler():
     windowName = "karaoke"
 
     recordingsFolder = "recordings/"
+    samplersFolder="samplers/"
     
-    lowCut = 0.05 #volumen
+    lowCut = 0.0174 #volumen
     lowToneCut=10 #pitch
     capW = 0
     capH = 0
@@ -40,6 +46,8 @@ class karaokesampler():
     averageCounter=0
     lastVolumes=[]
     paint="graph" #none,graph
+    singing=False
+    opencvReady=False
     
     graph = []
     
@@ -52,17 +60,9 @@ class karaokesampler():
         self.createNoteTargets()
         self.p = pyaudio.PyAudio()
         
-        self.cap = cv2.VideoCapture(self.Vdevice)
-        self.capW = int(self.cap.get(3))
-        self.capH = int(self.cap.get(4))
-        
         for i in range(self.amountToAvergeVolume+1):
             self.lastVolumes.append(0)
 
-        #init window
-        #ret_val, img = self.cap.read()
-        #cv2.imshow(self.windowName, img)
-        
     
     def createNoteTargets(self):
         #based on midi notes
@@ -129,40 +129,53 @@ class karaokesampler():
         #sleep(1)
         #self.checkingVolume=False
         self.checkingVolume=False
-        """
-        thisthread = threading.current_thread()
-        self.finished_threads.append(thisthread)
-        if len(self.finished_threads) > 1 and self.finished_threads[1] == thisthread:
-            #yay we are number two!
-            self.checkingVolume=False
-            self.event.set()
-        """
+        
+        
+    def startVision(self,name):
+        
+        self.cap = cv2.VideoCapture(self.Vdevice)
+        self.capW = int(self.cap.get(3))
+        self.capH = int(self.cap.get(4))
+        
+        while True:
+            ret_val, img = self.cap.read()
+            self.cleanimage=img.copy()
+            if self.paint=="graph":
+                img=self.drawNoteTargets(img)
             
-    
-    def get_rms(self, block ):
-        SHORT_NORMALIZE = (0.00003051757)
-        # RMS amplitude is defined as the square root of the 
-        # mean over time of the square of the amplitude.
-        # so we need to convert this string of bytes into 
-        # a string of 16-bit samples...
-
-        # we will get one short out for each 
-        # two chars in the string.
-        count = len(block)/2
-        format = "%dh"%(count)
-        shorts = struct.unpack( format, block )
-
-        # iterate over the block.
-        sum_squares = 0.0
-        for sample in shorts:
-            # sample is a signed short in +/- 32768. 
-            # normalize it to 1.0
-            n = sample * SHORT_NORMALIZE
-            sum_squares += n*n
-
-        return math.sqrt( sum_squares / count )
+            volume=self.volume
+            volH = int(self.remap(volume, 0.0, 0.2, 0.0, self.capH))
+            #print (volH)
+            lineV1 = (200, volH)
+            lineV2 = (400, volH)
+            if self.paint=="graph":
+                cv2.line(img, lineV1, lineV2, [255, 0, 255], 2)
+            
+            print(volume)
+            if volume>self.lowCut:
+                #   pitch
+                pitch=self.pitch
+                pitchH = int(self.remap(pitch, self.pitchGL, self.pitchGH, 0.0, self.capH))
+                #print pitchH
+                lineP1 = (500, pitchH)
+                lineP2 = (700, pitchH)
+                if self.paint=="graph":
+                    cv2.line(img, lineP1, lineP2, [255, 255, 255], 3)
+                    
+            cv2.imshow(self.windowName, img)
+            if cv2.waitKey(1) == 27:
+                self.singing=False
+                break  # esc to quit
+            
+            self.opencvReady=True
+            
+        cv2.destroyAllWindows()
+        return
+        
     
     def singKaraoke(self):
+        
+        self.singing=True
         
         if self.synth:
             print("SYNTH ENABLED")
@@ -180,14 +193,7 @@ class karaokesampler():
                              input=True,
                              frames_per_buffer=buffer_size,
                              output=True)
-                        
-        #recorder
-        #filename = self.recordingsFolder + "test.wav"
-        #outputsink = aubio.sink(filename, samplerate)
 
-       
-        
-        
         # Some constants for setting the PyAudio and the
         # Aubio.
         BUFFER_SIZE             = 2048
@@ -227,31 +233,35 @@ class karaokesampler():
         # as a silence.
         pDetection.set_silence(-40)
         
-        while True:
-            #image
-            ret_val, originalImage = self.cap.read()
-            img = originalImage.copy()
-            
-            if self.paint=="graph":
-                img=self.drawNoteTargets(img)
-            
+        t = threading.Thread(target=self.startVision, args = ("vision",))
+        t.start()
+        
+        lastPitch=pitch
+        
+        while self.singing:
+    
             #audio
             # Always listening to the microphone.
             data = mic.read(PERIOD_SIZE_IN_FRAME)
             # Convert into number that Aubio understand.
-            samples = np.fromstring(data,
+            signal = np.fromstring(data,
                 dtype=aubio.float_type)
             # Finally get the pitch.
             #pitch = pDetection(samples)[0]
             pitch=pitch_o(signal)[0]
+            self.pitch=pitch
             # Compute the energy (volume)
             # of the current frame.
-            volume = float(np.sum(samples**2)/len(samples))
+            volume = float(np.sum(signal**2)/len(signal))
             # Format the volume output so it only
             # displays at most six numbers behind 0.
-            volume=float("{:6f}".format(volume))
-            volume=2
-            print(str(pitch) + " " + str(volume))
+            volume=round(float("{:6f}".format(volume)),4)
+            volume=self.remap(volume, 0.0,0.8, 0.0, 1.0)
+            self.volume=volume
+            
+            #print(volume)
+            #volume=2
+            #print(str(pitch) + " " + str(volume))
             confidence=1
             """
             audiobuffer = stream.read(buffer_size)
@@ -265,33 +275,7 @@ class karaokesampler():
             if self.averageCounter>self.amountToAvergeVolume:
                 self.averageCounter=0
             """
-            
-            #volume=np.average(self.lastVolumes)
-            #volume = self.get_rms( audiobuffer )
-            #print(volume)
-            #self.volume = np.sum(signal ** 2) / len(signal)
-            #self.volume=audioop.max(signal, 4)
-            #self.volume =( audioop.rms(audiobuffer, 2))
-            #self.volume=(self.remap(self.volume, 11904, 1800, 0.0, self.capH))
-            
-            #outputsink(signal, len(signal))
-           
-            #print("{:10.4f}".format(energy))
-            
-            #self.calculateVolume(CHUNK,audiobuffer)
-            #if not self.checkingVolume:
-                #threading.Thread(target=self.calculateVolume, args = (CHUNK,audiobuffer)).start()
-                #t = threading.Thread(target=self.calculateVolume, args = (CHUNK,audiobuffer))
-                #t.start()
-            #data=stream.read(CHUNK)
-            #rms = audioop.rms(data,2)
-            #rms=self.rms(signal)
-            #print rms
-            #print (self.volume)
-            #volume=self.volume
-            #pitch Value
-            #pitch = pitch_o(signal)[0]
-            #confidence = pitch_o.get_confidence()
+          
             """
             if confidence > self.lastPitchConfidence:
                 self.lastPitch = pitch
@@ -299,54 +283,28 @@ class karaokesampler():
             else:
                 pitch = self.lastPitch
             """
-            if volume > self.lowCut and pitch>self.lowToneCut:
-                
-                #record if match
-                """
-                if int(pitch) in self.noteTargets:
-                    if not self.isrecording:
-                        #start recording
-                        print ("started recording")
-                        self.recordings.append(str(int(pitch))+"_"+str(len(self.recordings)))
-                        filename = self.recordingsFolder + str(int(pitch))+"_"+str(len(self.recordings))+".wav"
-                        outputsink = aubio.sink(filename, samplerate)
-                        self.isrecording=True
+            if self.opencvReady:
+                if volume>self.lowCut and pitch>self.lowToneCut:
+
+                    #record if match
+                    if pitch>(lastPitch+1) or pitch<(lastPitch-1):
+                        #pitch has changed create new audio clip
+                        if 'outputsink' in locals():
+                            outputsink.close()
+                        
+                        name=str(int(pitch))+"_"+str(len(self.recordings))
+                        self.recordings.append([name,0])
+                        filename = self.recordingsFolder + name
+                        outputsink = aubio.sink(filename+".wav", samplerate)
+                        cv2.imwrite(filename+".jpg",self.cleanimage)
                     else:
-                        print("#keep recording")
-                        if outputsink:
-                            pass
-                            outputsink(signal, len(signal))
-                else:
-                   if self.isrecording:
-                       self.isrecording=False
-                       #print("#stop recording")
-                       outputsink.close()
-                """
-                
-                #end record if match
-                
-                volH = int(self.remap(volume, 0.0, 0.2, 0.0, self.capH))
-                #print (volH)
-                lineV1 = (200, volH)
-                lineV2 = (400, volH)
-                if self.paint=="graph":
-                    cv2.line(img, lineV1, lineV2, [255, 0, 255], 2)
-                
-                #   pitch
-                pitchH = int(self.remap(pitch, self.pitchGL, self.pitchGH, 0.0, self.capH))
-                #print pitchH
-                lineP1 = (500, pitchH)
-                lineP2 = (700, pitchH)
-                if self.paint=="graph":
-                    cv2.line(img, lineP1, lineP2, [255, 255, 255], 3)
-                
-                
-                
-                #if self.synth:
-                    #synthPitch = pitch
-                    #print ("synthPitch", synthPitch)
-                    #self.S.modulateSynth(volume,pitch)
-            
+                        #same pitch, recording
+                        self.recordings[-1][1]+=1
+                        #pitch is the same, keep recording
+                        outputsink(signal, len(signal))
+
+                    lastPitch=pitch
+                    
             
             #self.S.out()
             self.lastPitch = 0
@@ -355,16 +313,101 @@ class karaokesampler():
             #if pitch > 0:
             #    stream.write(self.generateTone(pitch))
             
-            cv2.imshow(self.windowName, img)
-            if cv2.waitKey(1) == 27: 
-                break  # esc to quit
+           
         
         print("*** done recording")
-        print (self.recordings)
-        stream.stop_stream()
-        stream.close()
+        #print (self.recordings)
+        #stream.stop_stream()
+        #stream.close()
         self.p.terminate()
-        cv2.destroyAllWindows()
+        
+        self.processRecordings(self.recordings)
+        
+    def deleteAllshorterNotes(self,selectedRecodingNote):
+        
+        selectedNote=selectedRecodingNote.split("_")[0]
+        
+        for i,rec in enumerate(self.recordings):
+            recordingName=rec[0]
+            note=recordingName.split("_")[0]
+            if note==selectedNote and recordingName!=selectedNote:
+                #delete note
+                print ("delete note index ",i)
+                del self.recordings[i]
+        
+    def findFarestNoteWithLongestDuration(self,recordings):
+        
+        selectLimit=3
+        
+        selected=[int(recordings[0][0].split("_")[0])]
+        selectedFiles=[recordings[0][0]]
+        
+        bestScore=0
+        bestIndex=0
+        index=0
+        
+        while len(selected)<selectLimit:
+            
+            baseNote=int(recordings[index][0].split("_")[0])
+
+            for i,rec in enumerate(recordings):
+                note=int(rec[0].split("_")[0])
+                if note not in selected:
+                    duration=rec[1]
+                    noteDistance=abs(baseNote-note)
+                    score= noteDistance*(duration/5)
+                    print ("score",score)
+                    if score>bestScore:
+                        bestScore=score
+                        bestIndex=i
+                        
+            index=bestIndex
+            
+            selected.append(int(recordings[bestIndex][0].split("_")[0]))
+            selectedFiles.append(recordings[bestIndex][0])
+            bestScore=0
+            
+        return selected,selectedFiles
+    
+    def processRecordings(self,recordings):
+        print("***Process recordings")
+        recFolder=self.recordingsFolder
+        
+        recordings=list(reversed(sorted(recordings, key=itemgetter(1))))
+
+        #now fill the list
+        selected,selectedFiles=self.findFarestNoteWithLongestDuration(recordings)
+
+        #prepare sampler folder
+        numOfSamplers=len(os.walk(self.samplersFolder).next()[1])
+        newsamplerDir=self.samplersFolder+str(numOfSamplers)
+        
+        #createfolder
+        if not os.path.exists(newsamplerDir):
+            os.makedirs(newsamplerDir)
+            
+        sleep(0.5)
+            
+        #move good files
+        for s in selectedFiles:
+            #print (recFolder+s)
+            source=recFolder+s+".wav"
+            destination=newsamplerDir+"/"+s+".wav"
+            os.rename(source,destination)
+            source=recFolder+s+".jpg"
+            destination=newsamplerDir+"/"+s+".jpg"
+            os.rename(source,destination)
+        
+        #remove all files in recordings folder
+        shutil.rmtree(recFolder)
+        os.makedirs(recFolder)
+        
+        print ("selected",selected)
+        print ("selected files",selectedFiles)
+        #print ("all recordings",recordings)
+
+        
+        
 
 if __name__ == "__main__":
     
