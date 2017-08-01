@@ -22,7 +22,7 @@ class samplerPlayer():
     
     def __init__(self):
         print ("sampler Player init")
-        self.samplerFolder="4"
+        self.samplerFolder="2"
         self.resolution=1
         
     
@@ -86,6 +86,7 @@ class samplerPlayer():
         
         TT=round(totaltime,self.resolution)
         timesteps=int(TT*division)
+        print("timesteps",timesteps)
         #create empty list of lists for each time step
         timeline=[[] for i in range(timesteps)]
         
@@ -93,8 +94,10 @@ class samplerPlayer():
             
             #indexTimeline=int(timesteps/(round(t[2],1)))
             indexTimeline=int(round(t[2],self.resolution)*division)
+            
+            
             if indexTimeline<timesteps:
-                print ("indexTimeline",indexTimeline)
+                #print ("indexTimeline",indexTimeline)
                 #print((round(t[2],1)),timesteps,indexTimeline)
                 #print("indexTimeline",indexTimeline)
                 timeline[indexTimeline].append(t)
@@ -107,7 +110,7 @@ class samplerPlayer():
                     notePitched.export("samplers/"+self.samplerFolder+"/"+str(t[0])+".wav",format="wav")
                     self.notes.append(t[0])
                     self.sounds.append(pygame.mixer.Sound("samplers/"+self.samplerFolder+"/"+str(t[0])+".wav"))
-                #TODO: for each note not present in self.notes, create pitched sound with pydub and load it with pygame
+            
         
       
         #print timeline
@@ -131,7 +134,7 @@ class samplerPlayer():
         splrPartiture=self.constructSamplerTrack(samplerTrack,max(m.kartimes))
         
         pygame.mixer.music.load(filename)
-        #pygame.mixer.music.play(0,0) # Start song at 0 and don't loop
+        pygame.mixer.music.play(0,0) # Start song at 0 and don't loop
         start=datetime.datetime.now()
         
         
@@ -149,13 +152,18 @@ class samplerPlayer():
         #print ("nextNoteTime",nextNoteTime)
         #print ("nextNote",nextNote)
         
-        SplrCounter=int(self.division*1.7) #la ventaja que lleva
+        SplrCounter=17#220#int(self.division*1.6) #la ventaja que lleva #old 17 con 0.1 de sleep
         print("ventaja",SplrCounter)
         
+      
         dt=0.
-        sleepTime=float(1.0/self.division)
-        while True:
-        #while pygame.mixer.music.get_busy():
+        sleepTime=1.0
+        for times in range(self.resolution):
+            sleepTime=sleepTime/10.0
+        #sleepTime=0.001
+        #sleepTime=float(1.0/self.division)
+        #while True:
+        while pygame.mixer.music.get_busy():
             
             dt=(datetime.datetime.now()-start).total_seconds()
             m.update_karaoke(dt)
@@ -181,7 +189,7 @@ class samplerPlayer():
                 #print "playy "
             #print SplrCounter
             
-            SplrCounter+=self.resolution
+            SplrCounter+=1
             
             """
             if dtRound== nextNoteTime:
