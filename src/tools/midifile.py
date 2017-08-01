@@ -330,7 +330,7 @@ print m.karlinea[0]+'__'+m.karlineb[0]
                         
                         # interesting part
                         
-                        if itrack==3:
+                        if itrack==3:#3
                             #data1 = nota
                             #data2 = velocity
                             
