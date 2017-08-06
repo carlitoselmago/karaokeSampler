@@ -22,7 +22,7 @@ class karaokesampler():
     synth = False
     #end config
     windowName = "karaoke"
-    selectLimit=3 #number of audio samples to collect after recording
+    selectLimit=6 #number of audio samples to collect after recording
 
     recordingsFolder = "recordings/"
     samplersFolder="samplers/"
@@ -290,6 +290,7 @@ class karaokesampler():
 
                     #record if match
                     if pitch>(lastPitch+1) or pitch<(lastPitch-1):
+                    #if pitch>(lastPitch+1) or pitch<(lastPitch-1):
                         #pitch has changed create new audio clip
                         if 'outputsink' in locals():
                             outputsink.close()
@@ -395,11 +396,13 @@ class karaokesampler():
             #move good files
             for s in selectedFiles:
                 #print (recFolder+s)
+                sWithoutDuration=s.split("_")[0]
                 source=recFolder+s+".wav"
-                destination=newsamplerDir+"/"+s+".wav"
+                destination=newsamplerDir+"/"+sWithoutDuration+".wav"
                 os.rename(source,destination)
                 source=recFolder+s+".jpg"
-                destination=newsamplerDir+"/"+s+".jpg"
+                
+                destination=newsamplerDir+"/"+sWithoutDuration+".jpg"
                 os.rename(source,destination)
 
             #remove all files in recordings folder

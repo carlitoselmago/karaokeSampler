@@ -191,7 +191,7 @@ print m.karlinea[0]+'__'+m.karlineb[0]
         return [var,iread,bytesread] # Return value and number of bytes read
 
 
-    def load_file(self,fileobject):
+    def load_file(self,fileobject,trackToExtract):
         
         if type(fileobject) == str:
             self.fileobject=open(fileobject,'rb')
@@ -330,12 +330,12 @@ print m.karlinea[0]+'__'+m.karlineb[0]
                         
                         # interesting part
                         
-                        if itrack==3:#3
+                        if itrack==trackToExtract:#3
                             #data1 = nota
                             #data2 = velocity
                             
                             #print (data1,data2,status2,currentpatch,itrack,mastertime)
-                            self.outtrack.append([data1,data2,mastertime])
+                            self.outtrack.append(["on",data1,data2,mastertime])
                             #self.outtrack[0].append(data1)
                             #self.outtrack[1].append(data2)
                             #self.outtrack[2].append(mastertime)
@@ -349,6 +349,12 @@ print m.karlinea[0]+'__'+m.karlineb[0]
                                 break
                             inote=inote-1
                     elif status1 == 0b1000 or (status1 == 0b1001 and data2 == 0): # Note off event
+                        
+                         # interesting part
+                        
+                        if itrack==trackToExtract:
+                            self.outtrack.append(["off",data1,data2,mastertime])
+                    
                         inote=len(self.notes)-1
                         while inote >= 0:
                             if self.notes[inote][0] == data1 and self.notes[inote][2] == currentpatch:

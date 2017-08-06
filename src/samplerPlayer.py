@@ -3,9 +3,7 @@ import sys
 
 reload(sys)  
 sys.setdefaultencoding('utf8')
-import pydub
-from pydub import AudioSegment
-from pydub.playback import play
+import cv2
 import time, datetime
 from tools import midifile
 import pygame
@@ -13,18 +11,29 @@ from os.path import basename
 import glob,os
 import threading
 import numpy as np
-
+from mido import MidiFile
+import subprocess
+import commands
+from shutil import copyfile
 
 class samplerPlayer():
     
     preparedSounds=[]
     
     
-    def __init__(self):
+    def __init__(self,windowName):
         print ("sampler Player init")
-        self.samplerFolder="2"
-        self.resolution=1
-        
+        self.samplerFolder="8"
+        self.midiTrackToSampler=3
+        self.resolution=6 #sampler score resolution, the bigger the more precise
+        #pygame.mixer.pre_init(44100, -16, 1, 512)
+        self.windowName=windowName
+        self.lastImage=self.createBlackImage()
+        self.blankImage=self.lastImage
+    
+    def createBlackImage(self):
+        img = np.zeros((512,512,3), np.uint8)
+        return img
     
     def loadSampler(self):
         
@@ -39,11 +48,19 @@ class samplerPlayer():
         #print self.sounds
         
     
+    def loadImagesSampler(self):
+        self.imgs=[]
+        for file in glob.glob("samplers/"+self.samplerFolder+"/*.jpg"):
+            self.imgs.append( cv2.imread(file))
+    
     def findClosestNote(self,notes,note):
         
         closestNoteIndex=0
         closestDistance=999999999
         closesNote=0
+        
+        if len(notes)==1:
+            return notes[0]
         
         for i,n in enumerate(notes):
            distance=abs(int(n)-note)
@@ -76,7 +93,7 @@ class samplerPlayer():
     """
     
     def constructSamplerTrack(self,samplerTrack,totaltime):
-        
+        """
         division=1
         for times in range(self.resolution):
             division=division*10
@@ -86,63 +103,160 @@ class samplerPlayer():
         
         TT=round(totaltime,self.resolution)
         timesteps=int(TT*division)
-        print("timesteps",timesteps)
+        """
+        timesteps=int(totaltime*(self.resolution*60))
+        print("timesteps!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",timesteps)
         #create empty list of lists for each time step
         timeline=[[] for i in range(timesteps)]
+        
+        
+        firstStep=0
+        
+        preNotes=self.notes
         
         for t in samplerTrack: #parse all notes
             
             #indexTimeline=int(timesteps/(round(t[2],1)))
-            indexTimeline=int(round(t[2],self.resolution)*division)
-            
+            #indexTimeline=int(round(t[2],self.resolution)*division)
+            indexTimeline=self.getStepIndex(t[3],timesteps,totaltime)
             
             if indexTimeline<timesteps:
                 #print ("indexTimeline",indexTimeline)
                 #print((round(t[2],1)),timesteps,indexTimeline)
                 #print("indexTimeline",indexTimeline)
-                timeline[indexTimeline].append(t)
-                if t[0] not in self.notes:
-                    closestNote=self.findClosestNote(self.notes,t[0])
+                
+                #stablish the note "blocks"
+                
+                tmpStep=[]
+                
+                
+                if t[0]=="on":
+                    if firstStep==0:
+                        firstStep=indexTimeline
+                    timeline[indexTimeline].append(t)
+                    
+                    
+                if t[0]=="off":
+                    #search previous same note on and fill the gaps with on
+                    count=(indexTimeline-1)
+                    gapsTofill=True
+                    Ton=t
+                    Ton[0]="on"
+                    while gapsTofill:
+                        for g in timeline[count]:
+                            #for each existing note in past step
+                            if g[1]==t[1] and g[0]=="on":
+                                #if its the same note and has the on attribute, we reached our destiny
+                                gapsTofill=False
+                                break
+                        
+                        if gapsTofill:
+                            #ok, no same note found in prev step, let's create it with note on
+                            timeline[count].append(Ton)
+                           
+                        count-=1
+                
+                #if t[0]=="off":
+                #    pass
+                """
+                lastT=timeline[-1]
+                for s in lastT:
+                    #modify each note that matches in the last step
+                    if s[0]=="on" and t[0]!="off":
+                        
+                        timeline[indexTimeline].append(t)
+                        
+                """
+                   
+                
+                
+                
+                
+                if t[1] not in self.notes:
+                    print "CREATING NOTES"
+                    closestNote=self.findClosestNote(preNotes,t[1])
                     closestNoteFilename="samplers/"+self.samplerFolder+"/"+str(closestNote)+".wav"
 
-                    sound=AudioSegment.from_file(closestNoteFilename)
-                    notePitched=self.changePitch(sound,closestNote,t[0])
-                    notePitched.export("samplers/"+self.samplerFolder+"/"+str(t[0])+".wav",format="wav")
-                    self.notes.append(t[0])
-                    self.sounds.append(pygame.mixer.Sound("samplers/"+self.samplerFolder+"/"+str(t[0])+".wav"))
-            
+                    #sound=AudioSegment.from_file(closestNoteFilename)
+                    self.soxPitch(closestNoteFilename,"samplers/"+self.samplerFolder+"/"+str(t[1])+".wav",closestNote,t[1])
+                    
+                    self.notes.append(t[1])
+                    self.sounds.append(pygame.mixer.Sound("samplers/"+self.samplerFolder+"/"+str(t[1])+".wav"))
+                    """
+                    notePitched=self.changePitch(sound,closestNote,t[1])
+                    notePitched.export("samplers/"+self.samplerFolder+"/"+str(t[1])+".wav",format="wav",parameters=["-acodec", "pcm_s16le", "-ac", "1"])
+                    self.notes.append(t[1])
+                    self.sounds.append(pygame.mixer.Sound("samplers/"+self.samplerFolder+"/"+str(t[1])+".wav"))
+                    """
+        
+      
         
       
         #print timeline
+        #print "firstStep ",firstStep
         return timeline
-  
-
     
-    def playSong(self):
+    def soxPitch(self,inputFile,destinationFile,originPitch,destinationPitch):
+        
+        pitchChange=((destinationPitch-originPitch)*100)
+  
+        #tempoChange=float(destinationPitch-originPitch)/24
+        #shell='sox "'+inputFile+'" "'+destinationFile+'" pitch '+str(pitchChange)+' tempo '+str(tempoChange)
+        #command=['sox', '"'+inputFile+'"', '"'+destinationFile+'"', 'speed', str(pitchChange)+'c']  
+        command='sox "'+inputFile+'" "'+destinationFile+'" speed '+str(pitchChange)+'c'
+        print command
+        #command="ls"
+        #os.system(command)
+        #time.sleep(2)
+        prog = subprocess.call(command,shell=True)#, stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True)
+        #out, err = prog.communicate()
+        #process = subprocess.call(command)#,shell=True)
+        #process.wait()
+        
+        #create copy of image too
+        originImage=inputFile.split(".")[0]+".jpg"
+        destinationImage=destinationFile.split(".")[0]+".jpg"
+        copyfile(originImage, destinationImage)
+        self.imgs.append( cv2.imread(destinationImage))
+        return True#process.returncode
+  
+    def getStepIndex(self,dt,totalSteps,totalTime):
+        
+        #print "dt,totalSteps,totalTime",dt,totalSteps,totalTime
+        return int((totalSteps*dt)/totalTime)
+    
+    def playSong(self,filename):
         
         #filename="visa.kar"
-        filename="mammamia.KAR"
+        #filename="mammamia.KAR"
         #filename="barbiegirl.kar"
+        trackNumber=self.midiTrackToSampler
+        
+        #get the real duration of the song
+        mid = MidiFile(filename)
+        songDuration=mid.length
         
         m=midifile.midifile()
-        samplerTrack=m.load_file(filename)
+        samplerTrack=m.load_file(filename,trackNumber)
         
         
-        pygame.mixer.init()
+        pygame.mixer.init()#frequency=22050, size=-16, channels=2 ,buffer=44100)
         
         self.loadSampler()
-        splrPartiture=self.constructSamplerTrack(samplerTrack,max(m.kartimes))
+        self.loadImagesSampler()
         
+        splrPartiture=self.constructSamplerTrack(samplerTrack,songDuration)#max(m.kartimes))
+        time.sleep(2)
         pygame.mixer.music.load(filename)
         pygame.mixer.music.play(0,0) # Start song at 0 and don't loop
         start=datetime.datetime.now()
         
-        
+        """
         for n in samplerTrack:
-            if int(n[0]) not in self.notes:
-                self.sounds.append(self.prepareNextNote(int(n[0])))
-                self.notes.append(int(n[0]))
-        
+            if int(n[1]) not in self.notes:
+                self.sounds.append(self.prepareNextNote(int(n[1])))
+                self.notes.append(int(n[1]))
+        """
         """
         noteCounter=0
         nextNote=samplerTrack[noteCounter][0]
@@ -152,16 +266,27 @@ class samplerPlayer():
         #print ("nextNoteTime",nextNoteTime)
         #print ("nextNote",nextNote)
         
-        SplrCounter=17#220#int(self.division*1.6) #la ventaja que lleva #old 17 con 0.1 de sleep
-        print("ventaja",SplrCounter)
+        #SplrCounter=17#220#int(self.division*1.6) #la ventaja que lleva #old 17 con 0.1 de sleep
+        #print("ventaja",SplrCounter)
         
       
         dt=0.
-        sleepTime=1.0
-        for times in range(self.resolution):
-            sleepTime=sleepTime/10.0
+        totalTime=songDuration#max(m.kartimes)
+        totalSteps=len(splrPartiture)
+        #sleepTime=1.0
+        #for times in range(self.resolution):
+        #    sleepTime=sleepTime/10.0
         #sleepTime=0.001
         #sleepTime=float(1.0/self.division)
+        #while True:
+        
+        lastPlayingNotes=[]
+        lastPlayingNotesNames=[]
+        
+        playDelay=1.7
+        img=self.lastImage
+        
+        
         #while True:
         while pygame.mixer.music.get_busy():
             
@@ -171,25 +296,60 @@ class samplerPlayer():
             
             #the playing note part        
             #print (max(m.kartimes)*division)
-            print "splcounter",SplrCounter
+            #print "splcounter",SplrCounter
             #print "SplrCounter time check",(((max(m.kartimes))*self.division)/SplrCounter)
-            currentNotes=splrPartiture[SplrCounter]
-            #print (currentNotes)
+            
+            
+            stepIndex=self.getStepIndex((dt+playDelay),totalSteps,totalTime)
+            currentNotes=splrPartiture[stepIndex]
+            #print stepIndex
+            nowNoteNames=[]
             
             for cn in currentNotes:
-                print cn
-                soundIndex=self.notes.index(cn[0])
-                self.sounds[soundIndex].play()
+                if cn[0]=="on":
+                    nowNoteNames.append(cn[1])
+                    
+                if cn[1] not in lastPlayingNotesNames and cn[0]=="on":
+                    soundIndex=self.notes.index(cn[1])
+                    
+                    self.sounds[soundIndex].play()
+                    img=self.imgs[soundIndex]
+                    
+                    
+            for n in lastPlayingNotes:
+                if n[1] not in nowNoteNames and n[0]=="on":
+                    playingSoundIndex=self.notes.index(n[1])
+                    #self.sounds[playingSoundIndex].stop()
                 
                 
-                #t = threading.Thread(target=self.playSound, args = (soundIndex,))
-                #t.start()
-                #self.playSound(soundIndex)
-                #play(self.sounds[soundIndex])
-                #print "playy "
-            #print SplrCounter
+            lastPlayingNotesNames=nowNoteNames
+            lastPlayingNotes=currentNotes
             
-            SplrCounter+=1
+            #print ''
+            #print 't=',dtRound,' of ',songDuration#max(m.kartimes)
+            
+            imgText=""
+            
+            for iline in range(3):
+                imgText+=m.karlinea[iline]
+                imgText+='__'+m.karlineb[iline]+'\n'
+            #print ''
+            
+            #display images
+            imgCtext=img.copy()
+            y0, dy = 50, 30
+            for i, line in enumerate(imgText.split('\n')):
+                y = y0 + i*dy
+                cv2.putText(imgCtext,line, (10,y), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255),1)
+            
+            cv2.imshow(self.windowName,imgCtext)
+            if cv2.waitKey(1) == 27:
+                self.singing=False
+                break  # esc to quit
+            
+            self.opencvReady=True
+            
+        
             
             """
             if dtRound== nextNoteTime:
@@ -198,14 +358,12 @@ class samplerPlayer():
                 nCounter+=1
                 print "PLAY NOTE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
             """
-            print ''
-            print 't=',dtRound,' of ',max(m.kartimes)
-            for iline in range(3):
-                print m.karlinea[iline]+'__'+m.karlineb[iline]
-            print ''
+            
             
 
-            time.sleep(sleepTime)
+            #time.sleep(0.01)#sleepTime)
+            
+        cv2.destroyAllWindows()
     
     def speedx(self,sound_array, factor):
         """ Multiplies the sound's speed by some `factor` """
@@ -251,7 +409,7 @@ class samplerPlayer():
         transS=destinationpitch-originpitch
         factor = 2**(1.0 * transS / 12.0)
         
-        print("originpitch",originpitch,"destinationpitch",destinationpitch,"factor",factor)
+        #print("originpitch",originpitch,"destinationpitch",destinationpitch,"factor",factor)
         """
         npSound= self.pitchshift(sound,transS)
         
@@ -307,5 +465,6 @@ class samplerPlayer():
     
 
 if __name__ == "__main__":
-    K=samplerPlayer()
-    K.playSong()
+    K=samplerPlayer("karaoke")
+    #K.playSong("bellabestia.kar")
+    K.playSong("entregate.kar")
