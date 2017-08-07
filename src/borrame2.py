@@ -8,17 +8,20 @@ Run with (for example):
 import sys
 import mido
 from mido import MidiFile
+from time import sleep
 
-#mido.set_backend('mido.backends.rtmidi')
+#os.system("timidity -iA -B2,8 -Os -EFreverb=0")
+#sleep(2)
+#mido.set_backend('mido.backends.portmidi')
 print mido.get_output_names()
-filename ="entregate.kar"
+filename ="mammamia.KAR"
 
-with mido.open_output("TiMidity:TiMidity port 1 129:1") as output:
+with mido.open_output("TiMidity:TiMidity port 0 129:0") as output:
     try:
         for message in MidiFile(filename).play():
             print(message)
             output.send(message)
-
+            
     except KeyboardInterrupt:
         print()
         output.reset()

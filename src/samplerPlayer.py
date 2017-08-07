@@ -11,10 +11,14 @@ from os.path import basename
 import glob,os
 import threading
 import numpy as np
+import mido
 from mido import MidiFile
 import subprocess
 import commands
 from shutil import copyfile
+import pprint
+
+
 
 class samplerPlayer():
     
@@ -225,6 +229,10 @@ class samplerPlayer():
         #print "dt,totalSteps,totalTime",dt,totalSteps,totalTime
         return int((totalSteps*dt)/totalTime)
     
+    def dump(self,obj):
+        for attr in dir(obj):
+          print "obj.%s = %s" % (attr, getattr(obj, attr))
+    
     def playSong(self,filename):
         
         #filename="visa.kar"
@@ -247,8 +255,8 @@ class samplerPlayer():
         
         splrPartiture=self.constructSamplerTrack(samplerTrack,songDuration)#max(m.kartimes))
         time.sleep(2)
-        pygame.mixer.music.load(filename)
-        pygame.mixer.music.play(0,0) # Start song at 0 and don't loop
+        #pygame.mixer.music.load(filename)
+        #pygame.mixer.music.play(0,0) # Start song at 0 and don't loop
         start=datetime.datetime.now()
         
         """
@@ -288,77 +296,95 @@ class samplerPlayer():
         
         
         #while True:
-        while pygame.mixer.music.get_busy():
+        with mido.open_output("TiMidity:TiMidity port 0 129:0") as output:
+        #while pygame.mixer.music.get_busy():
             
-            dt=(datetime.datetime.now()-start).total_seconds()
-            m.update_karaoke(dt)
-            dtRound=round(dt,self.resolution)
-            
-            #the playing note part        
-            #print (max(m.kartimes)*division)
-            #print "splcounter",SplrCounter
-            #print "SplrCounter time check",(((max(m.kartimes))*self.division)/SplrCounter)
-            
-            
-            stepIndex=self.getStepIndex((dt+playDelay),totalSteps,totalTime)
-            currentNotes=splrPartiture[stepIndex]
-            #print stepIndex
-            nowNoteNames=[]
-            
-            for cn in currentNotes:
-                if cn[0]=="on":
-                    nowNoteNames.append(cn[1])
-                    
-                if cn[1] not in lastPlayingNotesNames and cn[0]=="on":
-                    soundIndex=self.notes.index(cn[1])
+            for message in MidiFile(filename).play():
+                
+                dt=(datetime.datetime.now()-start).total_seconds()
+                m.update_karaoke(dt)
+                dtRound=round(dt,self.resolution)
+
+                #the playing note part        
+                #print (max(m.kartimes)*division)
+                #print "splcounter",SplrCounter
+                #print "SplrCounter time check",(((max(m.kartimes))*self.division)/SplrCounter)
+
+
+                stepIndex=self.getStepIndex((dt+playDelay),totalSteps,totalTime)
+                currentNotes=splrPartiture[stepIndex]
+                #print stepIndex
+                nowNoteNames=[]
+                
+                if message.type=="note_on":
+                    self.dump(message)
+                    print("..")
+                
+                if message.type=="note_on" and message.channel==self.midiTrackToSampler:
+                    soundIndex=self.notes.index(message.note)
                     
                     self.sounds[soundIndex].play()
-                    img=self.imgs[soundIndex]
-                    
-                    
-            for n in lastPlayingNotes:
-                if n[1] not in nowNoteNames and n[0]=="on":
-                    playingSoundIndex=self.notes.index(n[1])
-                    #self.sounds[playingSoundIndex].stop()
+                output.send(message)
                 
+                """
+
+                for cn in currentNotes:
+                    if cn[0]=="on":
+                        nowNoteNames.append(cn[1])
+
+                    if cn[1] not in lastPlayingNotesNames and cn[0]=="on":
+                        soundIndex=self.notes.index(cn[1])
+
+                        self.sounds[soundIndex].play()
+                        img=self.imgs[soundIndex]
+
+
+                for n in lastPlayingNotes:
+                    if n[1] not in nowNoteNames and n[0]=="on":
+                        playingSoundIndex=self.notes.index(n[1])
+                        #self.sounds[playingSoundIndex].stop()
+
+                        
+                lastPlayingNotesNames=nowNoteNames
+                lastPlayingNotes=currentNotes
                 
-            lastPlayingNotesNames=nowNoteNames
-            lastPlayingNotes=currentNotes
-            
-            #print ''
-            #print 't=',dtRound,' of ',songDuration#max(m.kartimes)
-            
-            imgText=""
-            
-            for iline in range(3):
-                imgText+=m.karlinea[iline]
-                imgText+='__'+m.karlineb[iline]+'\n'
-            #print ''
-            
-            #display images
-            imgCtext=img.copy()
-            y0, dy = 50, 30
-            for i, line in enumerate(imgText.split('\n')):
-                y = y0 + i*dy
-                cv2.putText(imgCtext,line, (10,y), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255),1)
-            
-            cv2.imshow(self.windowName,imgCtext)
-            if cv2.waitKey(1) == 27:
-                self.singing=False
-                break  # esc to quit
-            
-            self.opencvReady=True
-            
-        
-            
-            """
-            if dtRound== nextNoteTime:
-                for n in nextNotesounds:
-                    play(n)
-                nCounter+=1
-                print "PLAY NOTE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-            """
-            
+                """
+
+                #print ''
+                #print 't=',dtRound,' of ',songDuration#max(m.kartimes)
+
+                imgText=""
+
+                for iline in range(3):
+                    imgText+=m.karlinea[iline]
+                    imgText+='__'+m.karlineb[iline]+'\n'
+                #print ''
+                
+                """
+                #display images
+                imgCtext=img.copy()
+                y0, dy = 50, 30
+                for i, line in enumerate(imgText.split('\n')):
+                    y = y0 + i*dy
+                    cv2.putText(imgCtext,line, (10,y), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255),1)
+                    
+                cv2.imshow(self.windowName,imgCtext)
+                if cv2.waitKey(1) == 27:
+                    self.singing=False
+                    break  # esc to quit
+
+                self.opencvReady=True
+
+                """
+
+                """
+                if dtRound== nextNoteTime:
+                    for n in nextNotesounds:
+                        play(n)
+                    nCounter+=1
+                    print "PLAY NOTE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+                """
+
             
 
             #time.sleep(0.01)#sleepTime)
@@ -467,4 +493,4 @@ class samplerPlayer():
 if __name__ == "__main__":
     K=samplerPlayer("karaoke")
     #K.playSong("bellabestia.kar")
-    K.playSong("entregate.kar")
+    K.playSong("mammamia.KAR")
