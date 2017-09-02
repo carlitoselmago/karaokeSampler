@@ -1,0 +1,92 @@
+body{
+	font-family: Arial;
+	font-size: 9px;
+	background-color: #46932f	;
+}
+.selmod{
+	
+    width:431px;
+    float: left;
+    background-color: grey;
+    height: 59px;
+    border: none;
+    text-align: center;
+    padding-top: 30px;
+    font-size: 23px;
+        margin-bottom: 13px;
+}
+#selsong{
+	background-color:black;
+	color:white;
+}
+#selsampler{
+	background-color:darkolivegreen;
+	color:white;
+	background-size: cover;
+	background-position: center center;
+}
+#customtext{
+	    height: 89px;
+    display: block;
+    padding-top: 0px;
+    background-color: aquamarine;
+}
+.clearfix{
+	clear:both;
+}
+.sampler{
+
+    width: 120px;
+    height: 60px;
+    float: left;
+    color: white;
+    font-size: 27px;
+    /* padding: 11px; */
+    padding-top: 29px;
+    text-align: center;
+    border: solid 1px;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+}
+#songlist{
+    height: calc(100vh - 200px);
+    overflow-y: scroll;
+    width: 40%;
+    background-color: white;
+    float:left;
+}
+#songlist ul{
+	padding-left: 0px;
+}
+#songlist .song {
+	list-style: none;
+    padding: 12px;
+   border-bottom: solid 1px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+#samplerlist{
+	float:left;
+	width: 40%;
+	overflow-y: scroll;
+	height: calc(100vh - 200px);
+	background-color: white;
+	    margin-left: 40px;
+	    cursor: pointer;
+}
+.control{
+	    float: left;
+    padding: 12px;
+    border: 1px solid white;
+    color: white;
+    font-size: 12px;
+    width: 118px;
+    margin-bottom: 15px;
+    cursor: pointer;
+}
+.control:hover{
+	background-color: white;
+	color:black;
+}

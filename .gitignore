@@ -3,3 +3,5 @@
 /src/aubio
 /nbproject/
 /src/samplers/*
+/src/KARsongs
+/src/guistatic/samplers

@@ -22,7 +22,7 @@ class karaokesampler():
     synth = False
     #end config
     windowName = "karaoke"
-    selectLimit=6 #number of audio samples to collect after recording
+    selectLimit=4 #number of audio samples to collect after recording
 
     recordingsFolder = "recordings/"
     samplersFolder="samplers/"
@@ -176,7 +176,10 @@ class karaokesampler():
         
     
     def singKaraoke(self):
-        
+        recFolder=self.recordingsFolder
+        shutil.rmtree(recFolder)
+        os.makedirs(recFolder)
+
         self.singing=True
         
         if self.synth:
@@ -255,6 +258,8 @@ class karaokesampler():
             # Compute the energy (volume)
             # of the current frame.
             volume = float(np.sum(signal**2)/len(signal))
+
+            print volume
             # Format the volume output so it only
             # displays at most six numbers behind 0.
             volume=round(float("{:6f}".format(volume)),4)
@@ -384,7 +389,7 @@ class karaokesampler():
             selected,selectedFiles=self.findFarestNoteWithLongestDuration(recordings)
 
             #prepare sampler folder
-            numOfSamplers=len(os.walk(self.samplersFolder).next()[1])
+            numOfSamplers=len(os.walk(self.samplersFolder).next()[1])+1
             newsamplerDir=self.samplersFolder+str(numOfSamplers)
 
             #createfolder
@@ -399,6 +404,7 @@ class karaokesampler():
                 sWithoutDuration=s.split("_")[0]
                 source=recFolder+s+".wav"
                 destination=newsamplerDir+"/"+sWithoutDuration+".wav"
+                print "source,destination",source,destination
                 os.rename(source,destination)
                 source=recFolder+s+".jpg"
                 
@@ -406,8 +412,8 @@ class karaokesampler():
                 os.rename(source,destination)
 
             #remove all files in recordings folder
-            shutil.rmtree(recFolder)
-            os.makedirs(recFolder)
+            #shutil.rmtree(recFolder)
+            #os.makedirs(recFolder)
 
             print ("selected",selected)
             print ("selected files",selectedFiles)
@@ -417,8 +423,7 @@ class karaokesampler():
         else:
             print ("not enough samples recorded!!!!!! sampler won't be created")
             #remove all files in recordings folder
-            shutil.rmtree(recFolder)
-            os.makedirs(recFolder)
+            
             return False
                 
 
