@@ -1,36 +1,13 @@
-#!/usr/bin/env python
-"""                                                                            
-Play MIDI file on output port.
-Run with (for example):
-	./play_midi_file.py 'SH-201 MIDI 1' 'test.mid'
-"""
+import numpy as np
+def find_nearest(array,value):
+    return min(range(len(array)), key=lambda i: abs(array[i]-value))
 
-import sys
-import mido
-from mido import MidiFile
-from time import sleep
-from pprint import pprint
+array = [29.43,9.97,1.44,5.13,6.30,7.0,6.60]
 
-#os.system("timidity -iA -B2,8 -Os -EFreverb=0")
-#sleep(2)
-#mido.set_backend('mido.backends.portmidi')
-print mido.get_output_names()
-filename ="mammamia.KAR"
+# [ 0.21069679  0.61290182  0.63425412  0.84635244  0.91599191  0.00213826
+#   0.17104965  0.56874386  0.57319379  0.28719469]
 
+value = 6.5
 
-#Microsoft GS Wavetable Synth 0
-with mido.open_output("loopMIDI Port 1") as output:
-	try:
-		for message in MidiFile(filename).play():
-			#pprint(dir(message))
-			#print(message.dict)
-			if message.channel==0:
-				print message
-			#print(message.bytes)
-			#print (mido.Message.from_bytes(message.bytes))
-			#print(message.bin)
-			#output.send(message)
-			
-	except KeyboardInterrupt:
-		print()
-		output.reset()
+print(find_nearest(array, value))
+# 0.568743859261

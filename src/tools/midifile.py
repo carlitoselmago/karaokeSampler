@@ -1,9 +1,7 @@
-# encoding=utf8  
-import sys  
-
-reload(sys)  
-sys.setdefaultencoding('utf8')
-#!/usr/bin/env python
+# -*- coding: utf-8 -*- 
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 #
 # (c) 2015 Hector Socas-Navarro (hsocas.iac@gmail.com)
 #
@@ -213,6 +211,7 @@ print m.karlinea[0]+'__'+m.karlineb[0]
                 self.fileobject.close()
             return self.error
 
+        #print "self.ntracks",self.ntracks,"GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG"
         for itrack in range(self.ntracks):
             currentpatch=0
             mastertime=0
@@ -336,6 +335,7 @@ print m.karlinea[0]+'__'+m.karlineb[0]
                             
                             #print (data1,data2,status2,currentpatch,itrack,mastertime)
                             self.outtrack.append(["on",data1,data2,mastertime])
+                       
                             #self.outtrack[0].append(data1)
                             #self.outtrack[1].append(data2)
                             #self.outtrack[2].append(mastertime)

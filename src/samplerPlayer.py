@@ -1,8 +1,8 @@
-# encoding=utf8  
-import sys  
+# -*- coding: utf-8 -*- 
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
-reload(sys)  
-sys.setdefaultencoding('utf8')
 import cv2
 import time, datetime
 from tools import midifile
@@ -14,11 +14,15 @@ import numpy as np
 import mido
 from mido import MidiFile
 import subprocess
-import commands
+#import commands
 from shutil import copyfile
 import pprint
 from time import sleep
-
+import random
+import  PIL
+from PIL import Image
+from PIL import ImageFont
+from PIL import ImageDraw 
 
 class samplerPlayer():
 	
@@ -27,7 +31,11 @@ class samplerPlayer():
 	
 	def __init__(self,windowName):
 		print ("sampler Player init")
-		
+		fonts_path = "fonts"#os.path.join(os.path.dirname(os.path.dirname(__file__)), 'fonts')
+		print fonts_path
+		self.font = ImageFont.truetype(os.path.join(fonts_path, 'futura.ttf'), 12) #last is font-size
+		self.percentageOfmessagesForLeadTrack=4.65
+		self.customText=""
 		self.midiTrackToSampler=0
 		self.resolution=6 #sampler score resolution, the bigger the more precise
 		#pygame.mixer.pre_init(44100, -16, 1, 512)
@@ -40,6 +48,7 @@ class samplerPlayer():
 		self.playingSoundsTime=[]
 		pygame.mixer.pre_init(44100, -16, 2, 2048)
 		pygame.mixer.init()
+		self.status="iddle"
 
 		t = threading.Thread(target=self.showImage, args = ("showImage",)) #algo entre 0.1 y 0.8
 		t.start()
@@ -68,7 +77,7 @@ class samplerPlayer():
 			self.imgs.append( cv2.imread(file))
 	
 	def findClosestNote(self,notes,note):
-		print notes,note,"BAAAA"
+		#print notes,note,"BAAAA"
 		closestNoteIndex=0
 		closestDistance=999999999
 		closesNote=0
@@ -84,156 +93,36 @@ class samplerPlayer():
 			   closesNote=int(n)
 			   
 		return notes[closestNoteIndex]
+
 	
-	"""
-	def prepareNextNote(self,note):
-		
-		closestNoteIndex=0
-		closestDistance=999999999
-		closesNote=0
-		
-		for i,n in enumerate(self.notes):
-			distance=abs(int(n)-note)
-			if distance<closestDistance:
-				closesDistance=distance
-				closestNoteIndex=i
-				closesNote=int(n)
-		
-		closestNoteSound=self.sounds[closestNoteIndex]
-		
-	   
-		notePitched=self.changePitch(closestNoteSound,adaptedPitch)
-		return notePitched
-	"""
-	
-	def constructSamplerTrack(self,samplerTrack,totaltime,samplerNumber):
-		"""
-		division=1
-		for times in range(self.resolution):
-			division=division*10
-		
-		self.division=division
-		#division=(for t in self.resolution)#10
-		
-		TT=round(totaltime,self.resolution)
-		timesteps=int(TT*division)
-		"""
-		timesteps=int(totaltime*(self.resolution*60))
-		print("timesteps!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",timesteps)
-		#create empty list of lists for each time step
-		timeline=[[] for i in range(timesteps)]
-		
-		
-		firstStep=0
+	def constructSamplerTrack(self,notesForSampler,totaltime,samplerNumber):
 		
 		preNotes=self.notes
 		
-		print preNotes,"ALL NOTES AT START"
+		print (notesForSampler,"NOTES REQUIRED")
+		print (preNotes,"ALL NOTES AT START")
 
-		for t in samplerTrack: #parse all notes
-			"""
-			#indexTimeline=int(timesteps/(round(t[2],1)))
-			#indexTimeline=int(round(t[2],self.resolution)*division)
-			indexTimeline=self.getStepIndex(t[3],timesteps,totaltime)
+		for n in notesForSampler: #parse all notes
 			
-			if indexTimeline<timesteps:
-				#print ("indexTimeline",indexTimeline)
-				#print((round(t[2],1)),timesteps,indexTimeline)
-				#print("indexTimeline",indexTimeline)
-				
-				#stablish the note "blocks"
-				
-				tmpStep=[]
-				
-				
-				if t[0]=="on":
-					if firstStep==0:
-						firstStep=indexTimeline
-					timeline[indexTimeline].append(t)
-					
-					
-				if t[0]=="off":
-					#search previous same note on and fill the gaps with on
-					count=(indexTimeline-1)
-					gapsTofill=True
-					Ton=t
-					Ton[0]="on"
-					while gapsTofill:
-						for g in timeline[count]:
-							#for each existing note in past step
-							if g[1]==t[1] and g[0]=="on":
-								#if its the same note and has the on attribute, we reached our destiny
-								gapsTofill=False
-								break
-						
-						if gapsTofill:
-							#ok, no same note found in prev step, let's create it with note on
-							timeline[count].append(Ton)
-						   
-						count-=1
-				
-				#if t[0]=="off":
-				#    pass
-				
-				lastT=timeline[-1]
-				for s in lastT:
-					#modify each note that matches in the last step
-					if s[0]=="on" and t[0]!="off":
-						
-						timeline[indexTimeline].append(t)
-						
-				"""
-				
-				
-				
-				
-			
-			if int(t[1]) not in self.notes:
-				print "CREATING NOTES"
-				closestNote=self.findClosestNote(preNotes,t[1])
+			if int(n) not in self.notes:
+				#print "CREATING NOTES"
+				closestNote=self.findClosestNote(preNotes,n)
 				closestNoteFilename="samplers/"+samplerNumber+"/"+str(closestNote)+".wav"
 
-				#sound=AudioSegment.from_file(closestNoteFilename)
-				self.soxPitch(closestNoteFilename,"samplers/"+samplerNumber+"/"+str(t[1])+".wav",closestNote,t[1])
+				self.soxPitch(closestNoteFilename,"samplers/"+samplerNumber+"/"+str(n)+".wav",closestNote,n)
 				
-				self.notes.append(int(t[1]))
-				self.sounds.append(pygame.mixer.Sound("samplers/"+samplerNumber+"/"+str(t[1])+".wav"))
-				"""
-				notePitched=self.changePitch(sound,closestNote,t[1])
-				notePitched.export("samplers/"+self.samplerFolder+"/"+str(t[1])+".wav",format="wav",parameters=["-acodec", "pcm_s16le", "-ac", "1"])
-				self.notes.append(t[1])
-				self.sounds.append(pygame.mixer.Sound("samplers/"+self.samplerFolder+"/"+str(t[1])+".wav"))
-				"""
-	
-	  
-		
-		print self.notes,"ALL NOTES CREATED"
-		#print timeline
-		#print "firstStep ",firstStep
-		return timeline
+				self.notes.append(int(n))
+				self.sounds.append(pygame.mixer.Sound("samplers/"+samplerNumber+"/"+str(n)+".wav"))
+
+		print(self.notes,"NOTES AFTER PROCESSED")
+		return True
 	
 	def soxPitch(self,inputFile,destinationFile,originPitch,destinationPitch):
 		
 		pitchChange=((destinationPitch-originPitch)*100)
-  
-		#tempoChange=float(destinationPitch-originPitch)/24
-		#shell='sox "'+inputFile+'" "'+destinationFile+'" pitch '+str(pitchChange)+' tempo '+str(tempoChange)
-		#command=['sox', '"'+inputFile+'"', '"'+destinationFile+'"', 'speed', str(pitchChange)+'c']  
 		command='sox "'+inputFile+'" "'+destinationFile+'" speed '+str(pitchChange)+'c'
-		print command
-		#command="ls"
-		#os.system(command)
-		#time.sleep(2)
 		prog = subprocess.call(command,shell=True)#, stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True)
-		#out, err = prog.communicate()
-		#process = subprocess.call(command)#,shell=True)
-		#process.wait()
-		
-		#create copy of image too
-		originImage=inputFile.split(".")[0]+".jpg"
-		destinationImage=destinationFile.split(".")[0]+".jpg"
-		copyfile(originImage, destinationImage)
-		self.imgs.append( cv2.imread(destinationImage))
+	
 		return True#process.returncode
   
 	def getStepIndex(self,dt,totalSteps,totalTime):
@@ -243,7 +132,7 @@ class samplerPlayer():
 	
 	def dump(self,obj):
 		for attr in dir(obj):
-		  print "obj.%s = %s" % (attr, getattr(obj, attr))
+		  print ("obj.%s = %s" % (attr, getattr(obj, attr)))
 
 	def playWithDelay(self,output,message,delayTime=.200):
 		sleep(delayTime)
@@ -267,203 +156,198 @@ class samplerPlayer():
 			#self.sounds[soundIndex].set_volume(0)
 		else:
 			#note on
-			self.img=self.imgs[soundIndex]
+			self.img=random.choice(self.imgs)
 			self.sounds[soundIndex].set_volume(message.velocity/127.0)
 			self.sounds[soundIndex].play()
 
-	def playSong(self,filename,samplerNumber):
+	def find_nearest(self,array,value): #returns index of nearest number in array
+		return min(range(len(array)), key=lambda i: abs(array[i]-value))
+
+	def getTrackNumbers(self,midiSong):
+
+		tracks=[]
+		notasInTrack=[]
+
+		for i, track in enumerate(midiSong.tracks):
+			#trackType=""
+			messagesTypes=[0,0]#normal,lyrics
+			messagesLimit=5
+			for c,message in enumerate(track):
+				
+				if c==messagesLimit:
+					break
+				if message.type=="note_on" or message.type=="note_off" or message.type=="sysex" or  message.type=="program_change" or message.type=="control_change":
+					#normal message
+					
+					messagesTypes[0]+=1
+					#trackType="standard"
+				else:
+					messagesTypes[1]+=1
+					#trackType="lyrics"
+					#lyrics message
+
+			trackType=messagesTypes.index(max(messagesTypes))
+			
+			tracks.append([track.name,trackType,len(track)])
+
+		#count all standard messages
+		totalMessages=0.0
+		for i,track in enumerate(tracks):
+			if track[1]==0:
+				#normal track
+				totalMessages+=track[2]
+
+		#get track percentages
+		percentages=[]
+		for i,track in enumerate(tracks):
+			if track[1]==0:
+				percentage=(track[2]*100.0)/totalMessages
+				percentages.append(percentage)
+				tracks[i].append(percentage)
+			else:
+				percentages.append(0.0)
+
+		leadTrackIndex=self.find_nearest(percentages,self.percentageOfmessagesForLeadTrack)
+		leadTrackName=tracks[leadTrackIndex][0]
+
+		count=0
+		for i,track in enumerate(tracks):
+			if track[1]==0:
+				if i==leadTrackIndex:
+					MidoTrackNumber=count
+					break
+
+				count+=1
+
+		midfileTrackNumber=leadTrackIndex
+
+		#construct a list of all notes that will be required during playback
+		for message in midiSong.tracks[midfileTrackNumber]:
+			if message.type =="note_on":
+
+				if message.note not in notasInTrack:
+					notasInTrack.append(message.note)
+
+		#print "song has ",totalMessages,"standard messages"
+		print tracks
+
+		print ("MidoTrackNumber",MidoTrackNumber,"PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP")
+		print ("midfileTrackNumber",midfileTrackNumber,"MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM")
+
+		return MidoTrackNumber,midfileTrackNumber,notasInTrack
 		
-		#filename="visa.kar"
-		#filename="mammamia.KAR"
-		#filename="barbiegirl.kar"
-		trackNumber=self.midiTrackToSampler
+
+
+	def playSong(self,filename,samplerNumber,customText):
+
+		filename=filename.decode("utf-8")
+
+		self.status="loading"
+		self.customText=customText
+		self.songName=filename.split(".")[0]
 		
 		#get the real duration of the song
 		mid = MidiFile(filename)
 		songDuration=mid.length
+
+		
+		trackNumber=self.midiTrackToSampler
 		
 		self.m=midifile.midifile()
-		
-		samplerTrack=self.m.load_file(filename,trackNumber+3) #TODO: atención esto seguramente dará error cuando cambie de canción
-		
+		#print "SONG HAS ",mid.tracks," TRACKS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+		MidoTrackNumber,midfileTrackNumber,notesForSampler=self.getTrackNumbers(mid)
+
+
+		samplerTrack=self.m.load_file((filename).encode("latin1"),midfileTrackNumber) #TODO: atención esto seguramente dará error cuando cambie de canción
 		
 		self.prepareSampler(str(samplerNumber))
-		print("after prepareSampler")
-		splrPartiture=self.constructSamplerTrack(samplerTrack,songDuration,str(samplerNumber))#max(m.kartimes))
-		time.sleep(2)
-		#pygame.mixer.music.load(filename)
-		#pygame.mixer.music.play(0,0) # Start song at 0 and don't loop
+		self.constructSamplerTrack(notesForSampler,songDuration,str(samplerNumber))#max(m.kartimes))
+
 		start=datetime.datetime.now()
 		
-		"""
-		for n in samplerTrack:
-			if int(n[1]) not in self.notes:
-				self.sounds.append(self.prepareNextNote(int(n[1])))
-				self.notes.append(int(n[1]))
-		"""
-		"""
-		noteCounter=0
-		nextNote=samplerTrack[noteCounter][0]
-		nextNoteTime=round(samplerTrack[noteCounter][2],1)
-		nextNoteSound=self.prepareNextNote(nextNote)
-		"""
-		#print ("nextNoteTime",nextNoteTime)
-		#print ("nextNote",nextNote)
-		
-		#SplrCounter=17#220#int(self.division*1.6) #la ventaja que lleva #old 17 con 0.1 de sleep
-		#print("ventaja",SplrCounter)
-		
-	  
 		dt=0.
 		totalTime=songDuration#max(m.kartimes)
-		totalSteps=len(splrPartiture)
-		#sleepTime=1.0
-		#for times in range(self.resolution):
-		#    sleepTime=sleepTime/10.0
-		#sleepTime=0.001
-		#sleepTime=float(1.0/self.division)
-		#while True:
 		
 		lastPlayingNotes=[]
 		lastPlayingNotesNames=[]
 		
 		playDelay=1.7
 		img=self.lastImage
-		print mido.get_output_names()
+		#print mido.get_output_names()
 		#otherOutput=mido.open_output("loopMIDI Port 1 3") 
 		
+		self.status="ready"
+
+		while self.status=="ready":
+			sleep(1)
 		
 		
+		dt=0.0
+
+		self.customText=""
 		#while True:
 		with mido.open_output("Microsoft GS Wavetable Synth 0") as output:
+
 		#while pygame.mixer.music.get_busy():
 			
-			for message in MidiFile(filename).play():#meta_messages=True):
-				
-				dt=(datetime.datetime.now()-start).total_seconds()-1.0
-				self.m.update_karaoke(dt)
-				dtRound=round(dt,self.resolution)
+			for message in MidiFile(filename).play(meta_messages=True):#meta_messages=True):
+				#print message
+				if self.status=="stop":
+					#stop the song
+					break
 
-				#the playing note part        
-				#print (max(m.kartimes)*division)
-				#print "splcounter",SplrCounter
-				#print "SplrCounter time check",(((max(m.kartimes))*self.division)/SplrCounter)
-
-
-				#stepIndex=self.getStepIndex((dt+playDelay),totalSteps,totalTime)
-				
-				#print stepIndex
 				nowNoteNames=[]
-				#pprint(message)
 
-				#if message.type=="note_on":
-				#    self.dump(message)
-				#    print("..")
-				
+				dt+=message.time
+
+				self.m.update_karaoke(dt)
+
 				if message.type=="note_on" or message.type=="note_off":
-					if message.channel==self.midiTrackToSampler:
-						#print "message",message
-						#otherOutput.send(message)
+					
+					if message.channel==MidoTrackNumber:#midfileTrackNumber:
 						
-						#milisecondsOfDuration=int(message.time*10000)
-						#print message.time,"message.time"
-						#print milisecondsOfDuration
 						t = threading.Thread(target=self.playSamplerNotewithDelay, args = (message,0.1)) #algo entre 0.1 y 0.8
 						t.start()
 						
-						"""
-
-						if message.type=="note_off" or message.velocity==0:
-							pass
-							#note off
-							self.sounds[soundIndex].stop()
-							#self.sounds[soundIndex].set_volume(0)
-						else:
-							#note on
-							self.sounds[soundIndex].set_volume(message.velocity/127.0)
-							self.sounds[soundIndex].play()
-						"""
-						#if message.note not in self.playingSounds:
-						#	self.playingSounds.append(message.note)
-						#	self.playingSoundsTime.append(datetime.datetime.now()+message.time)
-						
-
-				
-						
-					#try:
-						
-						
-						#print(message)
-						
-						#t = threading.Thread(target=self.playWithDelay, args = (otherOutput,message,.100))
-						#t = threading.Thread(target=self.playWithDelay, args = (message,.100))
-						#t.start()
-						#otherOutput.send(message)
-					#except:
-					#	print "note", message.note , "not in self.notes"
-				output.send(message)
-				#t = threading.Thread(target=self.playWithDelay, args = (output,message,0.001)) #algo entre 0.1 y 0.8
-				#t.start()
-				
-				
-				
-				"""
-
-				for cn in currentNotes:
-					if cn[0]=="on":
-						nowNoteNames.append(cn[1])
-
-					if cn[1] not in lastPlayingNotesNames and cn[0]=="on":
-						soundIndex=self.notes.index(cn[1])
-
-						self.sounds[soundIndex].play()
-						img=self.imgs[soundIndex]
-
-
-				for n in lastPlayingNotes:
-					if n[1] not in nowNoteNames and n[0]=="on":
-						playingSoundIndex=self.notes.index(n[1])
-						#self.sounds[playingSoundIndex].stop()
-
-						
-				lastPlayingNotesNames=nowNoteNames
-				lastPlayingNotes=currentNotes
-				
-				"""
-
-				#print ''
-				#print 't=',dtRound,' of ',songDuration#max(m.kartimes)
-
-				
-				
-				
-
-				"""
-				if dtRound== nextNoteTime:
-					for n in nextNotesounds:
-						play(n)
-					nCounter+=1
-					print "PLAY NOTE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-				"""
-
+					
+				if message.type=="note_on" or message.type=="note_off" or message.type=="sysex" or  message.type=="program_change" or message.type=="control_change":
+					output.send(message)
 			
 
-			#time.sleep(0.01)#sleepTime)
 			
+		self.status="iddle"
+		return True
 		
+	def putTextPIL(self,img,text,cordinates):
+		pil_im = Image.fromarray(img)
+		pil_d = ImageDraw.Draw(pil_im)
+		pil_d.text(cordinates,text,(255,255,255),font=self.font)
+		imgWithText = np.array(pil_im)
+		return imgWithText
 
 	def showImage(self,threadName):
-		
+		cv2.namedWindow(self.windowName, cv2.WND_PROP_FULLSCREEN)          
+		cv2.setWindowProperty(self.windowName, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 		running=True
-	
+		
 		while running:
 			imgText=""
-
+			
 			imgCtext=self.img.copy()
-
+			
 			#check if karaoke lyrics exist
+			if self.customText!="" and self.status!="playing": 
+				self.songName=self.songName.replace("KARsongs/", "")
+				#print "show singer text"
+				#self.songName.encode("ascii","ignore")
 
-			if 'm' in self.__dict__:
+				imgCtext=self.putTextPIL(imgCtext,self.songName,(10,40))
+				imgCtext=self.putTextPIL(imgCtext,"CANTA: "+self.customText.decode("utf-8"),(10,60))
+				
+				#cv2.putText(imgCtext, ord(u"É"), (10,40), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255),1)
+				#cv2.putText(imgCtext,"CANTA: "+self.customText, (10,60), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255),1)
+				
+			if 'm' in self.__dict__ and self.status=="playing":
 
 				for iline in range(3):
 					imgText+=self.m.karlinea[iline]
@@ -475,7 +359,8 @@ class samplerPlayer():
 				y0, dy = 50, 30
 				for i, line in enumerate(imgText.split('\n')):
 					y = y0 + i*dy
-					cv2.putText(imgCtext,line, (10,y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255),1)
+					imgCtext=self.putTextPIL(imgCtext,line,(10,y))
+					#cv2.putText(imgCtext,line, (10,y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255),1)
 				
 			cv2.imshow(self.windowName,imgCtext)
 			if cv2.waitKey(1) == 27:
@@ -532,36 +417,6 @@ class samplerPlayer():
 		transS=destinationpitch-originpitch
 		factor = 2**(1.0 * transS / 12.0)
 		
-		#print("originpitch",originpitch,"destinationpitch",destinationpitch,"factor",factor)
-		"""
-		npSound= self.pitchshift(sound,transS)
-		
-		audio_segment = pydub.AudioSegment(
-			npSound.tobytes(), 
-			frame_rate=44100,
-			sample_width=npSound.dtype.itemsize, 
-			channels=1
-		)
-		return audio_segment
-		"""
-		
-		#TODO:calculate octaves based on origin pitch and destination pitch
-		"""
-		
-		if destinationpitch>originpitch:
-			adaptedPitch = ((destinationpitch-originpitch)/12)+1
-		else:
-			adaptedPitch = ((originpitch-destinationpitch)/12)-1
-		"""
-		"""
-		mult=0.08334
-		
-		if destinationpitch>originpitch:
-			adaptedPitch = ((float(destinationpitch)-float(originpitch)))*mult
-		else:
-			adaptedPitch = ((float(originpitch)-float(destinationpitch)))*mult
-		
-		"""
 		
 		# shift the pitch up by half an octave (speed will increase proportionally)
 		#octaves = adaptedPitch  #octaves is an int
@@ -577,17 +432,8 @@ class samplerPlayer():
 		
 
 
-#sound = AudioSegment.from_file('samplers/3/63_1.wav')
-# shift the pitch up by half an octave (speed will increase proportionally)
-
-
-
-
-#for i in range(50):   
-	#play(chipmunk_ready_to_export )
-	
-
 if __name__ == "__main__":
 	K=samplerPlayer("karaoke")
 	#K.playSong("bellabestia.kar")
-	K.playSong("KARsongs/Africa1.kar",12)
+	#K.playSong("bellabestia.kar",12,"custom text ñ here")
+	K.playSong("KARsongs/ANA BELÉN - DERROCHE.kar",12,"custom text here ñññ Á")

@@ -19,20 +19,93 @@ $( document ).ready(function() {
 
 	//controls
 	$('#controls').on('click', '#loadsong', function(){
+
+		if ($("#customtext").val()==""){
+			alert("You must fill custom text for singer");
+		} else {
+			waitForSongLoaded();
+		var customtext=$("#customtext").val();
+		$("#status").text("LOADING...");
 		var filename=$("#selsong").attr("filename");
 		var samplerName=$("#selsampler").attr("samplerName");
-		var arrayJson= JSON.stringify({"filename":filename,"samplerName":samplerName});
+		var arrayJson= JSON.stringify({"filename":filename,"samplerName":samplerName,"customtext":customtext});
 		$.ajax({
 		    type: 'POST',
 		    url: 'loadsong',
 		    data: arrayJson, // or JSON.stringify ({name: 'jonas'}),
-		    success: function(data) { alert('data: ' + data); },
+		    success: function(data) { 
+		    	if (data=="OK"){
+		    		$("#status").text("iddle");
+		    	}
+		    },
 		    contentType: "application/json",
-		    dataType: 'json'
+		   
 		});
+		}
+
+		
 	});
+
+	$('#controls').on('click', '#play', function(){
+		if ($("#status").text()=="ready"){
+			$("#status").text("playing");
+			$.ajax({
+			    url: 'playsong',
+			    success: function(data) { 
+			    	if (data=="recorded"){
+			    			
+			    			loadSamplers();
+			    			$("#customtext").val("");
+			    	}
+			    }
+			});
+		} else {
+			alert("song must be loaded first");
+		}
+	});
+
+	$('#controls').on('click', '#stop', function(){
+		$.ajax({
+			    url: 'stopsong',
+			    success: function(data) { 
+			    	setTimeout(function(){
+			    		loadSamplers();
+			    		$("#status").text("iddle");
+			    	 }, 2000);
+			    	
+
+			    }
+			});
+	});
+	//END CONTROLS
+
+
+
+
+
 });
 
+function waitForSongLoaded(){
+	var songLoaded=false;
+	var watcher=setInterval(function(){
+		if (songLoaded){
+			//song is ready
+			clearInterval( watcher );
+
+		} else {
+			//keep watching
+			$.ajax({
+		    url: 'songloaded',
+		    success: function(data) { 
+		    	if (data=="loaded"){
+		    		songLoaded=true;
+		    		$("#status").text("ready");
+		    	}
+		    }
+		});
+		}
+	}, 3000);
+}
 
 function loadKarSongs(){
 	   $.getJSON( "getkarsongs", function( data ) {
@@ -49,6 +122,7 @@ function loadKarSongs(){
 }
 
 function loadSamplers(){
+	$("#samplerlist").html("");
 	$.getJSON( "getsamplers", function( data ) {
   	var items = [];
   	$.each( data, function( key, val ) {

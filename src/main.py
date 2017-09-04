@@ -10,6 +10,7 @@ from tools.GUIutils import GUIutils
 import json
 import cv2
 import threading
+from time import sleep
 
 from flask import Flask, url_for, render_template, jsonify, request, make_response
 
@@ -52,11 +53,37 @@ def getsamplers():
 
 @server.route("/loadsong",methods=['POST'])
 def loadsong():
+	customText=request.json["customtext"]
 	filename = utils.songsFolder+"/"+request.json["filename"]
 	samplerName = request.json["samplerName"]
 	print filename,"!!!!!!!!!!!!!!!!!	"
-	S.playSong(str(filename),int(samplerName))
+	S.playSong(str(filename),int(samplerName),customText)
+	print "SONG FINISHED"
+	K.singing=False
 	return "OK"
+
+@server.route("/songloaded")
+def songloaded():
+	if S.status=="ready":
+		return "loaded"
+	else:
+		return "notloaded"
+
+@server.route("/playsong")
+def playsong():
+	S.status="playing"
+
+	#start recorder
+	K.recordKaraoke()
+
+	return "recorded"
+
+@server.route("/stopsong")
+def stopsong():
+	K.singing=False
+	S.status="stop"
+	S.img=S.createBlackImage()
+	return "stoped"
 
 	
 #def loadSong():
@@ -65,15 +92,27 @@ def loadsong():
 def run_server():
 	server.run(host="127.0.0.1", port=23948, threaded=True)
 
+def statusWatcher(threadName):
+
+	lastState=S.status
+
+	while True:
+		if S.status !=lastState:
+			#status change!
+			lastState=S.status
+			if S.status=="ready":
+
+				print "SONG IS LOADED!!!!!!!!!!!!!!!!"
 
 
+		sleep(1)
 
 if __name__ == "__main__":
-	
+	t = threading.Thread(target=statusWatcher, args = ("statusthread",)) #algo entre 0.1 y 0.8
+	t.start()
 	webbrowser.open("http://127.0.0.1:23948")
 
-	#cv2.namedWindow(windowName, cv2.WND_PROP_FULLSCREEN)          
-	#cv2.setWindowProperty(windowName, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+	
 	#cv2.imshow(windowName,lastImage)
 	
 	

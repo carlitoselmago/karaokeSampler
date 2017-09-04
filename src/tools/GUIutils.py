@@ -23,7 +23,11 @@ class GUIutils():
 		samplerlist=[]
 		for root, dirs, files in os.walk(self.samplerFolder):
 			for dirName in dirs:
-				samplerlist.append([dirName,self.getFirstImageInFolder(self.samplerFolder+"/"+dirName)])
+				try:
+					samplerlist.append([dirName,self.getFirstImageInFolder(self.samplerFolder+"/"+dirName)])
+				except:
+					#folder corrupted
+					pass
 
 		return samplerlist
 

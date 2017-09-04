@@ -49,6 +49,14 @@ body{
     background-position: center center;
     background-size: cover;
 }
+#status{
+	    position: fixed;
+    top: 0px;
+    right: 0px;
+    background-color: white;
+    font-size: 25px;
+    padding: 12px;
+}
 #songlist{
     height: calc(100vh - 200px);
     overflow-y: scroll;
