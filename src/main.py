@@ -41,7 +41,7 @@ def getkarsongs():
 	#load song list
 	songList=utils.getSongList()
 	#print songList
-	return json.dumps(songList)
+	return json.dumps(songList,encoding='latin1')
 
 @server.route("/getsamplers")
 def getsamplers():
@@ -55,9 +55,10 @@ def getsamplers():
 def loadsong():
 	customText=request.json["customtext"]
 	filename = utils.songsFolder+"/"+request.json["filename"]
+	songpath= request.json["songpath"]
 	samplerName = request.json["samplerName"]
 	print filename,"!!!!!!!!!!!!!!!!!	"
-	S.playSong(str(filename),int(samplerName),customText)
+	S.playSong(str(filename),songpath,int(samplerName),customText)
 	print "SONG FINISHED"
 	K.singing=False
 	return "OK"

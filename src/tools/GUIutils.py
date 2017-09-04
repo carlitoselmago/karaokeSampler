@@ -13,9 +13,15 @@ class GUIutils():
 	def getSongList(self):
 		songlist=[]
 		for root, dirs, files in os.walk(self.songsFolder):
-		    for file in files:
-		        if file.endswith(".kar"):
-		            songlist.append(os.path.splitext(file)[0].decode('unicode_escape').encode('utf-8'))
+			for file in files:
+				if file.endswith(".kar"):
+					songName=os.path.splitext(file)[0].decode('unicode_escape').encode('utf-8')
+					filename=root.replace("\\\\", "/")+"/"+file#os.path.join(root, file)
+					filename=filename.replace("\\","/")
+					#print filename
+					
+					songlist.append([songName,filename])
+
 
 		return songlist
 

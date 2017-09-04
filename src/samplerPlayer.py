@@ -34,7 +34,7 @@ class samplerPlayer():
 		fonts_path = "fonts"#os.path.join(os.path.dirname(os.path.dirname(__file__)), 'fonts')
 		print fonts_path
 		self.font = ImageFont.truetype(os.path.join(fonts_path, 'futura.ttf'), 12) #last is font-size
-		self.percentageOfmessagesForLeadTrack=4.65
+		self.percentageOfmessagesForLeadTrack=6.40
 		self.customText=""
 		self.midiTrackToSampler=0
 		self.resolution=6 #sampler score resolution, the bigger the more precise
@@ -136,8 +136,7 @@ class samplerPlayer():
 
 	def playWithDelay(self,output,message,delayTime=.200):
 		sleep(delayTime)
-		#soundIndex=self.notes.index(message.note)
-		#self.sounds[soundIndex].play()
+	
 		output.send(message)
 		return
 
@@ -222,10 +221,15 @@ class samplerPlayer():
 		midfileTrackNumber=leadTrackIndex
 
 		#construct a list of all notes that will be required during playback
-		for message in midiSong.tracks[midfileTrackNumber]:
+		for i,message in enumerate(midiSong.tracks[midfileTrackNumber]):
+			#print dir(midiSong.tracks[midfileTrackNumber][i])
+			if hasattr(message, 'channel'):
+				midiSong.tracks[midfileTrackNumber][i].channel=15
+
 			if message.type =="note_on":
 
 				if message.note not in notasInTrack:
+
 					notasInTrack.append(message.note)
 
 		#print "song has ",totalMessages,"standard messages"
@@ -234,20 +238,23 @@ class samplerPlayer():
 		print ("MidoTrackNumber",MidoTrackNumber,"PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP")
 		print ("midfileTrackNumber",midfileTrackNumber,"MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM")
 
-		return MidoTrackNumber,midfileTrackNumber,notasInTrack
+		return MidoTrackNumber,midfileTrackNumber,notasInTrack,midiSong
 		
+	def separateSamplerChanel(self,midiSong,trackIndex,samplerChanel=10):
+		for i, track in enumerate(midiSong.tracks):
+			for c,message in enumerate(track):
+				pass
 
-
-	def playSong(self,filename,samplerNumber,customText):
+	def playSong(self,filename,songpath,samplerNumber,customText):
 
 		filename=filename.decode("utf-8")
-
+		print filename,"filename"
 		self.status="loading"
 		self.customText=customText
 		self.songName=filename.split(".")[0]
 		
 		#get the real duration of the song
-		mid = MidiFile(filename)
+		mid = MidiFile(songpath)
 		songDuration=mid.length
 
 		
@@ -255,10 +262,10 @@ class samplerPlayer():
 		
 		self.m=midifile.midifile()
 		#print "SONG HAS ",mid.tracks," TRACKS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-		MidoTrackNumber,midfileTrackNumber,notesForSampler=self.getTrackNumbers(mid)
+		MidoTrackNumber,midfileTrackNumber,notesForSampler,mid=self.getTrackNumbers(mid)
 
 
-		samplerTrack=self.m.load_file((filename).encode("latin1"),midfileTrackNumber) #TODO: atención esto seguramente dará error cuando cambie de canción
+		samplerTrack=self.m.load_file((songpath).encode("latin1"),midfileTrackNumber) #TODO: atención esto seguramente dará error cuando cambie de canción
 		
 		self.prepareSampler(str(samplerNumber))
 		self.constructSamplerTrack(notesForSampler,songDuration,str(samplerNumber))#max(m.kartimes))
@@ -290,7 +297,7 @@ class samplerPlayer():
 
 		#while pygame.mixer.music.get_busy():
 			
-			for message in MidiFile(filename).play(meta_messages=True):#meta_messages=True):
+			for message in mid.play(meta_messages=True):#meta_messages=True):
 				#print message
 				if self.status=="stop":
 					#stop the song
@@ -304,7 +311,7 @@ class samplerPlayer():
 
 				if message.type=="note_on" or message.type=="note_off":
 					
-					if message.channel==MidoTrackNumber:#midfileTrackNumber:
+					if message.channel==15:#MidoTrackNumber:#midfileTrackNumber:
 						
 						t = threading.Thread(target=self.playSamplerNotewithDelay, args = (message,0.1)) #algo entre 0.1 y 0.8
 						t.start()

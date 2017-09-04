@@ -4,8 +4,10 @@ $( document ).ready(function() {
 
  	$('#songlist').on('click', '.song', function(){
     	var songName=$(this).text();
+    	var songPath=$(this).attr("path");
     	var fileName=songName+".kar";
     	$("#selsong").text(songName);
+    	$("#selsong").attr("path",songPath);
     	$("#selsong").attr("filename",fileName);
 	});
 
@@ -27,8 +29,9 @@ $( document ).ready(function() {
 		var customtext=$("#customtext").val();
 		$("#status").text("LOADING...");
 		var filename=$("#selsong").attr("filename");
+		var songpath=$("#selsong").attr("path");
 		var samplerName=$("#selsampler").attr("samplerName");
-		var arrayJson= JSON.stringify({"filename":filename,"samplerName":samplerName,"customtext":customtext});
+		var arrayJson= JSON.stringify({"filename":filename,"songpath":songpath,"samplerName":samplerName,"customtext":customtext});
 		$.ajax({
 		    type: 'POST',
 		    url: 'loadsong',
@@ -110,8 +113,10 @@ function waitForSongLoaded(){
 function loadKarSongs(){
 	   $.getJSON( "getkarsongs", function( data ) {
   var items = [];
+
   $.each( data, function( key, val ) {
-    items.push( "<li class='song' id='" + key + "'>" + val + "</li>" );
+
+    items.push( "<li class='song' id='" + key + "' path='"+val[1]+"'>" + val[0] + "</li>" );
   });
  
   $( "<ul/>", {

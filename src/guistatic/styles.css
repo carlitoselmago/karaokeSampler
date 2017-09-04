@@ -15,6 +15,9 @@ body{
     font-size: 23px;
         margin-bottom: 13px;
 }
+#selected{
+        margin-top: 53px;
+}
 #selsong{
 	background-color:black;
 	color:white;
@@ -52,13 +55,13 @@ body{
 #status{
 	    position: fixed;
     top: 0px;
-    right: 0px;
+    left:; 0px;
     background-color: white;
     font-size: 25px;
     padding: 12px;
 }
 #songlist{
-    height: calc(100vh - 200px);
+    height: calc(100vh - 213px);
     overflow-y: scroll;
     width: 40%;
     background-color: white;
@@ -79,7 +82,7 @@ body{
 	float:left;
 	width: 40%;
 	overflow-y: scroll;
-	height: calc(100vh - 200px);
+	height: calc(100vh - 213px);
 	background-color: white;
 	    margin-left: 40px;
 	    cursor: pointer;
