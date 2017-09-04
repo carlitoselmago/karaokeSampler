@@ -33,7 +33,11 @@ class samplerPlayer():
 		print ("sampler Player init")
 		fonts_path = "fonts"#os.path.join(os.path.dirname(os.path.dirname(__file__)), 'fonts')
 		print fonts_path
-		self.font = ImageFont.truetype(os.path.join(fonts_path, 'futura.ttf'), 12) #last is font-size
+		self.fonts=[ 
+		ImageFont.truetype(os.path.join(fonts_path, 'garamondbold.ttf'), 32), 
+		ImageFont.truetype(os.path.join(fonts_path, 'garamond.ttf'), 32),
+		ImageFont.truetype(os.path.join(fonts_path, 'garamondbold.ttf'), 32)]
+		self.windowSize=[800,450]
 		self.percentageOfmessagesForLeadTrack=6.40
 		self.customText=""
 		self.midiTrackToSampler=0
@@ -55,7 +59,8 @@ class samplerPlayer():
 		#pygame.init()
 			
 	def createBlackImage(self):
-		img = np.zeros((512,512,3), np.uint8)
+		img=cv2.imread("black.jpg")
+		#img = np.zeros((800,450,3), np.uint8)
 		return img
 	
 	def loadSampler(self,samplerNumber):
@@ -108,7 +113,7 @@ class samplerPlayer():
 				#print "CREATING NOTES"
 				closestNote=self.findClosestNote(preNotes,n)
 				closestNoteFilename="samplers/"+samplerNumber+"/"+str(closestNote)+".wav"
-
+				print "SOX PITCH ",n
 				self.soxPitch(closestNoteFilename,"samplers/"+samplerNumber+"/"+str(n)+".wav",closestNote,n)
 				
 				self.notes.append(int(n))
@@ -235,10 +240,10 @@ class samplerPlayer():
 		#print "song has ",totalMessages,"standard messages"
 		print tracks
 
-		print ("MidoTrackNumber",MidoTrackNumber,"PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP")
+		#print ("MidoTrackNumber",MidoTrackNumber,"PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP")
 		print ("midfileTrackNumber",midfileTrackNumber,"MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM")
 
-		return MidoTrackNumber,midfileTrackNumber,notasInTrack,midiSong
+		return midfileTrackNumber,notasInTrack,midiSong
 		
 	def separateSamplerChanel(self,midiSong,trackIndex,samplerChanel=10):
 		for i, track in enumerate(midiSong.tracks):
@@ -262,7 +267,7 @@ class samplerPlayer():
 		
 		self.m=midifile.midifile()
 		#print "SONG HAS ",mid.tracks," TRACKS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-		MidoTrackNumber,midfileTrackNumber,notesForSampler,mid=self.getTrackNumbers(mid)
+		midfileTrackNumber,notesForSampler,mid=self.getTrackNumbers(mid)
 
 
 		samplerTrack=self.m.load_file((songpath).encode("latin1"),midfileTrackNumber) #TODO: atención esto seguramente dará error cuando cambie de canción
@@ -325,10 +330,13 @@ class samplerPlayer():
 		self.status="iddle"
 		return True
 		
-	def putTextPIL(self,img,text,cordinates):
+	def putTextPIL(self,img,text,cordinates,font=0,centered=False,color=(255,255,255)):
 		pil_im = Image.fromarray(img)
 		pil_d = ImageDraw.Draw(pil_im)
-		pil_d.text(cordinates,text,(255,255,255),font=self.font)
+		if centered:
+			w, h = pil_d.textsize(text,font=self.fonts[font])
+			cordinates=((self.windowSize[0]-w)/2,cordinates[1])
+		pil_d.text(cordinates,text,color,font=self.fonts[font])
 		imgWithText = np.array(pil_im)
 		return imgWithText
 
@@ -348,8 +356,8 @@ class samplerPlayer():
 				#print "show singer text"
 				#self.songName.encode("ascii","ignore")
 
-				imgCtext=self.putTextPIL(imgCtext,self.songName,(10,40))
-				imgCtext=self.putTextPIL(imgCtext,"CANTA: "+self.customText.decode("utf-8"),(10,60))
+				imgCtext=self.putTextPIL(imgCtext,self.songName,(10,190),1,True,(0,255,255))
+				imgCtext=self.putTextPIL(imgCtext,"CANTA: "+self.customText.decode("utf-8").upper(),(10,230),2,True)
 				
 				#cv2.putText(imgCtext, ord(u"É"), (10,40), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255),1)
 				#cv2.putText(imgCtext,"CANTA: "+self.customText, (10,60), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255),1)
@@ -363,10 +371,10 @@ class samplerPlayer():
 				
 					
 				#display images
-				y0, dy = 50, 30
+				y0, dy = 50, 40
 				for i, line in enumerate(imgText.split('\n')):
 					y = y0 + i*dy
-					imgCtext=self.putTextPIL(imgCtext,line,(10,y))
+					imgCtext=self.putTextPIL(imgCtext,line,(30,y))
 					#cv2.putText(imgCtext,line, (10,y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255),1)
 				
 			cv2.imshow(self.windowName,imgCtext)

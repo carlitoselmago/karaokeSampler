@@ -1,13 +1,15 @@
 $( document ).ready(function() {
+	window.selecteSongPath=""
  	loadKarSongs();
  	loadSamplers();
 
  	$('#songlist').on('click', '.song', function(){
     	var songName=$(this).text();
-    	var songPath=$(this).attr("path");
+    	var songPath=unescape($(this).attr("path"));
     	var fileName=songName+".kar";
     	$("#selsong").text(songName);
-    	$("#selsong").attr("path",songPath);
+    	window.selecteSongPath=songPath;
+    	//$("#selsong").attr("path",songPath);
     	$("#selsong").attr("filename",fileName);
 	});
 
@@ -29,7 +31,8 @@ $( document ).ready(function() {
 		var customtext=$("#customtext").val();
 		$("#status").text("LOADING...");
 		var filename=$("#selsong").attr("filename");
-		var songpath=$("#selsong").attr("path");
+		var songpath=window.selecteSongPath;//$("#selsong").attr("path");
+		
 		var samplerName=$("#selsampler").attr("samplerName");
 		var arrayJson= JSON.stringify({"filename":filename,"songpath":songpath,"samplerName":samplerName,"customtext":customtext});
 		$.ajax({
@@ -50,7 +53,7 @@ $( document ).ready(function() {
 	});
 
 	$('#controls').on('click', '#play', function(){
-		if ($("#status").text()=="ready"){
+		if ($("#status").text()=="ready!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"){
 			$("#status").text("playing");
 			$.ajax({
 			    url: 'playsong',
@@ -102,7 +105,7 @@ function waitForSongLoaded(){
 		    success: function(data) { 
 		    	if (data=="loaded"){
 		    		songLoaded=true;
-		    		$("#status").text("ready");
+		    		$("#status").text("ready!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 		    	}
 		    }
 		});
@@ -116,7 +119,7 @@ function loadKarSongs(){
 
   $.each( data, function( key, val ) {
 
-    items.push( "<li class='song' id='" + key + "' path='"+val[1]+"'>" + val[0] + "</li>" );
+    items.push( "<li class='song' id='" + key + "' path='"+escape(val[1])+"'>" + val[0] + "</li>" );
   });
  
   $( "<ul/>", {
@@ -128,6 +131,7 @@ function loadKarSongs(){
 
 function loadSamplers(){
 	$("#samplerlist").html("");
+
 	$.getJSON( "getsamplers", function( data ) {
   	var items = [];
   	$.each( data, function( key, val ) {

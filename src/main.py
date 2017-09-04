@@ -57,6 +57,7 @@ def loadsong():
 	filename = utils.songsFolder+"/"+request.json["filename"]
 	songpath= request.json["songpath"]
 	samplerName = request.json["samplerName"]
+	print songpath,"songpath"
 	print filename,"!!!!!!!!!!!!!!!!!	"
 	S.playSong(str(filename),songpath,int(samplerName),customText)
 	print "SONG FINISHED"
