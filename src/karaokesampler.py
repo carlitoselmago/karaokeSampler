@@ -213,7 +213,7 @@ class karaokesampler():
 				x=1
 			if y<2:
 				y=1
-				
+
 
 			ROI=[x,y,width,height]
 			#ROI=[mouth[0]-(radius*2), mouth[1]-radius, int(radius*2)+mouth[0]-radius, int(radius*2)+mouth[1]-radius]
@@ -604,15 +604,18 @@ class karaokesampler():
 				source=recFolder+s+".wav"
 				destination=newsamplerDir+"/"+sWithoutDuration+".wav"
 				print ("source,destination",source,destination)
-				os.rename(source,destination)
+				try:
+					os.rename(source,destination)
 
-				#jpg
-				source=recFolder+s+".jpg"
-				destination=newsamplerDir+"/"+sWithoutDuration+".jpg"
-				#resize
-				img = Image.open(source)
-				img2=img.resize((self.windowSize[0], self.windowSize[1]), PIL.Image.ANTIALIAS)
-				img2.save(destination)
+					#jpg
+					source=recFolder+s+".jpg"
+					destination=newsamplerDir+"/"+sWithoutDuration+".jpg"
+					#resize
+					img = Image.open(source)
+					img2=img.resize((self.windowSize[0], self.windowSize[1]), PIL.Image.ANTIALIAS)
+					img2.save(destination)
+				except:
+					print "skipping ",source
 
 				
 				#os.rename(source,destination)

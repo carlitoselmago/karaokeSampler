@@ -306,6 +306,8 @@ print m.karlinea[0]+'__'+m.karlineb[0]
                     iread=iread+l
 
                 else: # MIDI messages
+                    pass
+                    """
                     if status < 128: # Use running status instead
                         status=runningstatus
                         self.fileobject.seek(-1,1)
@@ -361,6 +363,7 @@ print m.karlinea[0]+'__'+m.karlineb[0]
                                 self.notes[inote][5] == mastertime # Time note off
                                 break
                             inote=inote-1
+                    """
                     runningstatus=status
                 # End MIDI event
         

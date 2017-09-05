@@ -57,11 +57,11 @@ $( document ).ready(function() {
 			$("#status").text("playing");
 			$.ajax({
 			    url: 'playsong',
-			    success: function(data) { 
+			    allways: function(data) { 
 			    	if (data=="recorded"){
-			    			
-			    			loadSamplers();
 			    			$("#customtext").val("");
+			    			loadSamplers();
+			    			
 			    	}
 			    }
 			});

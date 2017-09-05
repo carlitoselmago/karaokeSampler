@@ -38,7 +38,7 @@ class samplerPlayer():
 		ImageFont.truetype(os.path.join(fonts_path, 'garamond.ttf'), 32),
 		ImageFont.truetype(os.path.join(fonts_path, 'garamondbold.ttf'), 32)]
 		self.windowSize=[800,450]
-		self.percentageOfmessagesForLeadTrack=6.40
+		self.percentageOfmessagesForLeadTrack=5.9
 		self.customText=""
 		self.midiTrackToSampler=0
 		self.resolution=6 #sampler score resolution, the bigger the more precise
@@ -111,7 +111,8 @@ class samplerPlayer():
 			
 			if int(n) not in self.notes:
 				#print "CREATING NOTES"
-				closestNote=self.findClosestNote(preNotes,n)
+				closestNote=random.choice(preNotes)
+				#closestNote=self.findClosestNote(preNotes,n)
 				closestNoteFilename="samplers/"+samplerNumber+"/"+str(closestNote)+".wav"
 				print "SOX PITCH ",n
 				self.soxPitch(closestNoteFilename,"samplers/"+samplerNumber+"/"+str(n)+".wav",closestNote,n)
@@ -269,7 +270,7 @@ class samplerPlayer():
 		#print "SONG HAS ",mid.tracks," TRACKS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 		midfileTrackNumber,notesForSampler,mid=self.getTrackNumbers(mid)
 
-
+		#TODO: quitar dependencia de midifile.py
 		samplerTrack=self.m.load_file((songpath).encode("latin1"),midfileTrackNumber) #TODO: atención esto seguramente dará error cuando cambie de canción
 		
 		self.prepareSampler(str(samplerNumber))
