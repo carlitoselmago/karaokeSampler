@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*- 
-import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
+#import sys
+#reload(sys)
+#sys.setdefaultencoding('utf-8')
 
 import cv2
 import time, datetime
@@ -27,10 +27,14 @@ from PIL import ImageDraw
 class samplerPlayer():
 	
 	preparedSounds=[]
+	lyricMessageCount=0
+	lastLyrics=[]
+	lastSylab=0
 	
 	
 	def __init__(self,windowName):
 		print ("sampler Player init")
+		self.secondaryDisplay=[1024,768]
 		fonts_path = "fonts"#os.path.join(os.path.dirname(os.path.dirname(__file__)), 'fonts')
 		print fonts_path
 		self.fonts=[ 
@@ -104,8 +108,8 @@ class samplerPlayer():
 		
 		preNotes=self.notes
 		
-		print (notesForSampler,"NOTES REQUIRED")
-		print (preNotes,"ALL NOTES AT START")
+		#print (notesForSampler,"NOTES REQUIRED")
+		#print (preNotes,"ALL NOTES AT START")
 
 		for n in notesForSampler: #parse all notes
 			
@@ -120,7 +124,7 @@ class samplerPlayer():
 				self.notes.append(int(n))
 				self.sounds.append(pygame.mixer.Sound("samplers/"+samplerNumber+"/"+str(n)+".wav"))
 
-		print(self.notes,"NOTES AFTER PROCESSED")
+		#print(self.notes,"NOTES AFTER PROCESSED")
 		return True
 	
 	def soxPitch(self,inputFile,destinationFile,originPitch,destinationPitch):
@@ -168,10 +172,22 @@ class samplerPlayer():
 	def find_nearest(self,array,value): #returns index of nearest number in array
 		return min(range(len(array)), key=lambda i: abs(array[i]-value))
 
+	def find_between(self, s, first, last ):
+	    try:
+	        start = s.index( first ) + len( first )
+	        end = s.index( last, start )
+	        return s[start:end]
+	    except ValueError:
+	        return ""
+
+	def getTextFromMessage(self,message):
+		return unicode(self.find_between(str(message),"'","'"))
+
 	def getTrackNumbers(self,midiSong):
 
 		tracks=[]
 		notasInTrack=[]
+		self.lyrics=[]
 
 		for i, track in enumerate(midiSong.tracks):
 			#trackType=""
@@ -179,15 +195,21 @@ class samplerPlayer():
 			messagesLimit=5
 			for c,message in enumerate(track):
 				
-				if c==messagesLimit:
-					break
-				if message.type=="note_on" or message.type=="note_off" or message.type=="sysex" or  message.type=="program_change" or message.type=="control_change":
+				
+				if not self.isLyricsMessage(message):
 					#normal message
-					
-					messagesTypes[0]+=1
+					if c<messagesLimit:
+						messagesTypes[0]+=1
 					#trackType="standard"
 				else:
-					messagesTypes[1]+=1
+					if c<messagesLimit:
+						messagesTypes[1]+=1
+					#print message.type,message
+					if "text" in str(message):
+						#print "LYRIC MESSAGE",message
+						#print (self.getTextFromMessage(message))
+						self.lyrics.append(unicode(self.getTextFromMessage(message)))
+					
 					#trackType="lyrics"
 					#lyrics message
 
@@ -195,13 +217,20 @@ class samplerPlayer():
 			
 			tracks.append([track.name,trackType,len(track)])
 
+		"""	
+		
+		"""
+
 		#count all standard messages
 		totalMessages=0.0
 		for i,track in enumerate(tracks):
 			if track[1]==0:
 				#normal track
 				totalMessages+=track[2]
+		
 
+
+		print self.lyrics
 		#get track percentages
 		percentages=[]
 		for i,track in enumerate(tracks):
@@ -239,10 +268,10 @@ class samplerPlayer():
 					notasInTrack.append(message.note)
 
 		#print "song has ",totalMessages,"standard messages"
-		print tracks
+		#print tracks
 
 		#print ("MidoTrackNumber",MidoTrackNumber,"PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP")
-		print ("midfileTrackNumber",midfileTrackNumber,"MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM")
+		#print ("midfileTrackNumber",midfileTrackNumber,"MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM")
 
 		return midfileTrackNumber,notasInTrack,midiSong
 		
@@ -250,6 +279,13 @@ class samplerPlayer():
 		for i, track in enumerate(midiSong.tracks):
 			for c,message in enumerate(track):
 				pass
+
+	def isLyricsMessage(self,message):
+		if message.type=="note_on" or message.type=="note_off" or message.type=="sysex" or  message.type=="program_change" or message.type=="control_change" or message.type=="pitchwheel" or message.type=="sysex":
+			return False
+		else:
+			return True
+					
 
 	def playSong(self,filename,songpath,samplerNumber,customText):
 
@@ -302,9 +338,14 @@ class samplerPlayer():
 		with mido.open_output("Microsoft GS Wavetable Synth 0") as output:
 
 		#while pygame.mixer.music.get_busy():
+
+			
 			
 			for message in mid.play(meta_messages=True):#meta_messages=True):
-				#print message
+				
+				#if message.type=="lyrics":
+				#	print message
+				#print message.type,message
 				if self.status=="stop":
 					#stop the song
 					break
@@ -323,8 +364,14 @@ class samplerPlayer():
 						t.start()
 						
 					
-				if message.type=="note_on" or message.type=="note_off" or message.type=="sysex" or  message.type=="program_change" or message.type=="control_change":
+				if not self.isLyricsMessage(message):
 					output.send(message)
+				else:
+					if "text" in str(message):
+
+						
+						
+						self.lyricMessageCount+=1
 			
 
 			
@@ -341,9 +388,75 @@ class samplerPlayer():
 		imgWithText = np.array(pil_im)
 		return imgWithText
 
+	def printLyrics(self,imgCtext):
+		#self.lyricMessageCount
+		#self.lyrics
+		
+		if self.lastSylab<self.lyricMessageCount:
+			currentSylab=self.lyrics[self.lyricMessageCount]
+			print unicode(currentSylab)
+			if (currentSylab=="\\n") or (self.lyricMessageCount==0): #end of block!
+
+				print "BUILDING NEW BLOCK OF LYRICS!!!!!!"
+				#let's build the new block of lyrics
+				#find how many sillabs till next new block
+				parsingBlock=True
+				parser=0
+				lineCounter=0
+				threelines=[[]]
+
+				while parsingBlock:
+					print "self.lyricMessageCount+parser",self.lyricMessageCount+parser
+					advancedSylab=str(self.lyrics[self.lyricMessageCount+parser]).strip()
+					#print advancedSylab
+					if advancedSylab=="\\n":
+						parsingBlock=False
+						print "END OF BLOCK"
+					elif advancedSylab=="\\r":
+						#new line
+						lineCounter+=1
+						threelines.append([])
+					else:
+						threelines[lineCounter].append(advancedSylab)
+					parser+=1
+
+
+			else:
+				#keep with what we have
+				threelines=self.lastLyrics
+				
+		else:
+			threelines=self.lastLyrics
+		#threelines=[["1","2","3"],["4","5","6"],["7","8","9"]]
+		#self.lastLyrics
+
+		#display images
+		y0, dy = 50, 40
+		#for i, line in enumerate(imgText.split('\n')):
+		for i,line in  enumerate(threelines):
+			y = y0 + i*dy
+			lineX=30
+			for e,sylab in enumerate(line):
+				characterS=10
+				lineX+=(len(sylab)*characterS)+(characterS*2)
+				x=+lineX
+				imgCtext=self.putTextPIL(imgCtext,sylab,(x,y))
+			#cv2.putText(imgCtext,line, (10,y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255),1)
+
+		self.lastLyrics=threelines
+		self.lastSylab=self.lyricMessageCount
+		return imgCtext
+
+
+
 	def showImage(self,threadName):
 		cv2.namedWindow(self.windowName, cv2.WND_PROP_FULLSCREEN)          
 		cv2.setWindowProperty(self.windowName, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+		cv2.imshow(self.windowName,self.img)
+		
+		cv2.resizeWindow(self.windowName, self.secondaryDisplay[0], self.secondaryDisplay[1])
+		
+		#cv2.moveWindow(self.windowName,0,-780)
 		running=True
 		
 		while running:
@@ -363,20 +476,17 @@ class samplerPlayer():
 				#cv2.putText(imgCtext, ord(u"É"), (10,40), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255),1)
 				#cv2.putText(imgCtext,"CANTA: "+self.customText, (10,60), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255),1)
 				
-			if 'm' in self.__dict__ and self.status=="playing":
+			#if 'm' in self.__dict__ and self.status=="playing":
+			if self.status=="playing":
 
+				imgCtext=self.printLyrics(imgCtext)
+				"""
 				for iline in range(3):
 					imgText+=self.m.karlinea[iline]
 					imgText+='__'+self.m.karlineb[iline]+'\n'
 				#print ''
+				"""
 				
-					
-				#display images
-				y0, dy = 50, 40
-				for i, line in enumerate(imgText.split('\n')):
-					y = y0 + i*dy
-					imgCtext=self.putTextPIL(imgCtext,line,(30,y))
-					#cv2.putText(imgCtext,line, (10,y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255),1)
 				
 			cv2.imshow(self.windowName,imgCtext)
 			if cv2.waitKey(1) == 27:
@@ -450,6 +560,6 @@ class samplerPlayer():
 
 if __name__ == "__main__":
 	K=samplerPlayer("karaoke")
-	#K.playSong("bellabestia.kar")
+	#K.playSong("bellabestia","bellabestia.kar",20,"carlos")
 	#K.playSong("bellabestia.kar",12,"custom text ñ here")
-	K.playSong("KARsongs/ANA BELÉN - DERROCHE.kar",12,"custom text here ñññ Á")
+	K.playSong("toxic","KARsongs/A-B/A-B/Britney Spears - Toxic.kar",20,"custom text here ñññ Á")

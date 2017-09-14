@@ -53,21 +53,7 @@ $( document ).ready(function() {
 	});
 
 	$('#controls').on('click', '#play', function(){
-		if ($("#status").text()=="ready!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"){
-			$("#status").text("playing");
-			$.ajax({
-			    url: 'playsong',
-			    allways: function(data) { 
-			    	if (data=="recorded"){
-			    			$("#customtext").val("");
-			    			loadSamplers();
-			    			
-			    	}
-			    }
-			});
-		} else {
-			alert("song must be loaded first");
-		}
+		playSong();
 	});
 
 	$('#controls').on('click', '#stop', function(){
@@ -91,6 +77,24 @@ $( document ).ready(function() {
 
 });
 
+function playSong(){
+	if ($("#status").text()=="ready!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"){
+			$("#status").text("playing");
+			$.ajax({
+			    url: 'playsong',
+			    allways: function(data) { 
+			    	if (data=="recorded"){
+			    			$("#customtext").val("");
+			    			loadSamplers();
+			    			
+			    	}
+			    }
+			});
+		} else {
+			alert("song must be loaded first");
+		}
+}
+
 function waitForSongLoaded(){
 	var songLoaded=false;
 	var watcher=setInterval(function(){
@@ -106,6 +110,9 @@ function waitForSongLoaded(){
 		    	if (data=="loaded"){
 		    		songLoaded=true;
 		    		$("#status").text("ready!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+		    		if ($("#autoplay").is(':checked') ){
+		    			playSong();
+		    		}
 		    	}
 		    }
 		});

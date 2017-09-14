@@ -1,0 +1,113 @@
+TAKE ON ME
+<meta message lyrics text=u'on ' time=0>
+<meta message lyrics text=u'\r' time=0>
+<meta message lyrics text=u'on ' time=0>
+<meta message lyrics text=u'\r' time=0>
+<meta message lyrics text=u'(Take ' time=0>
+<meta message lyrics text=u'/(Take ' time=0>
+<meta message lyrics text=u'/(Take ' time=0>
+<meta message lyrics text=u'on ' time=0>
+<meta message lyrics text=u'on ' time=0>
+<meta message lyrics text=u'on ' time=0>
+<meta message lyrics text=u'me) ' time=0>
+<meta message lyrics text=u'\r' time=0>
+<meta message lyrics text=u'me) ' time=0>
+<meta message lyrics text=u'\r' time=0>
+<meta message lyrics text=u'me) ' time=0>
+<meta message lyrics text=u'\r' time=0>
+<meta message lyrics text=u"I'll " time=0>
+<meta message lyrics text=u"\\I'll " time=0>
+<meta message lyrics text=u"\\I'll " time=0>
+
+
+TOXIC:::::
+<meta message lyrics text=u'\r' time=0.0664335>
+<meta message lyrics text=u'Remix by RicBNH www.RicBNH.com' time=0.0034965>
+<meta message lyrics text=u'\r' time=0.013986>
+<meta message lyrics text=u'Ba' time=0>
+<meta message lyrics text=u'by, ' time=0>
+<meta message lyrics text=u"can't " time=0>
+<meta message lyrics text=u'you ' time=0>
+<meta message lyrics text=u'see ' time=0>
+<meta message lyrics text=u'\r' time=0>
+<meta message lyrics text=u"I'm " time=0>
+<meta message lyrics text=u'ca' time=0>
+<meta message lyrics text=u'll' time=0>
+<meta message lyrics text=u'ing ' time=0>
+<meta message lyrics text=u'\r' time=0>
+<meta message lyrics text=u'A ' time=0>
+<meta message lyrics text=u'guy ' time=0>
+<meta message lyrics text=u'like ' time=0>
+<meta message lyrics text=u'you ' time=0>
+<meta message lyrics text=u'\r' time=0>
+<meta message lyrics text=u'Should ' time=0>
+<meta message lyrics text=u'wear ' time=0>
+<meta message lyrics text=u'a ' time=0>
+<meta message lyrics text=u'war' time=0>
+<meta message lyrics text=u'ning ' time=0>
+<meta message lyrics text=u'\r' time=0>
+<meta message lyrics text=u"It's " time=0>
+<meta message lyrics text=u'dan' time=0>
+<meta message lyrics text=u'gerous ' time=0>
+<meta message lyrics text=u'\r' time=0>
+<meta message lyrics text=u"I'm " time=0>
+<meta message lyrics text=u'fal' time=0>
+<meta message lyrics text=u"lin'" time=0>
+<meta message lyrics text=u'\r' time=0>
+<meta message lyrics text=u'\n' time=0>
+C:\Users\carlos\Documents\karaokeSampler\src\karaokesampler.py:504: UserWarning: AUBIO WARNING: sink_wavwrite: trying to write 1024 frames to recordings/61_772.wav, but only 1002 could be written
+  outputsink(signal, len(signal))
+C:\Users\carlos\Documents\karaokeSampler\src\karaokesampler.py:504: UserWarning: AUBIO WARNING: sink_wavwrite: trying to write 1024 frames to recordings/102_776.wav, but only 1002 could be written
+  outputsink(signal, len(signal))
+C:\Users\carlos\Documents\karaokeSampler\src\karaokesampler.py:504: UserWarning: AUBIO WARNING: sink_wavwrite: trying to write 1024 frames to recordings/102_783.wav, but only 1002 could be written
+  outputsink(signal, len(signal))
+C:\Users\carlos\Documents\karaokeSampler\src\karaokesampler.py:504: UserWarning: AUBIO WARNING: sink_wavwrite: trying to write 1024 frames to recordings/102_789.wav, but only 1002 could be written
+  outputsink(signal, len(signal))
+C:\Users\carlos\Documents\karaokeSampler\src\karaokesampler.py:504: UserWarning: AUBIO WARNING: sink_wavwrite: trying to write 1024 frames to recordings/102_789.wav, but only 1023 could be written
+  outputsink(signal, len(signal))
+C:\Users\carlos\Documents\karaokeSampler\src\karaokesampler.py:504: UserWarning: AUBIO WARNING: sink_wavwrite: trying to write 1024 frames to recordings/74_790.wav, but only 1002 could be written
+  outputsink(signal, len(signal))
+C:\Users\carlos\Documents\karaokeSampler\src\karaokesampler.py:504: UserWarning: AUBIO WARNING: sink_wavwrite: trying to write 1024 frames to recordings/74_790.wav, but only 1023 could be written
+  outputsink(signal, len(signal))
+C:\Users\carlos\Documents\karaokeSampler\
+
+close to you carpenters
+note_on channel=2 note=62 velocity=0 time=0.01704545
+note_on channel=5 note=62 velocity=0 time=0
+<meta message text text=u' they' time=0.318181733333>
+note_on channel=15 note=64 velocity=98 time=0
+note_on channel=2 note=60 velocity=80 time=0
+note_on channel=2 note=55 velocity=68 time=0
+note_on channel=2 note=52 velocity=64 time=0
+note_on channel=2 note=67 velocity=71 time=0
+note_on channel=2 note=48 velocity=71 time=0
+note_on channel=5 note=60 velocity=74 time=0
+note_on channel=5 note=55 velocity=62 time=0
+note_on channel=5 note=52 velocity=58 time=0
+note_on channel=5 note=67 velocity=65 time=0
+note_on channel=5 note=48 velocity=65 time=0
+control_change channel=2 control=64 value=0 time=0.00568181666667
+control_change channel=5 control=64 value=0 time=0
+note_on channel=15 note=64 velocity=0 time=0.32386355
+control_change channel=2 control=64 value=127 time=0.0340909
+control_change channel=5 control=64 value=127 time=0
+<meta message text text=u' long' time=0.0909090666667>
+note_on channel=15 note=67 velocity=85 time=0
+note_on channel=2 note=60 velocity=0 time=0.0454545333333
+note_on channel=5 note=60 velocity=0 time=0
+note_on channel=2 note=67 velocity=0 time=0.0113636333333
+note_on channel=5 note=67 velocity=0 time=0
+note_on channel=15 note=67 velocity=0 time=0.147727233333
+note_on channel=2 note=60 velocity=76 time=0.0227272666667
+note_on channel=2 note=67 velocity=75 time=0
+note_on channel=5 note=60 velocity=70 time=0
+note_on channel=5 note=67 velocity=69 time=0
+note_on channel=2 note=60 velocity=0 time=0.232954483333
+note_on channel=5 note=60 velocity=0 time=0
+note_on channel=2 note=67 velocity=0 time=0.0738636166667
+note_on channel=5 note=67 velocity=0 time=0
+<meta message text text=u' to' time=0.147727233333>
+note_on channel=15 note=76 velocity=92 time=0
+note_on channel=15 note=76 velocity=0 time=0.2045454
+<meta message text text=u' be' time=0.0227272666667>
+note_on channel=15 note=74 velocity=85 time=0

@@ -1,8 +1,8 @@
-# encoding=utf8  
+
 import sys  
 
-reload(sys)  
-sys.setdefaultencoding('utf8')
+#reload(sys)  
+#sys.setdefaultencoding('utf8')
 import webbrowser
 from samplerPlayer import samplerPlayer
 from karaokesampler import karaokesampler
@@ -11,13 +11,15 @@ import json
 import cv2
 import threading
 from time import sleep
-
+import logging
 from flask import Flask, url_for, render_template, jsonify, request, make_response
 
 utils=GUIutils()
 
 windowName="karaoke"
 
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
 server = Flask(__name__, static_folder='guistatic', static_url_path='')
 server.config["SEND_FILE_MAX_AGE_DEFAULT"] = 1  # disable caching
 server.config['JSON_AS_ASCII'] = False

@@ -25,7 +25,7 @@ from PIL import Image
 class karaokesampler():
 	
 	#config
-	KinectMode=True
+	KinectMode=False
 	Vdevice = 0
 	synth = False
 	#end config
@@ -36,7 +36,7 @@ class karaokesampler():
 	samplersFolder="samplers/"
 	
 	lowCut = 0.0174 #volumen
-	lowToneCut=10 #pitch
+	lowToneCut=20 #pitch
 	capW = 0
 	capH = 0
 	
@@ -68,7 +68,7 @@ class karaokesampler():
 		
 		print("init karaokesampler")
 
-		self.windowSize=[800,450]
+		self.windowSize=[1920,1080]
 
 		self.pitch=0
 		if not self.KinectMode:
@@ -374,10 +374,11 @@ class karaokesampler():
 							print ("could not print pitch line")
 			self.img=img
 			try:
-				cv2.imshow(self.windowName, img)
+				pass
+				#cv2.imshow(self.windowName, img)
 			except:
 				pass
-			if cv2.waitKey(1) == 27:
+			if cv2.waitKey(100) == 27:
 				self.singing=False
 				break  # esc to quit
 				
