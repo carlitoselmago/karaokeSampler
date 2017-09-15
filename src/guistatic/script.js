@@ -1,5 +1,11 @@
 $( document ).ready(function() {
+
+
 	window.selecteSongPath=""
+	//DELETE THIS
+	window.selecteSongPath="KARsongs/A-B/A-B/Britney Spears - Toxic.kar";
+	//DELETE THIS
+
  	loadKarSongs();
  	loadSamplers();
 

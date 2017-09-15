@@ -55,26 +55,14 @@ TOXIC:::::
 <meta message lyrics text=u"lin'" time=0>
 <meta message lyrics text=u'\r' time=0>
 <meta message lyrics text=u'\n' time=0>
-C:\Users\carlos\Documents\karaokeSampler\src\karaokesampler.py:504: UserWarning: AUBIO WARNING: sink_wavwrite: trying to write 1024 frames to recordings/61_772.wav, but only 1002 could be written
-  outputsink(signal, len(signal))
-C:\Users\carlos\Documents\karaokeSampler\src\karaokesampler.py:504: UserWarning: AUBIO WARNING: sink_wavwrite: trying to write 1024 frames to recordings/102_776.wav, but only 1002 could be written
-  outputsink(signal, len(signal))
-C:\Users\carlos\Documents\karaokeSampler\src\karaokesampler.py:504: UserWarning: AUBIO WARNING: sink_wavwrite: trying to write 1024 frames to recordings/102_783.wav, but only 1002 could be written
-  outputsink(signal, len(signal))
-C:\Users\carlos\Documents\karaokeSampler\src\karaokesampler.py:504: UserWarning: AUBIO WARNING: sink_wavwrite: trying to write 1024 frames to recordings/102_789.wav, but only 1002 could be written
-  outputsink(signal, len(signal))
-C:\Users\carlos\Documents\karaokeSampler\src\karaokesampler.py:504: UserWarning: AUBIO WARNING: sink_wavwrite: trying to write 1024 frames to recordings/102_789.wav, but only 1023 could be written
-  outputsink(signal, len(signal))
-C:\Users\carlos\Documents\karaokeSampler\src\karaokesampler.py:504: UserWarning: AUBIO WARNING: sink_wavwrite: trying to write 1024 frames to recordings/74_790.wav, but only 1002 could be written
-  outputsink(signal, len(signal))
-C:\Users\carlos\Documents\karaokeSampler\src\karaokesampler.py:504: UserWarning: AUBIO WARNING: sink_wavwrite: trying to write 1024 frames to recordings/74_790.wav, but only 1023 could be written
-  outputsink(signal, len(signal))
-C:\Users\carlos\Documents\karaokeSampler\
 
-close to you carpenters
+
+CLOSE TO YOU CARPENTERS
 note_on channel=2 note=62 velocity=0 time=0.01704545
 note_on channel=5 note=62 velocity=0 time=0
+
 <meta message text text=u' they' time=0.318181733333>
+
 note_on channel=15 note=64 velocity=98 time=0
 note_on channel=2 note=60 velocity=80 time=0
 note_on channel=2 note=55 velocity=68 time=0
@@ -91,7 +79,9 @@ control_change channel=5 control=64 value=0 time=0
 note_on channel=15 note=64 velocity=0 time=0.32386355
 control_change channel=2 control=64 value=127 time=0.0340909
 control_change channel=5 control=64 value=127 time=0
+
 <meta message text text=u' long' time=0.0909090666667>
+
 note_on channel=15 note=67 velocity=85 time=0
 note_on channel=2 note=60 velocity=0 time=0.0454545333333
 note_on channel=5 note=60 velocity=0 time=0
@@ -111,3 +101,172 @@ note_on channel=15 note=76 velocity=92 time=0
 note_on channel=15 note=76 velocity=0 time=0.2045454
 <meta message text text=u' be' time=0.0227272666667>
 note_on channel=15 note=74 velocity=85 time=0
+
+
+
+TOXIC
+[u'Remix by RicBNH', u'Remixed by RicBNH @RAN Production Studios', '[LJUMP]', u'Remix by RicBNH www.RicBNH.com', '[LJUMP]', u'Ba', u'by, ', u'', u'you ', u'see ', '[LJUMP]', u'', u'ca', u'll', u'ing ', '[LJUMP]', u'A ', u'guy ', u'like ', u'you ', '[LJUMP]', u'Should ', u'wear ', u'a ', u'war', u'ning ', '[LJUMP]', u'', u'dan', u'gerous ', '[LJUMP]', u'', u'fal', u'', '[LJUMP]', '[PJUMP]', u'', u'no ', u'e', u'scape ', '[LJUMP]', u'I ', u'', u'hide ', '[LJUMP]', u'I ', u'need ', u'a ', u'hit ', '[LJUMP]', u'Ba', u'by, ', u'give ', u'me ', u'it ', '[LJUMP]', u'', u'dan', u'ge', u'rous ', '[LJUMP]', u'', u'lo', u'', u'it ', '[LJUMP]', '[PJUMP]', u'Too ', u'high ', '[LJUMP]', u'', u'come ', u'do', u'wn ', '[LJUMP]', u'Lo', u'sing ', u'my ', u'head ', '[LJUMP]', u'Spin', u'ning ', u'', u'and ', u'', u'und ', '[LJUMP]', u'Do ', u'you ', u'feel ', u'me ', u'n', u'ow ', '[LJUMP]', '[PJUMP]', u'With ', u'a ', u'taste ', u'of ', u'your ', u'lips ', '[LJUMP]', u'', u'on ', u'a ', u'ride ', '[LJUMP]', u'', u'to', u'xic ', '[LJUMP]', u'', u'slipp', u'ing ', u'under ', '[LJUMP]', u'With ', u'a ', u'taste ', u'of ', u'a ', u'poi', u'son ', u'pa', u'ra', u'dise ', '[LJUMP]', u'', u'a', u'ddi', u'cted ', u'to ', u'you ', '[LJUMP]', u'', u'you ', u'know ', u'that ', u'', u'to', u'xic ', '[LJUMP]', u'And ', u'I ', u'love ', u'what ', u'you ', u'do ', '[LJUMP]', u'', u'you ', u'know ', u'that ', u'', u'to', u'xic ', '[LJUMP]', '[PJUMP]', u'', u'gett', u'ing ', u'late ', '[LJUMP]', u'To ', u'give ', u'it ', u'up ', '[LJUMP]', u'I ', u'took ', u'a ', u'sip ', '[LJUMP]', u'From ', u'my ', u'devil ', u'cup ', '[LJUMP]', u'Slo', u'wly ', '[LJUMP]', u'', u'taking ', u'o', u'ver ', u'me ', '[LJUMP]', '[PJUMP]', u'Too ', u'high ', '[LJUMP]', u'', u'come ', u'do', u'wn ', '[LJUMP]', u'', u'in ', u'the ', u'air ', '[LJUMP]', u'And ', u'', u'all ', u'a', u'ro', u'und ', '[LJUMP]', u'Can ', u'you ', u'feel ', u'me ', u'n', u'ow ', '[LJUMP]', '[PJUMP]', u'With ', u'a ', u'taste ', u'of ', u'your ', u'lips ', '[LJUMP]', u'', u'on ', u'a ', u'ride ', '[LJUMP]', u'', u'to', u'xic ', '[LJUMP]', u'', u'slipp', u'ing ', u'under ', '[LJUMP]', u'With ', u'a ', u'taste ', u'of ', u'a ', u'po', u'ison ', u'pa', u'ra', u'dise ', '[LJUMP]', u'', u'a', u'ddi', u'cted ', u'to ', u'you ', '[LJUMP]', u'', u'you ', u'know ', u'that ', u'', u'to', u'xic ', '[LJUMP]', u'And ', u'I ', u'love ', u'what ', u'you ', u'do ', '[LJUMP]', u'', u'you ', u'know ', u'that ', u'', u'to', u'xic ', '[LJUMP]', '[PJUMP]', u'', u'you ', u'know ', u'that ', u'you', u'', u'to', u'xic ', '[LJUMP]', '[PJUMP]', u'Taste ', u'of ', u'my ', u'lips ', u'and ', u'hav', u'ing ', u'fun ', '[LJUMP]', u'', u'to', u'xic ', '[LJUMP]', u'', u'slipp', u'ing ', u'under ', '[LJUMP]', u'With ', u'a ', u'taste ', u'of ', u'a ', u'poi', u'son ', u'pa', u'ra', u'dise ', '[LJUMP]', u'', u'a', u'ddi', u'cted ', u'to ', u'you ', '[LJUMP]', u'', u'you ', u'know ', u'that ', u'', u'to', u'xic ', '[LJUMP]', '[PJUMP]', u'Taste ', u'of ', u'your ', u'lips ', '[LJUMP]', u'', u'on ', u'a ', u'ride ', '[LJUMP]', u'', u'to', u'xic ', '[LJUMP]', u'', u'slipp', u'ing ', u'under ', '[LJUMP]', u'With ', u'a ', u'taste ', u'of ', u'a ', u'poi', u'son ', u'pa', u'ra', u'dise ', '[LJUMP]', u'', u'a', u'ddi', u'cted ', u'to ', u'you ', '[LJUMP]', u'', u'you ', u'know ', u'that ', u'', u'to', u'xic ', '[LJUMP]', '[PJUMP]', u'', u'in', u'to', u'xi', u'ca', u'ted ', u'now ', '[LJUMP]', u'', u'love ', u'it ', u'now ', '[LJUMP]', u'I ', u'think ', u'', u'rea', u'dy ', u'now ', '[LJUMP]', u'I ', u'think ', u'', u'ready ', u'now ', '[LJUMP]', u'', u'in', u'to', u'xi', u'ca', u'ted ', u'now ', '[LJUMP]', u'', u'love ', u'it ', u'now ', '[LJUMP]', u'I ', u'think ', u'', u'rea', u'dy ', u'now ']
+
+
+
+STEP 1
+STEP 2
+STEP 3
+STEP 4
+STEP 5
+STEP 6
+STEP 7
+STEP 8
+STEP 9
+STEP 9 XXX
+STEP 10
+XXX
+STEP 12
+STEP 13
+STEP 14 XXX
+STEP 14
+STEP 15
+XXX
+STEP 17
+STEP 18
+STEP 19
+STEP 19
+STEP 20
+STEP 22
+STEP 23
+STEP 24
+STEP 25
+STEP 25
+STEP 26
+STEP 28
+STEP 29
+STEP 29
+STEP 30
+STEP 32
+STEP 33
+STEP 33
+STEP 34
+STEP 35
+BUILDING NEW BLOCK OF LYRICS!!!!!!
+END OF BLOCK
+STEP 37
+STEP 38
+STEP 39
+STEP 39
+STEP 40
+STEP 42
+
+
+
+STEP 1
+STEP 2
+STEP 3
+STEP 4
+STEP 5
+STEP 6
+STEP 7
+STEP 8
+STEP 9
+STEP 10
+STEP 11
+STEP 12
+STEP 13
+STEP 14
+STEP 15
+STEP 16
+STEP 17
+STEP 18
+STEP 19
+STEP 20
+STEP 21
+STEP 22
+STEP 23
+STEP 24
+STEP 25
+STEP 26
+STEP 27
+STEP 28
+STEP 29
+STEP 30
+STEP 31
+STEP 32 <---
+STEP 37 <---
+STEP 38
+STEP 39
+STEP 40
+STEP 41
+STEP 42
+STEP 43
+STEP 44
+STEP 45
+STEP 46
+STEP 47
+STEP 48
+STEP 49
+STEP 50
+STEP 51
+STEP 52
+STEP 53
+STEP 54
+STEP 55
+STEP 56
+STEP 57
+STEP 58
+STEP 59
+STEP 60
+STEP 61
+STEP 62
+STEP 63
+STEP 64
+STEP 65
+STEP 66
+BUILDING NEW BLOCK OF LYRICS!!!!!!
+END OF BLOCK
+STEP 67
+STEP 68
+STEP 69
+STEP 70
+STEP 71
+STEP 72
+STEP 73
+STEP 74
+STEP 75
+STEP 76
+STEP 77
+STEP 78
+STEP 79
+STEP 80
+STEP 81
+STEP 82
+STEP 83
+STEP 84
+STEP 85
+STEP 86
+STEP 87
+STEP 88
+STEP 89
+STEP 90
+STEP 91
+STEP 92
+STEP 93
+STEP 94
+BUILDING NEW BLOCK OF LYRICS!!!!!!
+END OF BLOCK
+STEP 95
+STEP 96
+
+
+[u'@KMIDI KARAOKE FILE', u'@KV0100', u'@I Lyrics entered by Raphael Pungin', u'@I raphael@cnct.com', u'@LENG', u'@TTAKE ON ME', u'@TAh Ha', u'', u'talking ', u'a', u'way', u'/I ', u'', u'know ', u'what', u'', u'to ', u'say ', u'', u'say ', u'it ', u'a', u'ny', u'way', u'/To', u'', u'a', u'no', u'ther ', u'day ', u'to ', u'find ', u'you', u'\\\\Shy', u'ing ', u'a', u'way', u'', u'be ', u'co', u'ming ', u'for ', u'your ', u'lo', u've, ', u'OK?', u'\\\\Take ', u'on ', u'me,', u'/(Take ', u'on ', u'me)', u'\\\\Take ', u'me ', u'on', u'/(Take ', u'on ', u'me)', u'', u'be ', u'gone', u'/In ', u'a ', u'day ', u'or ', u'two', u'\\\\So ', u'needless ', u'to ', u'say', u'', u'odds ', u'and ', u'ends', u'\\\\But ', u'', u'me ', u'that ', u'stum', u'bl', u'ing ', u'a', u'way', u'/Slow', u'ly ', u'lear', u'ning ', u'that ', u'life ', u'is ', u'O', u'K.', u'\\\\Say ', u'af', u'ter ', u'me', u'', u'no ', u'bet', u'ter ', u'to ', u'be ', u'safe ', u'than ', u'sorry', u'\\\\Take ', u'on ', u'me,', u'/(Take ', u'on ', u'me)', u'\\\\Take ', u'me ', u'on', u'/(Take ', u'on ', u'me)', u'', u'be ', u'gone', u'/In ', u'a ', u'day ', u'or ', u'two ', u'\\\\Oh ', u'the ', u'things ', u'you ', u'say', u'/Is ', u'it ', u'live ', u'or', u'\\\\Just ', u'to ', u'play ', u'my ', u'wor', u'ries ', u'a', u'wa', u'y', u'', u'all ', u'the ', u'things ', u'', u'got ', u'to ', u're', u'member', u'\\\\Shy', u'ing ', u'a', u'way', u'', u'be ', u'co', u'ming ', u'for ', u'you ', u'a', u'ny', u'way', u'\\\\Take ', u'on ', u'me,', u'/(Take ', u'on ', u'me)', u'\\\\Take ', u'me ', u'on', u'/(Take ', u'on ', u'me)', u'', u'be ', u'gone', u'/In ', u'a ', u'day ', u'or two', u'\\\\Take ', u'on ', u'me,', u'/(Take ', u'on ', u'me)', u'\\\\Take ', u'me ', u'on', u'/(Take ', u'on ', u'me)', u'', u'be ', u'gone', u'/In ', u'a ', u'day ', u'or ', u'two', u'', u'talking ', u'a', u'way ', u'\\r', u'I ', u'', u'know ', u'what ', u'\\r', u'', u'to ', u'say ', u'', u'say ', u'it ', u'a', u'ny', u'way ', u'\\r', u'To', u'', u'a', u'no', u'ther ', u'day ', u'to ', u'find ', u'you ', u'\\r', u'Shy', u'ing ', u'a', u'way ', u'\\r', u'', u'be ', u'co', u'ming ', u'for ', u'your ', u'lo', u've, ', u'OK? ', u'\\r', u'Take ', u'on ', u'me, ', u'\\r', u'(Take ', u'on ', u'me) ', u'\\r', u'Take ', u'me ', u'on ', u'\\r', u'(Take ', u'on ', u'me) ', u'\\r', u'', u'be ', u'gone ', u'\\r', u'In ', u'a ', u'day ', u'or ', u'two ', u'\\r', u'So ', u'needless ', u'to ', u'say ', u'\\r', u'', u'odds ', u'and ', u'ends ', u'\\r', u'But ', u'', u'me ', u'that ', u'stum', u'bl', u'ing ', u'a', u'way ', u'\\r', u'Slow', u'ly ', u'lear', u'ning ', u'that ', u'life ', u'is ', u'O', u'K. ', u'\\r', u'Say ', u'af', u'ter ', u'me ', u'\\r', u'', u'no ', u'bet', u'ter ', u'to ', u'be ', u'safe ', u'than ', u'sorry ', u'\\r', u'Take ', u'on ', u'me, ', u'\\r', u'(Take ', u'on ', u'me) ', u'\\r', u'Take ', u'me ', u'on ', u'\\r', u'(Take ', u'on ', u'me) ', u'\\r', u'', u'be ', u'gone ', u'\\r', u'In ', u'a ', u'day ', u'or ', u'two ', u'\\r', u'Oh ', u'the ', u'things ', u'you ', u'say ', u'\\r', u'Is ', u'it ', u'live ', u'or ', u'\\r', u'Just ', u'to ', u'play ', u'my ', u'wor', u'ries ', u'a', u'wa', u'y ', u'\\r', u'', u'all ', u'the ', u'things ', u'', u'got ', u'to ', u're', u'member ', u'\\r', u'Shy', u'ing ', u'a', u'way ', u'\\r', u'', u'be ', u'co', u'ming ', u'for ', u'you ', u'a', u'ny', u'way ', u'\\r', u'Take ', u'on ', u'me, ', u'\\r', u'(Take ', u'on ', u'me) ', u'\\r', u'Take ', u'me ', u'on ', u'\\r', u'(Take ', u'on ', u'me) ', u'\\r', u'', u'be ', u'gone ', u'\\r', u'In ', u'a ', u'day ', u'or.two ', u'\\r', u'Take ', u'on ', u'me, ', u'\\r', u'(Take ', u'on ', u'me) ', u'\\r', u'Take ', u'me ', u'on ', u'\\r', u'(Take ', u'on ', u'me) ', u'\\r', u'', u'be ', u'gone ', u'\\r', u'In ', u'a ', u'day ', u'or ', u'two ', u'\\r', u'\\n', u'', u'talking ', u'a', u'way ', u'\\r', u'/I ', u'', u'know ', u'what ', u'\\r', u'', u'to ', u'say ', u'', u'say ', u'it ', u'a', u'ny', u'way ', u'\\r', u'/To', u'', u'a', u'no', u'ther ', u'day ', u'to ', u'find ', u'you ', u'\\r', u'\\\\Shy', u'ing ', u'a', u'way ', u'\\r', u'', u'be ', u'co', u'ming ', u'for ', u'your ', u'lo', u've, ', u'OK? ', u'\\r', u'\\\\Take ', u'on ', u'me, ', u'\\r', u'/(Take ', u'on ', u'me) ', u'\\r', u'\\\\Take ', u'me ', u'on ', u'\\r', u'/(Take ', u'on ', u'me) ', u'\\r', u'', u'be ', u'gone ', u'\\r', u'/In ', u'a ', u'day ', u'or ', u'two ', u'\\r', u'\\n', u'\\\\So ', u'needless ', u'to ', u'say ', u'\\r', u'', u'odds ', u'and ', u'ends ', u'\\r', u'\\\\But ', u'', u'me ', u'that ', u'stum', u'bl', u'ing ', u'a', u'way ', u'\\r', u'/Slow', u'ly ', u'lear', u'ning ', u'that ', u'life ', u'is ', u'O', u'K. ', u'\\r', u'\\\\Say ', u'af', u'ter ', u'me ', u'\\r', u'', u'no ', u'bet', u'ter ', u'to ', u'be ', u'safe ', u'than ', u'sorry ', u'\\r', u'\\\\Take ', u'on ', u'me, ', u'\\r', u'/(Take ', u'on ', u'me) ', u'\\r', u'\\\\Take ', u'me ', u'on ', u'\\r', u'/(Take ', u'on ', u'me) ', u'\\r', u'', u'be ', u'gone ', u'\\r', u'/In ', u'a ', u'day ', u'or ', u'two ', u'\\r', u'\\n', u'\\\\Oh ', u'the ', u'things ', u'you ', u'say ', u'\\r', u'/Is ', u'it ', u'live ', u'or ', u'\\r', u'\\\\Just ', u'to ', u'play ', u'my ', u'wor', u'ries ', u'a', u'wa', u'y ', u'\\r', u'', u'all ', u'the ', u'things ', u'', u'got ', u'to ', u're', u'member ', u'\\r', u'\\\\Shy', u'ing ', u'a', u'way ', u'\\r', u'', u'be ', u'co', u'ming ', u'for ', u'you ', u'a', u'ny', u'way ', u'\\r', u'\\\\Take ', u'on ', u'me, ', u'\\r', u'/(Take ', u'on ', u'me) ', u'\\r', u'\\\\Take ', u'me ', u'on ', u'\\r', u'/(Take ', u'on ', u'me) ', u'\\r', u'', u'be ', u'gone ', u'\\r', u'/In ', u'a ', u'day ', u'or.two ', u'\\r', u'\\\\Take ', u'on ', u'me, ', u'\\r', u'/(Take ', u'on ', u'me) ', u'\\r', u'\\\\Take ', u'me ', u'on ', u'\\r', u'/(Take ', u'on ', u'me) ', u'\\r', u'', u'be ', u'gone ', u'\\r', u'/In ', u'a ', u'day ', u'or ', u'two ', u'\\r', u'\\n', u'', u'talking ', u'a', u'way ', u'\\r', u'/I ', u'', u'know ', u'what ', u'\\r', u'', u'to ', u'say ', u'', u'say ', u'it ', u'a', u'ny', u'way ', u'\\r', u'/To', u'', u'a', u'no', u'ther ', u'day ', u'to ', u'find ', u'you ', u'\\r', u'\\\\Shy', u'ing ', u'a', u'way ', u'\\r', u'', u'be ', u'co', u'ming ', u'for ', u'your ', u'lo', u've, ', u'OK? ', u'\\r', u'\\\\Take ', u'on ', u'me, ', u'\\r', u'/(Take ', u'on ', u'me) ', u'\\r', u'\\\\Take ', u'me ', u'on ', u'\\r', u'/(Take ', u'on ', u'me) ', u'\\r', u'', u'be ', u'gone ', u'\\r', u'/In ', u'a ', u'day ', u'or ', u'two ', u'\\r', u'\\n', u'\\\\So ', u'needless ', u'to ', u'say ', u'\\r', u'', u'odds ', u'and ', u'ends ', u'\\r', u'\\\\But ', u'', u'me ', u'that ', u'stum', u'bl', u'ing ', u'a', u'way ', u'\\r', u'/Slow', u'ly ', u'lear', u'ning ', u'that ', u'life ', u'is ', u'O', u'K. ', u'\\r', u'\\\\Say ', u'af', u'ter ', u'me ', u'\\r', u'', u'no ', u'bet', u'ter ', u'to ', u'be ', u'safe ', u'than ', u'sorry ', u'\\r', u'\\\\Take ', u'on ', u'me, ', u'\\r', u'/(Take ', u'on ', u'me) ', u'\\r', u'\\\\Take ', u'me ', u'on ', u'\\r', u'/(Take ', u'on ', u'me) ', u'\\r', u'', u'be ', u'gone ', u'\\r', u'/In ', u'a ', u'day ', u'or ', u'two ', u'\\r', u'\\n', u'\\\\Oh ', u'the ', u'things ', u'you ', u'say ', u'\\r', u'/Is ', u'it ', u'live ', u'or ', u'\\r', u'\\\\Just ', u'to ', u'play ', u'my ', u'wor', u'ries ', u'a', u'wa', u'y ', u'\\r', u'', u'all ', u'the ', u'things ', u'', u'got ', u'to ', u're', u'member ', u'\\r', u'\\\\Shy', u'ing ', u'a', u'way ', u'\\r', u'', u'be ', u'co', u'ming ', u'for ', u'you ', u'a', u'ny', u'way ', u'\\r', u'\\\\Take ', u'on ', u'me, ', u'\\r', u'/(Take ', u'on ', u'me) ', u'\\r', u'\\\\Take ', u'me ', u'on ', u'\\r', u'/(Take ', u'on ', u'me) ', u'\\r', u'', u'be ', u'gone ', u'\\r', u'/In ', u'a ', u'day ', u'or.two ', u'\\r', u'\\\\Take ', u'on ', u'me, ', u'\\r', u'/(Take ', u'on ', u'me) ', u'\\r', u'\\\\Take ', u'me ', u'on ', u'\\r', u'/(Take ', u'on ', u'me) ', u'\\r', u'', u'be ', u'gone ', u'\\r', u'/In ', u'a ', u'day ', u'or ', u'two ', u'\\r', u'\\n']
+
+
+
+
+[u'Remix by RicBNH', u'Remixed by RicBNH @RAN Production Studios', u'\r', u'Remix by RicBNH www.RicBNH.com', u'\r', u'Ba', u'by, ', u"can't ", u'you ', u'see ', u'\r', u"I'm ", u'ca', u'll', u'ing ', u'\r', u'A ', u'guy ', u'like ', u'you ', u'\r', u'Should ', u'wear ', u'a ', u'war', u'ning ', u'\r', u"It's ", u'dan', u'gerous ', u'\r', u"I'm ", u'fal', u"lin'", u'\r', u'\n', u"There's ", u'no ', u'e', u'scape ', u'\r', u'I ', u"can't ", u'hide ', u'\r', u'I ', u'need ', u'a ', u'hit ', u'\r', u'Ba', u'by, ', u'give ', u'me ', u'it ', u'\r', u"You're ", u'dan', u'ge', u'rous ', u'\r', u"I'm ", u'lo', u"vin' ", u'it ', u'\r', u'\n', u'Too ', u'high ', u'\r', u"Can't ", u'come ', u'do', u'wn ', u'\r', u'Lo', u'sing ', u'my ', u'head ', u'\r', u'Spin', u'ning ', u"'round ", u'and ', u"'ro", u'und ', u'\r', u'Do ', u'you ', u'feel ', u'me ', u'n', u'ow ', u'\r', u'\n', u'With ', u'a ', u'taste ', u'of ', u'your ', u'lips ', u'\r', u"I'm ", u'on ', u'a ', u'ride ', u'\r', u"You're ", u'to', u'xic ', u'\r', u"I'm ", u'slipp', u'ing ', u'under ', u'\r', u'With ', u'a ', u'taste ', u'of ', u'a ', u'poi', u'son ', u'pa', u'ra', u'dise ', u'\r', u"I'm ", u'a', u'ddi', u'cted ', u'to ', u'you ', u'\r', u"Don't ", u'you ', u'know ', u'that ', u"you're ", u'to', u'xic ', u'\r', u'And ', u'I ', u'love ', u'what ', u'you ', u'do ', u'\r', u"Don't ", u'you ', u'know ', u'that ', u"you're ", u'to', u'xic ', u'\r', u'\n', u"It's ", u'gett', u'ing ', u'late ', u'\r', u'To ', u'give ', u'it ', u'up ', u'\r', u'I ', u'took ', u'a ', u'sip ', u'\r', u'From ', u'my ', u'devil ', u'cup ', u'\r', u'Slo', u'wly ', u'\r', u"It's ", u'taking ', u'o', u'ver ', u'me ', u'\r', u'\n', u'Too ', u'high ', u'\r', u"Can't ", u'come ', u'do', u'wn ', u'\r', u"It's ", u'in ', u'the ', u'air ', u'\r', u'And ', u"it's ", u'all ', u'a', u'ro', u'und ', u'\r', u'Can ', u'you ', u'feel ', u'me ', u'n', u'ow ', u'\r', u'\n', u'With ', u'a ', u'taste ', u'of ', u'your ', u'lips ', u'\r', u"I'm ", u'on ', u'a ', u'ride ', u'\r', u"You're ", u'to', u'xic ', u'\r', u"I'm ", u'slipp', u'ing ', u'under ', u'\r', u'With ', u'a ', u'taste ', u'of ', u'a ', u'po', u'ison ', u'pa', u'ra', u'dise ', u'\r', u"I'm ", u'a', u'ddi', u'cted ', u'to ', u'you ', u'\r', u"Don't ", u'you ', u'know ', u'that ', u"you're ", u'to', u'xic ', u'\r', u'And ', u'I ', u'love ', u'what ', u'you ', u'do ', u'\r', u"Don't ", u'you ', u'know ', u'that ', u"you're ", u'to', u'xic ', u'\r', u'\n', u"Don't ", u'you ', u'know ', u'that ', u'you', u"'re ", u'to', u'xic ', u'\r', u'\n', u'Taste ', u'of ', u'my ', u'lips ', u'and ', u'hav', u'ing ', u'fun ', u'\r', u"You're ", u'to', u'xic ', u'\r', u"I'm ", u'slipp', u'ing ', u'under ', u'\r', u'With ', u'a ', u'taste ', u'of ', u'a ', u'poi', u'son ', u'pa', u'ra', u'dise ', u'\r', u"I'm ", u'a', u'ddi', u'cted ', u'to ', u'you ', u'\r', u"Don't ", u'you ', u'know ', u'that ', u"you're ", u'to', u'xic ', u'\r', u'\n', u'Taste ', u'of ', u'your ', u'lips ', u'\r', u"I'm ", u'on ', u'a ', u'ride ', u'\r', u"You're ", u'to', u'xic ', u'\r', u"I'm ", u'slipp', u'ing ', u'under ', u'\r', u'With ', u'a ', u'taste ', u'of ', u'a ', u'poi', u'son ', u'pa', u'ra', u'dise ', u'\r', u"I'm ", u'a', u'ddi', u'cted ', u'to ', u'you ', u'\r', u"Don't ", u'you ', u'know ', u'that ', u"you're ", u'to', u'xic ', u'\r', u'\n', u"I'm ", u'in', u'to', u'xi', u'ca', u'ted ', u'now ', u'\r', u"you'll ", u'love ', u'it ', u'now ', u'\r', u'I ', u'think ', u"I'm ", u'rea', u'dy ', u'now ', u'\r', u'I ', u'think ', u"I'm ", u'ready ', u'now ', u'\r', u"I'm ", u'in', u'to', u'xi', u'ca', u'ted ', u'now ', u'\r', u"you'll ", u'love ', u'it ', u'now ', u'\r', u'I ', u'think ', u"I'm ", u'rea', u'dy ', u'now ']
+
+
+THREELINES
+[[u'Remix by RicBNH', u'Remixed by RicBNH @RAN Production Studios'], [u'Remix by RicBNH www.RicBNH.com'], [u'Ba', u'by, ', u"can't ", u'you ', u'see '], [u"I'm ", u'ca', u'll', u'ing '], [u'A ', u'guy ', u'like ', u'you '], [u'Should ', u'wear ', u'a ', u'war', u'ning '], [u"It's ", u'dan', u'gerous '], [u"I'm ", u'fal', u"lin'"], []]
+
+[[u"There's ", u'no ', u'e', u'scape '], [u'I ', u"can't ", u'hide '], [u'I ', u'need ', u'a ', u'hit '], [u'Ba', u'by, ', u'give ', u'me ', u'it '], [u"You're ", u'dan', u'ge', u'rous '], [u"I'm ", u'lo', u"vin' ", u'it '], []]
+
+[[u'Too ', u'high '], [u"Can't ", u'come ', u'do', u'wn '], [u'Lo', u'sing ', u'my ', u'head '], [u'Spin', u'ning ', u"'round ", u'and ', u"'ro", u'und '], [u'Do ', u'you ', u'feel ', u'me ', u'n', u'ow '], []]

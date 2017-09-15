@@ -1,13 +1,17 @@
-import numpy as np
-def find_nearest(array,value):
-    return min(range(len(array)), key=lambda i: abs(array[i]-value))
+stepsss=[1,2,3,4,5,6,7,8,9,11,12,13,20]
 
-array = [29.43,9.97,1.44,5.13,6.30,7.0,6.60]
+lastSylab=0
+for lyricMessageCount in stepsss:
+	if lyricMessageCount-lastSylab>1:
+		#we missed a step reproduce both
+		#print "we missed some!"
+		steps=[]
+		for s in range(lyricMessageCount-lastSylab):
+			
+			steps.append((lastSylab+s)+1)
+	else:
+		steps=[lyricMessageCount]
 
-# [ 0.21069679  0.61290182  0.63425412  0.84635244  0.91599191  0.00213826
-#   0.17104965  0.56874386  0.57319379  0.28719469]
-
-value = 6.5
-
-print(find_nearest(array, value))
-# 0.568743859261
+	for s in steps:
+		print "STEP",s
+	lastSylab=s

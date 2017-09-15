@@ -5,7 +5,7 @@
 
 import cv2
 import time, datetime
-from tools import midifile
+#from tools import midifile
 import pygame
 from os.path import basename
 import glob,os
@@ -28,8 +28,10 @@ class samplerPlayer():
 	
 	preparedSounds=[]
 	lyricMessageCount=0
+	lyricMessageCountInBlocks=0
 	lastLyrics=[]
 	lastSylab=0
+
 	
 	
 	def __init__(self,windowName):
@@ -181,6 +183,7 @@ class samplerPlayer():
 	        return ""
 
 	def getTextFromMessage(self,message):
+		
 		return unicode(self.find_between(str(message),"'","'"))
 
 	def getTrackNumbers(self,midiSong):
@@ -205,10 +208,20 @@ class samplerPlayer():
 					if c<messagesLimit:
 						messagesTypes[1]+=1
 					#print message.type,message
-					if "text" in str(message):
+					if hasattr(message, 'text'):
+						print message
 						#print "LYRIC MESSAGE",message
 						#print (self.getTextFromMessage(message))
-						self.lyrics.append(unicode(self.getTextFromMessage(message)))
+						
+						text=message.text#self.getTextFromMessage(message)
+						"""
+						if text=="\\n":
+							text="[PJUMP]"
+						if text=="\\r":
+							text="[LJUMP]"
+						"""
+							
+						self.lyrics.append(text)
 					
 					#trackType="lyrics"
 					#lyrics message
@@ -281,7 +294,13 @@ class samplerPlayer():
 				pass
 
 	def isLyricsMessage(self,message):
-		if message.type=="note_on" or message.type=="note_off" or message.type=="sysex" or  message.type=="program_change" or message.type=="control_change" or message.type=="pitchwheel" or message.type=="sysex":
+		"""
+		if hasattr(message, 'text'):
+			return True
+		else:
+			return False
+		"""
+		if message.type=="marker" or message.type=="note_on" or message.type=="note_off" or message.type=="sysex" or  message.type=="program_change" or message.type=="control_change" or message.type=="pitchwheel" or message.type=="sysex":
 			return False
 		else:
 			return True
@@ -302,12 +321,12 @@ class samplerPlayer():
 		
 		trackNumber=self.midiTrackToSampler
 		
-		self.m=midifile.midifile()
+		#self.m=midifile.midifile()
 		#print "SONG HAS ",mid.tracks," TRACKS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 		midfileTrackNumber,notesForSampler,mid=self.getTrackNumbers(mid)
 
 		#TODO: quitar dependencia de midifile.py
-		samplerTrack=self.m.load_file((songpath).encode("latin1"),midfileTrackNumber) #TODO: atención esto seguramente dará error cuando cambie de canción
+		#samplerTrack=self.m.load_file((songpath).encode("latin1"),midfileTrackNumber) #TODO: atención esto seguramente dará error cuando cambie de canción
 		
 		self.prepareSampler(str(samplerNumber))
 		self.constructSamplerTrack(notesForSampler,songDuration,str(samplerNumber))#max(m.kartimes))
@@ -340,7 +359,6 @@ class samplerPlayer():
 		#while pygame.mixer.music.get_busy():
 
 			
-			
 			for message in mid.play(meta_messages=True):#meta_messages=True):
 				
 				#if message.type=="lyrics":
@@ -354,7 +372,7 @@ class samplerPlayer():
 
 				dt+=message.time
 
-				self.m.update_karaoke(dt)
+				#self.m.update_karaoke(dt)
 
 				if message.type=="note_on" or message.type=="note_off":
 					
@@ -367,10 +385,9 @@ class samplerPlayer():
 				if not self.isLyricsMessage(message):
 					output.send(message)
 				else:
-					if "text" in str(message):
-
-						
-						
+					if hasattr(message, 'text'):
+						#text=self.getTextFromMessage(message)
+						#print text,len(text)
 						self.lyricMessageCount+=1
 			
 
@@ -391,60 +408,130 @@ class samplerPlayer():
 	def printLyrics(self,imgCtext):
 		#self.lyricMessageCount
 		#self.lyrics
+		#print self.lyrics[self.lyricMessageCount]
+		#print len(self.lyrics[self.lyricMessageCount]),"index:",self.lyricMessageCount
 		
-		if self.lastSylab<self.lyricMessageCount:
-			currentSylab=self.lyrics[self.lyricMessageCount]
-			print unicode(currentSylab)
-			if (currentSylab=="\\n") or (self.lyricMessageCount==0): #end of block!
+		if self.lastSylab<self.lyricMessageCount or self.lyricMessageCount==0:
+			#change of step index in lyrics
+			
 
-				print "BUILDING NEW BLOCK OF LYRICS!!!!!!"
-				#let's build the new block of lyrics
-				#find how many sillabs till next new block
-				parsingBlock=True
-				parser=0
-				lineCounter=0
-				threelines=[[]]
-
-				while parsingBlock:
-					print "self.lyricMessageCount+parser",self.lyricMessageCount+parser
-					advancedSylab=str(self.lyrics[self.lyricMessageCount+parser]).strip()
-					#print advancedSylab
-					if advancedSylab=="\\n":
-						parsingBlock=False
-						print "END OF BLOCK"
-					elif advancedSylab=="\\r":
-						#new line
-						lineCounter+=1
-						threelines.append([])
-					else:
-						threelines[lineCounter].append(advancedSylab)
-					parser+=1
-
-
+			if self.lyricMessageCount-self.lastSylab>1:
+				#we missed a step reproduce both
+				steps=[]
+				for s in range(self.lyricMessageCount-self.lastSylab):
+					steps.append((self.lastSylab+s)+1)
 			else:
-				#keep with what we have
-				threelines=self.lastLyrics
-				
+				steps=[self.lyricMessageCount]
+
+			sylabCounter=0
+			for s in steps:
+				#print "STEP",s
+				sylabCounter+=1
+				currentSylab=self.lyrics[s]
+				#print "index",s,"currentSylab",currentSylab
+				#print currentSylab
+				if (currentSylab=="\n") or (s==0): #end of block!
+					self.lyricMessageCountInBlocks=self.lyricMessageCount
+					#print "BUILDING NEW BLOCK OF LYRICS!!!!!!"
+					#let's build the new block of lyrics
+					#find how many sillabs till next new block
+					parsingBlock=True
+					
+					lineCounter=0
+					threelines=[[]]
+					
+					#check next syllab after last break (in case it's not the first block)
+					if s!=0:
+						#not first block
+						parser=0
+						advancedSylab=self.lyrics[s]
+						findingNextSylab=True
+						while findingNextSylab:
+							if advancedSylab!="\n" or advancedSylab!="\r":
+								findingNextSylab=False
+							advancedSylab=self.lyrics[s+parser]
+							s+=1
+							parser+=1
+							
+
+					parser=0
+					while parsingBlock:
+						#print "s+parser",s+parser
+						#print "self.lyricMessageCount+parser",s+parser
+						#print "len lyrics",len(self.lyrics)
+						#print "s+parser",s+prepareSampler
+						advancedSylab=self.lyrics[s+parser]
+						#print "advancedSylab:",advancedSylab,"s+parser:",s+parser
+						#print advancedSylab
+						if advancedSylab=="\n":
+							parsingBlock=False
+
+							#print "END OF BLOCK"
+						elif advancedSylab=="\r":
+							#new line
+							lineCounter+=1
+							threelines.append([])
+						#else:
+						threelines[lineCounter].append(advancedSylab)	
+							
+						parser+=1
+						
+					
+					self.lastLyrics=threelines
+					
+				else:
+					#keep with what we have
+					threelines=self.lastLyrics
+				#self.lyricMessageCountInBlocks=self.lyricMessageCount-sylabCounter
+			
+			self.lastSylab=s#self.lyricMessageCount
+
 		else:
 			threelines=self.lastLyrics
 		#threelines=[["1","2","3"],["4","5","6"],["7","8","9"]]
 		#self.lastLyrics
 
+
+		paragrapahSinged=self.lyricMessageCount-self.lyricMessageCountInBlocks
+
 		#display images
+		singed=(0,255,255)
+		toSing=(255,255,255)
+		color=singed
 		y0, dy = 50, 40
+		sylabCount=0
+		
+		
+
 		#for i, line in enumerate(imgText.split('\n')):
 		for i,line in  enumerate(threelines):
 			y = y0 + i*dy
 			lineX=30
 			for e,sylab in enumerate(line):
-				characterS=10
-				lineX+=(len(sylab)*characterS)+(characterS*2)
-				x=+lineX
-				imgCtext=self.putTextPIL(imgCtext,sylab,(x,y))
-			#cv2.putText(imgCtext,line, (10,y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255),1)
+				checkSylab=sylab.strip()
+				
+				if sylabCount==paragrapahSinged:
+					color=toSing
+				pil_im = Image.fromarray(imgCtext)
+				pil_d = ImageDraw.Draw(pil_im)
+				w, h = pil_d.textsize(sylab,font=self.fonts[0])
+				#print "w",w,"sylab",sylab
+				#cordinates=((self.windowSize[0]-w)/2,cordinates[1])
+				
+				cordinates=(lineX,y)
+				pil_d.text(cordinates,sylab,color,font=self.fonts[0])
+				imgCtext = np.array(pil_im)
+				lineX+=w
+				#sylabCount+=1
+				#if checkSylab !="\n" or checkSylab !="\r" or checkSylab!="":
+				sylabCount+=1
+				#if self.lastSylab<self.lyricMessageCount:
+				#	print sylab
+
+
 
 		self.lastLyrics=threelines
-		self.lastSylab=self.lyricMessageCount
+		
 		return imgCtext
 
 
