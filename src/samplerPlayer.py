@@ -12,7 +12,7 @@ import glob,os
 import threading
 import numpy as np
 import mido
-from mido import MidiFile
+from mido import Message, MidiFile, MidiTrack
 import subprocess
 #import commands
 from shutil import copyfile
@@ -31,6 +31,9 @@ class samplerPlayer():
 	lyricMessageCountInBlocks=0
 	lastLyrics=[]
 	lastSylab=0
+	blockLines=4
+	blockLineCounter=0
+	lineJumpCounter=0
 
 	
 	
@@ -46,7 +49,7 @@ class samplerPlayer():
 		self.windowSize=[800,450]
 		self.percentageOfmessagesForLeadTrack=5.9
 		self.customText=""
-		self.midiTrackToSampler=0
+		
 		self.resolution=6 #sampler score resolution, the bigger the more precise
 		#pygame.mixer.pre_init(44100, -16, 1, 512)
 		self.windowName=windowName
@@ -182,22 +185,42 @@ class samplerPlayer():
 	    except ValueError:
 	        return ""
 
-	def getTextFromMessage(self,message):
-		
-		return unicode(self.find_between(str(message),"'","'"))
+	def unifyText(self,text):
+		sylabs=[text]
+		if "/" in text:
+			temp=text.replace("/","")
+			if temp=="":
+				sylabs=["\r"]
+			else:
+				sylabs=["\r",temp]
+		elif "\\" in text:
+			temp=text.replace("\\","")
+			if temp=="":
+				sylabs=["\n"]
+			else:
+				sylabs=["\n",temp]
+
+		return sylabs
+
 
 	def getTrackNumbers(self,midiSong):
 
 		tracks=[]
 		notasInTrack=[]
 		self.lyrics=[]
+		lyricsAlltracks=[]
+		self.typeOfLineJump="dashes"
+
 
 		for i, track in enumerate(midiSong.tracks):
-			#trackType=""
+
+			
 			messagesTypes=[0,0]#normal,lyrics
-			messagesLimit=5
+			messagesLimit=150
+			newLtrack=MidiTrack()
+			newLtrack.name="LETRASSSS"
+			lyricsAlltracks.append(newLtrack)
 			for c,message in enumerate(track):
-				
 				
 				if not self.isLyricsMessage(message):
 					#normal message
@@ -207,31 +230,51 @@ class samplerPlayer():
 				else:
 					if c<messagesLimit:
 						messagesTypes[1]+=1
-					#print message.type,message
-					if hasattr(message, 'text'):
-						print message
-						#print "LYRIC MESSAGE",message
-						#print (self.getTextFromMessage(message))
-						
-						text=message.text#self.getTextFromMessage(message)
-						"""
-						if text=="\\n":
-							text="[PJUMP]"
-						if text=="\\r":
-							text="[LJUMP]"
-						"""
-							
-						self.lyrics.append(text)
-					
-					#trackType="lyrics"
-					#lyrics message
+				
+		
+					text=message.text#self.getTextFromMessage(message)
+			
+					#TODO:CLEAN HERE MESSAGE IF NECESSARY
 
+					lyricsAlltracks[i].append(message)
+					
+					"""
+					sylabs=self.unifyText(text)
+					for syl in sylabs:
+						self.lyrics.append(syl)
+					"""
+							
+							
+		
 			trackType=messagesTypes.index(max(messagesTypes))
+	
 			
 			tracks.append([track.name,trackType,len(track)])
 
-		"""	
 		
+		#check what is the lyrics track with more words
+		mostWords=0
+		mostWordsIndex=0
+		for i,track in enumerate(lyricsAlltracks):
+
+			lCounter=len(track)
+			if lCounter>mostWords:
+				mostWords=lCounter
+				mostWordsIndex=i
+
+		trackWithMostLyrics=lyricsAlltracks[mostWordsIndex]
+
+		#print "lyricsAlltracks",lyricsAlltracks
+
+		#print "trackWithMostLyrics",trackWithMostLyrics
+
+		"""
+		print tracks
+		print "###"
+		print lyricsAlltracks
+		print "###"
+		print messagesTypes
+		sys.exit()
 		"""
 
 		#count all standard messages
@@ -240,10 +283,20 @@ class samplerPlayer():
 			if track[1]==0:
 				#normal track
 				totalMessages+=track[2]
+			"""
+			else:
+				print "REMOVING TRACK NUM "+str(i),"NAMED: ",track.name
+				#remove all text tracks
+				del midiSong.tracks[i]
+			"""
+
+		
+		#add most lyrics track back the file object
+		#midiSong.tracks.append(trackWithMostLyrics)
+
 		
 
-
-		print self.lyrics
+		#print self.lyrics
 		#get track percentages
 		percentages=[]
 		for i,track in enumerate(tracks):
@@ -271,6 +324,7 @@ class samplerPlayer():
 		#construct a list of all notes that will be required during playback
 		for i,message in enumerate(midiSong.tracks[midfileTrackNumber]):
 			#print dir(midiSong.tracks[midfileTrackNumber][i])
+
 			if hasattr(message, 'channel'):
 				midiSong.tracks[midfileTrackNumber][i].channel=15
 
@@ -280,8 +334,26 @@ class samplerPlayer():
 
 					notasInTrack.append(message.note)
 
+		for i,message in enumerate(midiSong.tracks[mostWordsIndex]):
+
+		
+			if hasattr(message, 'text'):
+				text=message.text
+				midiSong.tracks[mostWordsIndex][i].text=text+"[:]"
+				if "\r" in text or "\n" in text:
+					self.typeOfLineJump="text"
+				self.lyrics.append(text)
+				"""
+				sylabs=self.unifyText(text)
+				for syl in sylabs:
+					self.lyrics.append(syl)
+				"""
+		#print self.typeOfLineJump
+		
 		#print "song has ",totalMessages,"standard messages"
 		#print tracks
+		#print self.lyrics
+
 
 		#print ("MidoTrackNumber",MidoTrackNumber,"PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP")
 		#print ("midfileTrackNumber",midfileTrackNumber,"MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM")
@@ -294,20 +366,36 @@ class samplerPlayer():
 				pass
 
 	def isLyricsMessage(self,message):
+		if hasattr(message, 'text'):
+			return True
+		else:
+			return False
+		"""
+		if message.type=="lyrics":
+			return True
+		else:
+			return False
+		"""
 		"""
 		if hasattr(message, 'text'):
 			return True
 		else:
 			return False
 		"""
+		"""
 		if message.type=="marker" or message.type=="note_on" or message.type=="note_off" or message.type=="sysex" or  message.type=="program_change" or message.type=="control_change" or message.type=="pitchwheel" or message.type=="sysex":
 			return False
 		else:
-			return True
-					
+			if hasattr(message, 'text'):
+				return True
+			else:
+				return False
+		"""
+			
 
 	def playSong(self,filename,songpath,samplerNumber,customText):
-
+		self.lastLyrics=[]
+		self.lyricMessageCount=0
 		filename=filename.decode("utf-8")
 		print filename,"filename"
 		self.status="loading"
@@ -319,7 +407,7 @@ class samplerPlayer():
 		songDuration=mid.length
 
 		
-		trackNumber=self.midiTrackToSampler
+	
 		
 		#self.m=midifile.midifile()
 		#print "SONG HAS ",mid.tracks," TRACKS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
@@ -381,14 +469,27 @@ class samplerPlayer():
 						t = threading.Thread(target=self.playSamplerNotewithDelay, args = (message,0.1)) #algo entre 0.1 y 0.8
 						t.start()
 						
-					
+
+				
 				if not self.isLyricsMessage(message):
-					output.send(message)
+					if message.type=="marker" or message.type=="note_on" or message.type=="note_off" or message.type=="sysex" or  message.type=="program_change" or message.type=="control_change" or message.type=="pitchwheel" or message.type=="sysex":
+			
+						output.send(message)
 				else:
 					if hasattr(message, 'text'):
-						#text=self.getTextFromMessage(message)
-						#print text,len(text)
+						if "[:]" in message.text:
+							self.lyricMessageCount+=1
+					#self.lyricMessageCount+=1
+					#if hasattr(message, 'text'):
+					#text=self.getTextFromMessage(message)
+					#print text,len(text)
+					
+					
+					"""
+					sylabs=self.unifyText(message.text)
+					for syl in sylabs:
 						self.lyricMessageCount+=1
+					"""
 			
 
 			
@@ -405,6 +506,20 @@ class samplerPlayer():
 		imgWithText = np.array(pil_im)
 		return imgWithText
 
+	def isLineJump(self,text):
+		if self.typeOfLineJump=="dashes":
+			if "\\" in text or "/" in text:
+				return True
+			else:
+				return False
+		else:
+
+			if "\n" in text or "\r" in text:# or "\\" in text or "/" in text:# or text=="":
+				#print text ,"isLineJump"
+				return True
+			else:
+				return False
+
 	def printLyrics(self,imgCtext):
 		#self.lyricMessageCount
 		#self.lyrics
@@ -414,7 +529,6 @@ class samplerPlayer():
 		if self.lastSylab<self.lyricMessageCount or self.lyricMessageCount==0:
 			#change of step index in lyrics
 			
-
 			if self.lyricMessageCount-self.lastSylab>1:
 				#we missed a step reproduce both
 				steps=[]
@@ -424,67 +538,89 @@ class samplerPlayer():
 				steps=[self.lyricMessageCount]
 
 			sylabCounter=0
+
+			threelines=self.lastLyrics
+			self.lastLyrics=[]
 			for s in steps:
 				#print "STEP",s
 				sylabCounter+=1
 				currentSylab=self.lyrics[s]
 				#print "index",s,"currentSylab",currentSylab
 				#print currentSylab
-				if (currentSylab=="\n") or (s==0): #end of block!
-					self.lyricMessageCountInBlocks=self.lyricMessageCount
-					#print "BUILDING NEW BLOCK OF LYRICS!!!!!!"
-					#let's build the new block of lyrics
-					#find how many sillabs till next new block
-					parsingBlock=True
+				if (self.isLineJump(currentSylab)) or (s==0): #end of block!
 					
-					lineCounter=0
-					threelines=[[]]
+					self.lineJumpCounter+=1
+
+					if self.lineJumpCounter==self.blockLines or (s==0):
+						self.lineJumpCounter=0
 					
-					#check next syllab after last break (in case it's not the first block)
-					if s!=0:
-						#not first block
-						parser=0
-						advancedSylab=self.lyrics[s]
-						findingNextSylab=True
-						while findingNextSylab:
-							if advancedSylab!="\n" or advancedSylab!="\r":
-								findingNextSylab=False
-							advancedSylab=self.lyrics[s+parser]
-							s+=1
-							parser+=1
+						#if self.blockLineCounter==0:
 							
-
-					parser=0
-					while parsingBlock:
-						#print "s+parser",s+parser
-						#print "self.lyricMessageCount+parser",s+parser
-						#print "len lyrics",len(self.lyrics)
-						#print "s+parser",s+prepareSampler
-						advancedSylab=self.lyrics[s+parser]
-						#print "advancedSylab:",advancedSylab,"s+parser:",s+parser
-						#print advancedSylab
-						if advancedSylab=="\n":
-							parsingBlock=False
-
-							#print "END OF BLOCK"
-						elif advancedSylab=="\r":
-							#new line
-							lineCounter+=1
-							threelines.append([])
-						#else:
-						threelines[lineCounter].append(advancedSylab)	
-							
-						parser+=1
+						#print "BUILDING NEW BLOCK OF LYRICS!!!!!!"
 						
+						
+						self.lyricMessageCountInBlocks=self.lyricMessageCount
+						
+						#let's build the new block of lyrics
+						#find how many sillabs till next new block
+						parsingBlock=True
+						
+						lineCounter=0
+						threelines=[[]]
+						
+						#check next syllab after last break (in case it's not the first block)
+						if s!=0:
+							#not first block
+							parser=0
+							advancedSylab=self.lyrics[s]
+							findingNextSylab=True
+							while findingNextSylab:
+								if self.typeOfLineJump=="dashes":
+									if "\\" in advancedSylab or "/" in advancedSylab:
+										findingNextSylab=False
+								else:
+									if "\n" in advancedSylab or "\r" in advancedSylab:
+										findingNextSylab=False
+								advancedSylab=self.lyrics[s+parser]
+								s+=1
+								parser+=1
+								
+
+						parser=0
+						while parsingBlock:
+							#print "s+parser",s+parser
+							#print "self.lyricMessageCount+parser",s+parser
+							#print "len lyrics",len(self.lyrics)
+							#print "s+parser",s+prepareSampler
+							advancedSylab=self.lyrics[s+parser]
+							#print "advancedSylab:",advancedSylab,"s+parser:",s+parser
+							#print advancedSylab
+							if self.isLineJump(advancedSylab):
+
+								lineCounter+=1
+								threelines.append([])
+								#LINE JUMP!
+								self.blockLineCounter+=1
+							#if advancedSylab=="\n":
+							if (self.blockLineCounter==self.blockLines):# or (s==0):
+								parsingBlock=False
+								self.blockLineCounter=0
+								#print "END OF BLOCK"
+							#elif advancedSylab=="\r":
+								#new line
+								
+							#else:
+							threelines[lineCounter].append(advancedSylab)	
+								
+							parser+=1
 					
-					self.lastLyrics=threelines
+				
+						self.lastLyrics=threelines
+
 					
-				else:
-					#keep with what we have
-					threelines=self.lastLyrics
 				#self.lyricMessageCountInBlocks=self.lyricMessageCount-sylabCounter
 			
-			self.lastSylab=s#self.lyricMessageCount
+				self.lastSylab=s#self.lyricMessageCount
 
 		else:
 			threelines=self.lastLyrics
@@ -508,18 +644,21 @@ class samplerPlayer():
 			y = y0 + i*dy
 			lineX=30
 			for e,sylab in enumerate(line):
-				checkSylab=sylab.strip()
-				
+
+
+				#checkSylab=sylab.strip()
+				cleanSylab=sylab.replace("/","").replace("\\","").replace("_"," ")
+				 	
 				if sylabCount==paragrapahSinged:
 					color=toSing
 				pil_im = Image.fromarray(imgCtext)
 				pil_d = ImageDraw.Draw(pil_im)
-				w, h = pil_d.textsize(sylab,font=self.fonts[0])
+				w, h = pil_d.textsize(cleanSylab,font=self.fonts[0])
 				#print "w",w,"sylab",sylab
 				#cordinates=((self.windowSize[0]-w)/2,cordinates[1])
 				
 				cordinates=(lineX,y)
-				pil_d.text(cordinates,sylab,color,font=self.fonts[0])
+				pil_d.text(cordinates,cleanSylab,color,font=self.fonts[0])
 				imgCtext = np.array(pil_im)
 				lineX+=w
 				#sylabCount+=1
@@ -649,4 +788,5 @@ if __name__ == "__main__":
 	K=samplerPlayer("karaoke")
 	#K.playSong("bellabestia","bellabestia.kar",20,"carlos")
 	#K.playSong("bellabestia.kar",12,"custom text ñ here")
-	K.playSong("toxic","KARsongs/A-B/A-B/Britney Spears - Toxic.kar",20,"custom text here ñññ Á")
+	#K.playSong("toxic","KARsongs/A-B/A-B/Britney Spears - Toxic.kar",20,"custom text here ñññ Á")
+	K.playSong("mamma mia","KARsongs/A-B/A-B/Abba - Mamma Mia.kar",20,"development")

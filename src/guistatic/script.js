@@ -3,7 +3,7 @@ $( document ).ready(function() {
 
 	window.selecteSongPath=""
 	//DELETE THIS
-	window.selecteSongPath="KARsongs/A-B/A-B/Britney Spears - Toxic.kar";
+	window.selecteSongPath="KARsongs/A-B/A-B/A Ha - Take On Me.kar";
 	//DELETE THIS
 
  	loadKarSongs();
