@@ -544,78 +544,85 @@ class samplerPlayer():
 			for s in steps:
 				#print "STEP",s
 				sylabCounter+=1
-				currentSylab=self.lyrics[s]
-				#print "index",s,"currentSylab",currentSylab
-				#print currentSylab
-				if (self.isLineJump(currentSylab)) or (s==0): #end of block!
-					
-					self.lineJumpCounter+=1
+				if len(self.lyrics)>(s):
+					currentSylab=self.lyrics[s]
+					#print "index",s,"currentSylab",currentSylab
+					#print currentSylab
+					if (self.isLineJump(currentSylab)) or (s==0): #end of block!
+						
+						self.lineJumpCounter+=1
 
-					if self.lineJumpCounter==self.blockLines or (s==0):
-						self.lineJumpCounter=0
-					
-						#if self.blockLineCounter==0:
+						if self.lineJumpCounter==self.blockLines or (s==0):
+							self.lineJumpCounter=0
+						
+							#if self.blockLineCounter==0:
+								
+							#print "BUILDING NEW BLOCK OF LYRICS!!!!!!"
 							
-						#print "BUILDING NEW BLOCK OF LYRICS!!!!!!"
-						
-						
-						self.lyricMessageCountInBlocks=self.lyricMessageCount
-						
-						#let's build the new block of lyrics
-						#find how many sillabs till next new block
-						parsingBlock=True
-						
-						lineCounter=0
-						threelines=[[]]
-						
-						#check next syllab after last break (in case it's not the first block)
-						if s!=0:
-							#not first block
+							
+							self.lyricMessageCountInBlocks=self.lyricMessageCount
+							
+							#let's build the new block of lyrics
+							#find how many sillabs till next new block
+							parsingBlock=True
+							
+							lineCounter=0
+							threelines=[[]]
+							
+							#check next syllab after last break (in case it's not the first block)
+							if s!=0:
+								#not first block
+								parser=0
+								advancedSylab=self.lyrics[s]
+								findingNextSylab=True
+								while findingNextSylab:
+									if self.typeOfLineJump=="dashes":
+										if "\\" in advancedSylab or "/" in advancedSylab:
+											findingNextSylab=False
+									else:
+										if "\n" in advancedSylab or "\r" in advancedSylab:
+											findingNextSylab=False
+									advancedSylab=self.lyrics[s+parser]
+									s+=1
+									parser+=1
+									
+
 							parser=0
-							advancedSylab=self.lyrics[s]
-							findingNextSylab=True
-							while findingNextSylab:
-								if self.typeOfLineJump=="dashes":
-									if "\\" in advancedSylab or "/" in advancedSylab:
-										findingNextSylab=False
+							while parsingBlock:
+								#print "s+parser",s+parser
+								#print "self.lyricMessageCount+parser",s+parser
+								#print "len lyrics",len(self.lyrics)
+								#print "s+parser",s+prepareSampler
+
+								if len(self.lyrics)<=(s+parser):
+									parsingBlock=False
+									self.blockLineCounter=0
 								else:
-									if "\n" in advancedSylab or "\r" in advancedSylab:
-										findingNextSylab=False
-								advancedSylab=self.lyrics[s+parser]
-								s+=1
-								parser+=1
-								
 
-						parser=0
-						while parsingBlock:
-							#print "s+parser",s+parser
-							#print "self.lyricMessageCount+parser",s+parser
-							#print "len lyrics",len(self.lyrics)
-							#print "s+parser",s+prepareSampler
-							advancedSylab=self.lyrics[s+parser]
-							#print "advancedSylab:",advancedSylab,"s+parser:",s+parser
-							#print advancedSylab
-							if self.isLineJump(advancedSylab):
+									advancedSylab=self.lyrics[s+parser]
+									#print "advancedSylab:",advancedSylab,"s+parser:",s+parser
+									#print advancedSylab
+									if self.isLineJump(advancedSylab):
 
-								lineCounter+=1
-								threelines.append([])
-								#LINE JUMP!
-								self.blockLineCounter+=1
-							#if advancedSylab=="\n":
-							if (self.blockLineCounter==self.blockLines):# or (s==0):
-								parsingBlock=False
-								self.blockLineCounter=0
-								#print "END OF BLOCK"
-							#elif advancedSylab=="\r":
-								#new line
-								
-							#else:
-							threelines[lineCounter].append(advancedSylab)	
-								
-							parser+=1
+										lineCounter+=1
+										threelines.append([])
+										#LINE JUMP!
+										self.blockLineCounter+=1
+									#if advancedSylab=="\n":
+									if (self.blockLineCounter==self.blockLines):# or (s==0):
+										parsingBlock=False
+										self.blockLineCounter=0
+										#print "END OF BLOCK"
+									#elif advancedSylab=="\r":
+										#new line
+										
+									#else:
+									threelines[lineCounter].append(advancedSylab)	
+										
+									parser+=1
+						
 					
-				
-						self.lastLyrics=threelines
+							self.lastLyrics=threelines
 
 					
 				#self.lyricMessageCountInBlocks=self.lyricMessageCount-sylabCounter
@@ -648,21 +655,23 @@ class samplerPlayer():
 
 				#checkSylab=sylab.strip()
 				cleanSylab=sylab.replace("/","").replace("\\","").replace("_"," ")
+
+				if "@" not in cleanSylab:
 				 	
-				if sylabCount==paragrapahSinged:
-					color=toSing
-				pil_im = Image.fromarray(imgCtext)
-				pil_d = ImageDraw.Draw(pil_im)
-				w, h = pil_d.textsize(cleanSylab,font=self.fonts[0])
-				#print "w",w,"sylab",sylab
-				#cordinates=((self.windowSize[0]-w)/2,cordinates[1])
-				
-				cordinates=(lineX,y)
-				pil_d.text(cordinates,cleanSylab,color,font=self.fonts[0])
-				imgCtext = np.array(pil_im)
-				lineX+=w
-				#sylabCount+=1
-				#if checkSylab !="\n" or checkSylab !="\r" or checkSylab!="":
+					if sylabCount==paragrapahSinged:
+						color=toSing
+					pil_im = Image.fromarray(imgCtext)
+					pil_d = ImageDraw.Draw(pil_im)
+					w, h = pil_d.textsize(cleanSylab,font=self.fonts[0])
+					#print "w",w,"sylab",sylab
+					#cordinates=((self.windowSize[0]-w)/2,cordinates[1])
+					
+					cordinates=(lineX,y)
+					pil_d.text(cordinates,cleanSylab,color,font=self.fonts[0])
+					imgCtext = np.array(pil_im)
+					lineX+=w
+					#sylabCount+=1
+					#if checkSylab !="\n" or checkSylab !="\r" or checkSylab!="":
 				sylabCount+=1
 				#if self.lastSylab<self.lyricMessageCount:
 				#	print sylab

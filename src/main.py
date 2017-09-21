@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*- 
+
+
+# karaoke sampler v.1.0
+
+
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')

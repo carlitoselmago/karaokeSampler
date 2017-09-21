@@ -30,7 +30,7 @@ class karaokesampler():
 	synth = False
 	#end config
 	windowName = "recorder"
-	selectLimit=6 #number of audio samples to collect after recording
+	selectLimit=8 #number of audio samples to collect after recording
 
 	recordingsFolder = "recordings/"
 	samplersFolder="samplers/"
@@ -69,6 +69,7 @@ class karaokesampler():
 		print("init karaokesampler")
 
 		self.windowSize=[1920,1080]
+		self.imgResizeSize=[800,450]
 
 		self.pitch=0
 		if not self.KinectMode:
@@ -375,7 +376,7 @@ class karaokesampler():
 			self.img=img
 			try:
 				pass
-				#cv2.imshow(self.windowName, img)
+				cv2.imshow(self.windowName, img)
 			except:
 				pass
 			if cv2.waitKey(100) == 27:
@@ -613,7 +614,7 @@ class karaokesampler():
 					destination=newsamplerDir+"/"+sWithoutDuration+".jpg"
 					#resize
 					img = Image.open(source)
-					img2=img.resize((self.windowSize[0], self.windowSize[1]), PIL.Image.ANTIALIAS)
+					img2=img.resize((self.imgResizeSize[0], self.imgResizeSize[1]), PIL.Image.ANTIALIAS)
 					img2.save(destination)
 				except:
 					print "skipping ",source
