@@ -39,7 +39,7 @@ Abba - Dancing Queen
 Abba - Does Your Mother Know
 Abba - Fernando
 Abba - Gimme! Gimme! Gimme!
-Abba - Hasta Ma√±ana
+Abba - Hasta MaÒana
 Abba - He Is Your Brother
 Abba - Hey Hey Helen
 Abba - I Do I Do I Do
@@ -260,22 +260,11 @@ Atomic Kitten - Whole Again
 Avril Lavigne - Complicated
 Avril Lavigne - Im With You
 Avril Lavigne - Sk8erboi
-B B King - Don't Answer The Door
-B B King - Get Off My Back, Woman
-B B King - Let The Good Times Roll
-B B King - Rock Me Baby
-B B King - Sweet Sixteen
-B B King - The Thrill Is Gone
-B B King - To Know You Is To Love You
 B J Thomas - Hooked On A Feel
 B J Thomas - Raindrops Keep Falling In My Head
 B-52's - The Flintstones
 Baby Face - Exhale (Shoop Shoop)
 Bachelor Girl - Buses And Trains
-Bachmann Turner Overdrive - Hey You
-Bachmann Turner Overdrive - Let It Ride
-Bachmann Turner Overdrive - Takin' Care Of Business
-Bachmann Turner Overdrive - You Ain't Seem Nothing Yet
 Backstreet Boys - All I Have To Give
 Backstreet Boys - As Long As You Love Me
 Backstreet Boys - Back To Your Heart
@@ -354,112 +343,6 @@ Beach Boys - Surfer Girl
 Beach Boys - Surfin' Usa
 Beach Boys - Wouldnt It Be Nice
 Beasty Boys - Fight For You Right To Party
-Beatles - A Day In The Life
-Beatles - A Shot Of Rhythm And Blues
-Beatles - A Taste Of Honey
-Beatles - All Together Now
-Beatles - And I Love Her
-Beatles - And I Love Her2
-Beatles - And Your Bird Can Sing
-Beatles - Anna (Go To Him)
-Beatles - Another Girl
-Beatles - Any Time At All
-Beatles - Baby It's You
-Beatles - Baby's In Black
-Beatles - Back In The U.S.S.R.
-Beatles - Ballroom Dancing
-Beatles - Birthday
-Beatles - Boys
-Beatles - Carol
-Beatles - Chains
-Beatles - Come Together
-Beatles - Cry Baby Cry
-Beatles - Dizzy Miss Lizzy
-Beatles - Do You Want To Know A Secret
-Beatles - Don't Bother Me
-Beatles - Don't Let Me Down
-Beatles - Drive My Car
-Beatles - Eight Days A Week
-Beatles - Eleanor Rigby
-Beatles - Everybody's Got Something To Hide
-Beatles - Fool On The Hill
-Beatles - For No One
-Beatles - Free As A Bird
-Beatles - Get Back
-Beatles - Girl
-Beatles - Glass Onion
-Beatles - Hard Days Night
-Beatles - Help
-Beatles - Here Comes The Sun
-Beatles - Here There And Everywhere
-Beatles - Hey Jude
-Beatles - Honeypie
-Beatles - I Am The Walrus
-Beatles - I Am The Walrus2
-Beatles - I Call Your Name
-Beatles - I Don't Want To Spoil The Party
-Beatles - I Need You
-Beatles - I Wanna Be Your Man
-Beatles - I Will
-Beatles - I'll Be Back
-Beatles - I'll Be On My Way
-Beatles - I'll Follow The Sun
-Beatles - I'm A Loser
-Beatles - I'm Only Sleeping
-Beatles - If I Fell
-Beatles - Julia
-Beatles - Lady Madonna
-Beatles - Let It Be
-Beatles - Long Winding Road
-Beatles - Magical Mystery Tour
-Beatles - Maxwell's Silver Hammer
-Beatles - Michelle
-Beatles - Mr. Moonlight
-Beatles - No Reply
-Beatles - Norwegian Wood
-Beatles - Nowhere Man
-Beatles - Nowhere Man2
-Beatles - Obla Di Bla Da
-Beatles - Oh Darling
-Beatles - Old Brown Shoe
-Beatles - One After 909
-Beatles - P.S. I Love You
-Beatles - Penny Lane
-Beatles - Please Please Me
-Beatles - Polytheme Pam
-Beatles - Real Love
-Beatles - Revolution
-Beatles - Rocky Racoon
-Beatles - Sgt Pepper Lonely Hearts Club Band (Reprise)
-Beatles - Sgt Pepper Lonely Hearts Club Band
-Beatles - She Loves You
-Beatles - She's Leaving Home
-Beatles - Something
-Beatles - Strawberry Fields
-Beatles - Tell Me What You See
-Beatles - Tell Me Why
-Beatles - The Fool On The Hill
-Beatles - There's A Place
-Beatles - Ticket To Ride
-Beatles - Till There Was You
-Beatles - Tomorrow Never Knows
-Beatles - Twist And Shout
-Beatles - Wait
-Beatles - We Can Work It Out
-Beatles - What You're Doing
-Beatles - When I Get Home
-Beatles - When I'm 64
-Beatles - While My Guitar Gently Weeps
-Beatles - Why Don't We Do It In The Road
-Beatles - With A Little Help From My Friends
-Beatles - Yellow Submarine
-Beatles - Yesterday
-Beatles - You Can't Do That
-Beatles - You Never Give Me You Money
-Beatles - You're Going To Lose That Girl
-Beatles - You've Got To Hide Your Love Away
-Beatles - You've Really Got A Hold On Me
-Beatles - Your Mother Should Know
 Beau Brummel - Just A Little
 Beau Brummel - Laugh Laugh
 Beautiful South - Don't Marry Her Have Me
@@ -847,14 +730,14 @@ Charles Aznavour - Hier Encore
 Charles Aznavour - Il Faut Savoir
 Charles Aznavour - J'aime Paris Au Mois De Mai
 Charles Aznavour - Je M'voyais Deje
-Charles Aznavour - Je Te R√©chaufferai
+Charles Aznavour - Je Te RÈchaufferai
 Charles Aznavour - La Boheme 2
 Charles Aznavour - La Mama
 Charles Aznavour - Les Comediens
 Charles Aznavour - Les Plaisirs Demodes
 Charles Aznavour - Mes Emmerdes
 Charles Aznavour - Mourir D'aimer
-Charles Aznavour - Non Je N'ai Rien Oubli√©
+Charles Aznavour - Non Je N'ai Rien OubliÈ
 Charles Aznavour - Nous Irons A Verone
 Charles Aznavour - Paris Au Mois De Mai
 Charles Aznavour - Plus Bleu Que Le Bleu De Tes Yeux
@@ -1090,18 +973,6 @@ Dion & The Bellmonts - Why Must I Be A Teenager In Love
 Dion & The Belmonts - Teenager In Love
 Dionne Warwick - A House Is Not A Home
 Dionne Warwick - That's What Friends Are For
-Dire Straits - Love Over Gold
-Dire Straits - Money For Nothing
-Dire Straits - Romeo And Juliet
-Dire Straits - So Far Away
-Dire Straits - Sultans Of Swing 2
-Dire Straits - Sultans Of Swing
-Dire Straits - Telegraph Road
-Dire Straits - Ticket To Heaven
-Dire Straits - Tunnel Of Love 2
-Dire Straits - Tunnel Of Love
-Dire Straits - Walk Of Life
-Dire Straits - Your Latest Trick
 Disney - A Whole New World
 Disney - Alladin - A Whole New World
 Disney - Barenece
@@ -1342,50 +1213,6 @@ Erasure - Chains Of Love
 Erasure - Man In The Moon
 Eric Carmen - All By Myself
 Eric Carmen - Sunrise
-Eric Clapton - After Midnight 2
-Eric Clapton - After Midnight
-Eric Clapton - Bad Love
-Eric Clapton - Before You Accuse Me 2
-Eric Clapton - Before You Accuse Me
-Eric Clapton - Blue Eyes Blue
-Eric Clapton - Blues Power
-Eric Clapton - Change The World 2
-Eric Clapton - Change The World
-Eric Clapton - Cocaine
-Eric Clapton - Crosscut Saw V1
-Eric Clapton - Crossroads 2
-Eric Clapton - Crossroads
-Eric Clapton - Forever Man V1
-Eric Clapton - Holy Mother
-Eric Clapton - I Shot The Sheriff
-Eric Clapton - It's Too Late V1
-Eric Clapton - Lay Down Sally
-Eric Clapton - Layla (Full Version)
-Eric Clapton - Layla Unplugged
-Eric Clapton - Layla V1
-Eric Clapton - Layla V2
-Eric Clapton - Layla V3
-Eric Clapton - Layla
-Eric Clapton - Look Wonderful Tonight V1
-Eric Clapton - My Father's Eyes V1
-Eric Clapton - My Father's Eyes V2
-Eric Clapton - Nobody Knows You When You're Down And Out V1
-Eric Clapton - Presence Of The Lord
-Eric Clapton - Promises V1
-Eric Clapton - Tears In Heaven 2
-Eric Clapton - Tears In Heaven V1
-Eric Clapton - Tears In Heaven V3
-Eric Clapton - Tears In Heaven V4
-Eric Clapton - Tears In Heaven
-Eric Clapton - Willie And The Hand Jive V1
-Eric Clapton - Wonderful Tonight 2
-Eric Clapton - Wonderful Tonight V1
-Eric Clapton - Wonderful Tonight V2
-Eric Clapton - Wonderful Tonight V3
-Eric Clapton - Wonderful Tonight
-Eric Clapton And Bob Marley - I Shot The Sheriff V1
-Eric Clapton And Bob Marley - I Shot The Sheriff V2
-Eric Clapton, Elmore James And Various - It Hurts Me Too
 Ernie Ford - Sixteen Tons
 Ernie K-Doe - Mother In Law
 Eros Ramazzotti - Come Saprei
@@ -1474,55 +1301,6 @@ Four Tops - Baby I Need Your Lovin'
 Four Tops - I Can't Help Myself
 Four Tops - Reach Out I'll Be There
 Fourtops - Working My Way Back To You
-Frank Sinatra - All Or Nothing At All
-Frank Sinatra - Almost Like Being In Love
-Frank Sinatra - An Affairto Remember
-Frank Sinatra - Around The World
-Frank Sinatra - Begin The Beguine
-Frank Sinatra - Besame Mucho
-Frank Sinatra - But Not For Me
-Frank Sinatra - Call Me Irresponsible
-Frank Sinatra - Cheek To Cheek
-Frank Sinatra - Cycles
-Frank Sinatra - Don't Get Around Much Anymore
-Frank Sinatra - Don't Take Your Love From Me
-Frank Sinatra - Dream
-Frank Sinatra - Ebb Tide
-Frank Sinatra - Everybody Loves Somebody
-Frank Sinatra - Fly Me To The Moon 2
-Frank Sinatra - Fly Me To The Moon
-Frank Sinatra - How About You
-Frank Sinatra - I Had The Craziest Dream
-Frank Sinatra - I'm Gonna Sit Right Down And Write Myself A Letter
-Frank Sinatra - I've Got You Under My Skin
-Frank Sinatra - It Was A Very Good Year
-Frank Sinatra - It's Only A Paper Moon
-Frank Sinatra - Lady Is A Tramp
-Frank Sinatra - Laura
-Frank Sinatra - Love And Marriage
-Frank Sinatra - Luck Be A Lady
-Frank Sinatra - Makin' Whoopee
-Frank Sinatra - Moonlight In Vermont
-Frank Sinatra - My Way 2
-Frank Sinatra - My Way 3
-Frank Sinatra - My Way
-Frank Sinatra - New York New York
-Frank Sinatra - Nice'n'easy
-Frank Sinatra - Sentimental Journey
-Frank Sinatra - Strangers In The Night
-Frank Sinatra - Sunny Side Of The Street
-Frank Sinatra - Sweet Georgia Brown
-Frank Sinatra - The Coffee Song
-Frank Sinatra - The Summer Wind
-Frank Sinatra - The Summmerwind 2
-Frank Sinatra - The Way You Look Tonight 2
-Frank Sinatra - The Way You Look Tonight
-Frank Sinatra - Three Coins In A Fountain
-Frank Sinatra - Watch What Happens
-Frank Sinatra - Who Can I Turn To
-Frank Sinatra - Witchcraft
-Frank Sinatra - Young At Heart
-Frank Sinatra- I've Got The World On A String
 Frankie Ford - Sea Cruise
 Frankie Goes To Hollywood - Relax
 Frankie Laine - Cool Water
@@ -1582,43 +1360,12 @@ George Benson - Broadway
 George Benson - In Your Eyes
 George Benson - Moody's Mood For Love
 George Benson - This Masquerade
-George Harrison - All Things Must Pass
-George Harrison - All Those Years Ago
-George Harrison - Blood From A Clone
-George Harrison - Cheer Down
-George Harrison - Crackerbox Palace
-George Harrison - Don't Let Me Wait Too Long
-George Harrison - Dream Away
-George Harrison - Living In The Material World
-George Harrison - Love Comes To Everyone
-George Harrison - Maya Love
-George Harrison - This Guitar
-George Harrison - True Love
-George Harrison - Wake Up My Love
-George Harrison - When We Was Fab
-George Harrison - Woman Don't You Cry For Me
-George Harrison - Wreck Of The Hesperus
-George Harrison - You
 George Jones & Tammy Wynette - The Ceremony
 George Mccrae - Rock Your Baby
 George Michael - Careless Whisper
 George Michael - Last Christmas
 George Michael - One More Try
 George Michael - Outside
-George Strait - Ace In The Hole
-George Strait - All My Ex's Live In Texas
-George Strait - Amarillo By Morning
-George Strait - I Cross My Heart
-George Strait - I Want To Dance With You
-George Strait - I Wasn't Fooling Around
-George Strait - Love Bug
-George Strait - Love Without End, Amen
-George Strait - No One But You
-George Strait - One Night At A Time
-George Strait - Stay Out Of My Arms
-George Strait - The Chair
-George Strait - We Really Shouldn't Be Doing This
-George Strait - You Look So Good In Love
 Georges Jones - Crystal Chandeliers
 Georges Jones - The Wind Of Above
 Geri Halliwell - Its Raining Man
@@ -1720,17 +1467,6 @@ Hall And Oates - Kiss On My List
 Hall And Oates - Sara Smile
 Hank Locklin - Please Help Me I'm Falling
 Hank Locklin - Send Me The Pillow That You Dream On
-Hank Williams - Born To Boogie
-Hank Williams - Cold Cold Heart
-Hank Williams - Family Tradition
-Hank Williams - Hey Good Looking
-Hank Williams - I Cant Help It If Im Still In Love With You
-Hank Williams - I'm So Lonesome I Could Cry
-Hank Williams - I'm So Lonsome I Could Cry
-Hank Williams - Jambalya
-Hank Williams - My Son Calls Another Man Daddy
-Hank Williams - Tennessee Waltz
-Hank Williams - Theres A Tear In My Beer
 Hanson - I Will Come To You
 Hanson - If Only
 Hanson - Madeline
@@ -1843,29 +1579,8 @@ Jewel - The Birds And The Bees
 Jewel - You Were Meant For Me
 Jigsaw - Skyhigg
 Jim Croce - Bad Bad Leroy Brown
-Jim Reeves - A Stranger
-Jim Reeves - Dear Hearts
-Jim Reeves - Four Walls
-Jim Reeves - He'll Have To Go
-Jim Reeves - I Love You Because
-Jim Reeves - I'll Fly Away
-Jim Reeves - Make The World Go Away
-Jim Reeves - Roving Gambler
-Jim Reeves - Welcome To My World 2
-Jim Reeves - Welcome To My World
 Jim Webb - Macarthur Park
-Jimi Hendrix - Hey Joe
-Jimi Hendrix - Purple Haze
-Jimi Hendrix - The Wind Cries Mary
 Jimmie Rodgers - English Country Garden
-Jimmy Buffet - Changes In Latitudes
-Jimmy Buffet - Come Monday 2
-Jimmy Buffet - Come Monday
-Jimmy Buffet - Death Of A Poet
-Jimmy Buffet - False Echoes
-Jimmy Buffet - Margaritaville
-Jimmy Buffet - Migration
-Jimmy Buffet - Son Of A Son Of A Sailor
 Jimmy Clanton - Venus In Blue Jeans
 Jimmy Dean - Big Bad John
 Jimmy Fontana - Che Sera
@@ -1885,25 +1600,6 @@ John Cougar Mellencamp - Danger List
 John Cougar Mellencamp - Hand To Hold On To
 John Cougar Mellencamp - Jack & Diane
 John Cougar Mellencamp - Pink Houses
-John Denver - Annie's Song
-John Denver - Annie
-John Denver - Back Home Again
-John Denver - Calypso
-John Denver - Country Roads 2
-John Denver - Country Roads 3
-John Denver - Country Roads
-John Denver - El Paso
-John Denver - Fly Away
-John Denver - Follow Me
-John Denver - Leaving On A Jet Plane 2
-John Denver - Leaving On A Jet Plane
-John Denver - Libyan On A Jetplane (Parodi)
-John Denver - Perhaps Love
-John Denver - Rhyme & Reason
-John Denver - Rocky Mountain High
-John Denver - Some Days Are Diamonds
-John Denver - Sunshine On My Shoulders
-John Denver - Teach Your Children
 John Fogerty - Almost Saturday Night
 John Fogerty - Big Train From Memphis
 John Fogerty - Blue Boy
@@ -1914,18 +1610,6 @@ John Fogerty - Southern Streamline
 John Fred And The Playboys - Judy In Disguise
 John Lee Hooker - Dimples
 John Lee Hooker - Keep It To Yourself
-John Lennon - Beautiful Boy
-John Lennon - Grow Old With Me
-John Lennon - How Do You Sleep At Night
-John Lennon - How
-John Lennon - Imagine 2
-John Lennon - Imagine
-John Lennon - Jealous Guy
-John Lennon - Just Like Starting Over
-John Lennon - Mother
-John Lennon - Watching The Wheels
-John Lennon - Woman 2
-John Lennon - Woman
 John Mayer - Daughters
 John Michael Montgomery - Be My Baby Tonight
 John Paul Young - Love Is In The Air
@@ -2043,39 +1727,6 @@ Leann Rimes - I Believe
 Leann Rimes - I Need You
 Leann Rimes - One Way Ticket
 Leann Rimes - You Light Up My Life
-Led Zeppelin - Baby, Come On Home
-Led Zeppelin - Black Country Woman
-Led Zeppelin - Black Dog
-Led Zeppelin - Boogie With Stu
-Led Zeppelin - Corouselambra
-Led Zeppelin - Dazed And Confused
-Led Zeppelin - Down By The Seaside
-Led Zeppelin - Fool In The Rain
-Led Zeppelin - Good Times Bad Times
-Led Zeppelin - Hats Off To (Ray) Harper
-Led Zeppelin - Hot Dog
-Led Zeppelin - How Many More Times
-Led Zeppelin - I'm Gonna Crawl
-Led Zeppelin - Immigrant Song
-Led Zeppelin - In The Evening
-Led Zeppelin - In The Light
-Led Zeppelin - Living Loving Maid
-Led Zeppelin - Night Flight
-Led Zeppelin - Rock And Roll
-Led Zeppelin - Sick Again
-Led Zeppelin - Since I've Been Loving You
-Led Zeppelin - Stairway To Heaven 2
-Led Zeppelin - Staiway To Heaven
-Led Zeppelin - Tangerine
-Led Zeppelin - Ten Years Gone
-Led Zeppelin - That's The Way
-Led Zeppelin - The Song Remains The Same 2
-Led Zeppelin - The Song Remains The Same
-Led Zeppelin - Travelling Riverside Blues
-Led Zeppelin - What Is And Never Should Be
-Led Zeppelin - Whole Lotta Loving
-Led Zeppelin - You Shook Me
-Led Zeppelin - Your Time Is Gonna Come
 Lee Ann Womack - A Little Past Little Rock
 Lee Ann Womack - Never Again, Again
 Lee Greenwood - Ring On Her Finger
@@ -2168,13 +1819,13 @@ Lynard Skynard - I Know A Little
 Lynard Skynard - Sweet Home Alabama
 Lynard Skynard - What's Your Name
 Alaska y los Pegamoides - Bailando
-Alaz√°n - Torero
+Alaz·n - Torero
 Albano - Felicidad
 Albert Hammond - It Never Rains In Southern Californa
 Alejandro Sanz - Amiga Mia
-Alejandro Sanz - Coraz√≥n part√≠o
+Alejandro Sanz - CorazÛn partÌo
 Alejandro Sanz - Cuando Nadie Me Ve
-Alejandro Sanz - La Fuerza del Coraz√≥n
+Alejandro Sanz - La Fuerza del CorazÛn
 Alejandro Sanz - Lo ves
 Alejandro Sanz - Me ire
 Alejandro Sanz - Mi soledad y yo
@@ -2183,12 +1834,12 @@ Alejandro Sanz - Viviendo deprisa
 Alejandro Sanz - Y si fuera ella
 Alejandro Sanz - Y solo se me ocurre amarte
 Alicia Keys - Fallin
-Aliz√®e - Moi lolita
+AlizËe - Moi lolita
 ANA BELEN - Contaminame
 ANA BELEN - Derroche
 ANA BELEN - LA MENTIRA
-ANA BEL√âN - CONTAM+NAME
-ANA BEL√âN - DERROCHE
+ANA BEL…N - CONTAM+NAME
+ANA BEL…N - DERROCHE
 ANASTACIA - One day in your life
 ANASTACIA - Paid my dues
 Andrew Lloyd Webber - Phantom of the Opera
@@ -2205,31 +1856,31 @@ Azucar Moreno - Mamma mia
 Azucar moreno - Ole Ole
 Azucar moreno - Quiero verte
 AZUCAR MORENO - Solo se vive una vez
-Az√∫car Moreno - SOLO SE VIVE UNA VEZ - KAR BY ANX
+Az˙car Moreno - SOLO SE VIVE UNA VEZ - KAR BY ANX
 Bella y bestia son
 Bertin Osborne - Como un vagabundo
 Bertin Osborne - Quererte a ti
-Bert√≠n Osborne - Amor mediterr√°neo
-Bert√≠n Osborne - Noches de San Juan
+BertÌn Osborne - Amor mediterr·neo
+BertÌn Osborne - Noches de San Juan
 BIG MOUNTAIN - Baby I Love Your Way
 Blondie - Maria
 BLUE - If you come back
 Bob Dylan - Blowing In The Wind
-Camela - Coraz√≥n indomable
-Camela - H√°blale de m√≠
-Camela - ¬øPor qu√© me has enga√±ado!
+Camela - CorazÛn indomable
+Camela - H·blale de mÌ
+Camela - øPor quÈ me has engaÒado!
 Cantores de Hispalis - A Bailar
 Celtas cortos - 20abril
 Chayane - Salome
 Chayane - Yo te amo
 Chayanne - Completamente enamorado
 Chayanne - Enamorado
-Chayanne - Este ritmo se baila as√≠
-Chayanne - Lo dejar√≠a todo
-Chayanne - Prov√≥came
+Chayanne - Este ritmo se baila asÌ
+Chayanne - Lo dejarÌa todo
+Chayanne - ProvÛcame
 Chayanne - Tal vez es amor (4)
 Chayanne - Torero
-CHENOA - Atr√©vete
+CHENOA - AtrÈvete
 Chocolate - Mayonesa
 Christina Aguilera - Falsas esperanzas
 Christina Aguilera - Genio atrapado
@@ -2249,26 +1900,26 @@ Cristina y los subterraneos - voy en un coche
 David Bisbal - Ave Maria
 David Bisbal - Quiero perderme en tu cuerpo
 DAVID BUSTAMANTE - Cantabria
-David Bustamante - La magia del coraz√≥n
+David Bustamante - La magia del corazÛn
 David Civera - Caminar por la vida
 David Civera - Dile que la quiero
-David Civera - Mu√©vete
+David Civera - MuÈvete
 David Civera - Que la detengan
 Duncan Dhu - En algun lugar (11)
 Duncan Dhu - ESOS OJOS NEGROS
 Duncan Dhu - Paloma Blanca
 Dunkan Dhu - Esos ojos negros
-El consorcio - El chacach√° del tren.kar
+El consorcio - El chacach· del tren
 El simbolo - Que si que no
-El S√≠mbolo - El Baile del 8
-El S√≠mbolo - Levantando las manos
-El S√≠mbolo - Uno, dos, tres (4)
-El S√≠mbolo - Uno, dos, tres
+El SÌmbolo - El Baile del 8
+El SÌmbolo - Levantando las manos
+El SÌmbolo - Uno, dos, tres (4)
+El SÌmbolo - Uno, dos, tres
 Enrique Iglesias - Escapar
 Enrique Iglesias - Experiencia religiosa
 ENRIQUE IGLESIAS - Heroe
 Enrique Iglesias - Lluvia cae
-Enrique Iglesias - No llores por m√≠ 
+Enrique Iglesias - No llores por mÌ 
 Enrique Iglesias - Por amarte 
 Estopa - Cacho a cacho
 Estopa - Como_Camaron
@@ -2285,15 +1936,15 @@ Extremoduro - Jesucristo Garcia (8)
 Extremoduro - La hoguera (8)
 Gloria Estefan - Abriendo puertas (11)
 Gloria Estefan - Ayer (4)
-Gloria Estefan - Con los a√±os que me quedan (1)
-Gloria Estefan - Con los a√±os que me quedan
-Gloria Estefan - Coraz√≥n prohibido (4)
+Gloria Estefan - Con los aÒos que me quedan (1)
+Gloria Estefan - Con los aÒos que me quedan
+Gloria Estefan - CorazÛn prohibido (4)
 Gloria Estefan - Dulce amor
 Gloria Estefan - Farolito (2 y 4)
 Gloria Estefan - Get on your feet (4)
 Gloria Estefan - Mi buen amor (4)
 Gloria Estefan - Mi tierra (13)
-Gloria Estefan - M√°s all√° (1)
+Gloria Estefan - M·s all· (1)
 Gloria Estefan - No pretendo (9)
 Gloria Estefan - Oye mi canto (1)
 Gloria Estefan - Oye mi canto
@@ -2310,37 +1961,24 @@ Isabel Pantoja - De nadie
 Isabel Pantoja - Veneno
 Jennifer Lopez & Marc Anthony - No me ames (remezcla tropical) (4 y 5)
 Jennifer Lopez & Marc Anthony - No me ames (remezcla tropical)
-Jennifer L√≥pez & Chayanne - Dame
-Joan Manel Serrat - Aquellas peque√±as cosas
-Joan Manel Serrat - Pen√©lope
+Jennifer LÛpez & Chayanne - Dame
+Joan Manel Serrat - Aquellas pequeÒas cosas
+Joan Manel Serrat - PenÈlope
 Joan Manuel Serrat - LA MUJER QUE YO QUIERO
-Joan Manuel Serrat - MEDITERR¬¶NEO
-JOAQUIN SABINA - 19 dias y 500 noches
-Joaquin Sabina - Calle melancolia
-JOAQUIN SABINA - El blues de lo que pasa en mi escalera
-Joaquin Sabina - Noches de boda
-Joaquin Sabina - Nos sobran los motivos
-Joaquin Sabina - Peor para el sol
-Joaquin Sabina - Princesa
-Joaquin Sabina - Y jugar por jugar
-Joaquin Sabina - Y nos dieron las diez (1)
+Joan Manuel Serrat - MEDITERR¶NEO
 Joaquin Sabina - Y NOS DIERON LAS DIEZ
-Joaqu√≠n Sabina - Ahora que
-Joaqu√≠n Sabina - Es mentira (4)
-Joaqu√≠n Sabina - Pongamos que hablo de Madrid (1)
-Joaqu√≠n Sabina - Por el boulevar de los sue√±os rotos
-Joaqu√≠n Sabina y Fito P√°ez - Llueve sobre mojado (4)
+JoaquÌn Sabina - Por el boulevar de los sueÒos rotos
 JOHN SECADA - Otro dia mas sin verte
 JOSE EL FRANCES - Ya no quiero tu querer
 Jose Luis Perales - Ella y el (4 y 12)
-Jose Luis Perales - Ella y √©l
+Jose Luis Perales - Ella y Èl
 Jose Luis Perales - LOCA
 Jose Luis Perales - Me llamas (4)
-Jose Luis Perales - Que canten los ni√±os (4)
-Jos√© Luis Perales - El amor (4)
-Jos√© Luis Perales - Loca
-Jos√© Luis Perales - Te quiero (4)
-Jos√© Luis Perales - Un velero llamado libertad (4)
+Jose Luis Perales - Que canten los niÒos (4)
+JosÈ Luis Perales - El amor (4)
+JosÈ Luis Perales - Loca
+JosÈ Luis Perales - Te quiero (4)
+JosÈ Luis Perales - Un velero llamado libertad (4)
 Juan Luis Guerra - A pedir su mano
 JUAN LUIS GUERRA - Bachata rosa
 JUAN LUIS GUERRA - Burbujas de amor
@@ -2351,9 +1989,9 @@ Juan Luis Guerra - La bilirrubina
 Juan Luis Guerra - La cosquillita
 Juan Luis Guerra - Me sube la bilirrubina 
 JUAN LUIS GUERRA - Ojala que llueva cafe
-Juan Luis Guerra - OJAL¬¶ QUE LLUEVA CAF√â
+Juan Luis Guerra - OJAL¶ QUE LLUEVA CAF…
 Juan Luis Guerra - Woman del Callao
-Juan Pardo - Bravo por la m√∫sica
+Juan Pardo - Bravo por la m˙sica
 Juan Pardo - No me hables
 Juan Perro - La charla del pescado (4)
 Juanes - A dios le pido
@@ -2373,16 +2011,16 @@ Julio Iglesias - Me siento de aqui
 Julio Iglesias - Que no se rompa la noche (16)
 Kesia - Quiero verte
 Ketama - Agustito
-Ketama - K' Cha Ch√°
-Ketama - Mi√©nteme (4)
+Ketama - K' Cha Ch·
+Ketama - MiÈnteme (4)
 Ketama - No estamos locos (8 y 16)
 Ketama - Vente pa' Madrid (16)
 Ketama - Vente Pa' Madrid
 KING AFRICA - Comadre compadre
 King Africa - Salta
-King √Åfrica - Comadre, compadre
-King √Åfrica - El camale√≥n (4)
-King √Åfrica - La bomba
+King ¡frica - Comadre, compadre
+King ¡frica - El camaleÛn (4)
+King ¡frica - La bomba
 La oreja de Van Gogh - Cuidate 
 La oreja de Van Gogh - Cuidate
 La Oreja de Van Gogh - El 28
@@ -2406,13 +2044,13 @@ Lluis Llach - No mes per a tu
 Lluis Llach - Tendressa
 Lola Flores - La zarzamora
 Los brincos - Con un sorbito de champan
-Los ca√±os -  Virus del amor
-Los ca√±os - Ni√±a
-Los Ca√±os - Nunca llueve al Sur de California
+Los caÒos -  Virus del amor
+Los caÒos - NiÒa
+Los CaÒos - Nunca llueve al Sur de California
 Los Chunguitos - Dame veneno
 Los del Rio - Baila baila
 Los del Rio - Macarena
-Los del R√≠o - Macarena (Mix)
+Los del RÌo - Macarena (Mix)
 Los lobos - La bamba
 Los Manolos - Amigos para Siempre
 Los Manolos - Una aventura
@@ -2427,41 +2065,41 @@ Luis Miguel - Amor amor
 Luis Miguel - Besame mucho
 LUIS MIGUEL - Como duele
 Luis Miguel - Como es posible
-Luis Miguel - Como yo te am√©
+Luis Miguel - Como yo te amÈ
 Luis Miguel - Como
 Luis Miguel - Contigo en la distancia
 Luis Miguel - Dame
 Luis Miguel - Dormir contigo
 Luis Miguel - El dia que me quieras
 Luis Miguel - Encadenados
-Luis Miguel - Entr√©gate
+Luis Miguel - EntrÈgate
 Luis Miguel - Hasta que me olvides
 Luis Miguel - Historia de un amor
-Luis Miguel - J√∫rame
+Luis Miguel - J˙rame
 Luis Miguel - La bikina
 Luis Miguel - La incondicional
 Luis Miguel - La media vuelta
 Luis Miguel - La mentira
-Luis Miguel - Mucho coraz√≥n
+Luis Miguel - Mucho corazÛn
 Luis Miguel - Nada es igual
-Luis Miguel - No me platiques m√°s
-Luis Miguel - No se t√∫
+Luis Miguel - No me platiques m·s
+Luis Miguel - No se t˙
 Luis Miguel - Nosotros
-Luis Miguel - O t√∫ o ninguna
+Luis Miguel - O t˙ o ninguna
 Luis Miguel - Por debajo de la mesa
 Luis Miguel - Reloj
-Luis Miguel - Sabor a m√≠
-Luis Miguel - Ser√° que no me amas
+Luis Miguel - Sabor a mÌ
+Luis Miguel - Ser· que no me amas
 Luis Miguel - Sin ti
 Luis Miguel - Sol, arena y mar
 Luis Miguel - Somos novios (1)
-Luis Miguel - Sue√±a (1)
-Luis Miguel - Te extra√±o (4)
+Luis Miguel - SueÒa (1)
+Luis Miguel - Te extraÒo (4)
 Luis Miguel - Todo y nada
 Luis Miguel - Usted
 Luis Miguel - Voy a apagar la luz
 Luis Miguel - Y
-Luis Miguel - Yo se que volver√°s
+Luis Miguel - Yo se que volver·s
 Luis Miguel-La barca
 Luis Miguel-La Mentira
 Luis Miguel_Somos novios
@@ -2481,15 +2119,15 @@ Luz Casal - Mi confianza
 LUZ CASAL - Mis recuerdos
 LUZ CASAL - No me importa nada
 LUZ CASAL - Piensa en mi
-Luz Casal - Un a√±o de amor (16)
+Luz Casal - Un aÒo de amor (16)
 Luz Casal - Un pedazo de cielo
 Luz Casal_Piensa En Mi
 Manu Tenorio - Tan enamorados
 Manu Tenorio - Tu Piel
 Manu Tenorio y Lolita - Un bolero
-Marta S√°nchez - Chica ye ye (16)
-Marta S√°nchez - Desesperada (16)
-Marta S√°nchez - La desconocida (4)
+Marta S·nchez - Chica ye ye (16)
+Marta S·nchez - Desesperada (16)
+Marta S·nchez - La desconocida (4)
 Massiel - Eres (1)
 Massiel - La la la
 Mecano - 7 de Septiembre (7)
@@ -2502,7 +2140,7 @@ Mecano - El club de los humildes (1)
 Mecano - Hijo de la luna (5)
 Mecano - HIJO DE LA LUNA
 Mecano - Los amantes (16)
-Mecano - Me col√© en una fiesta
+Mecano - Me colÈ en una fiesta
 Mecano - Me cuesta tanto olvidarte
 Mecano - Mujer contra mujer (1)
 Mecano - Naturaleza muerta (1)
@@ -2514,58 +2152,58 @@ MELODY - El baile del gorila
 Miguel Bose - Amante bandido (1)
 Miguel Bose - Linda
 Miguel Bose - Los chicos no lloran (1)
-Miguel Bos√© - Hacer por hacer
-Miguel Bos√© - Muro
-Miguel Bos√© - Sevilla (1)
-Miguel Bos√© - Si t√∫ no vuelves
-Miguel Rios - A√±o 2000 (4)
-Miguel Rios - A√±o 2000
+Miguel BosÈ - Hacer por hacer
+Miguel BosÈ - Muro
+Miguel BosÈ - Sevilla (1)
+Miguel BosÈ - Si t˙ no vuelves
+Miguel Rios - AÒo 2000 (4)
+Miguel Rios - AÒo 2000
 Miguel Rios - Bienvenidos
 Miguel Rios - Da Doo Ron Ron
 Miguel Rios - El blus del autobus
 Miguel Rios - El ritmo de la lluvia
 Miguel Rios - El rock de la carcel
-Miguel Rios - El rock de la c√°rcel (4)
+Miguel Rios - El rock de la c·rcel (4)
 Miguel Rios - Melodia desencadenada
 Miguel Rios - Popotitos
 Miguel Rios - Santa Lucia
 Miguel Rios - Todo a pulmon
 Miguel Rios - Un diablo disfrazado
-Miguel R√≠os - Bienvenidos (4)
-Miguel R√≠os - Popotitos (16)
-Miguel R√≠os - Santa Luc√≠a (8) 
-Miguel R√≠os - Todo a pulm√≥n (4)
+Miguel RÌos - Bienvenidos (4)
+Miguel RÌos - Popotitos (16)
+Miguel RÌos - Santa LucÌa (8) 
+Miguel RÌos - Todo a pulmÛn (4)
 Mocedades - Amor de hombre (1)
-Mocedades - D√≥nde est√°s coraz√≥n
-Mocedades - Eres t√∫ (1)
-Mocedades- As√≠ fue nuestro amor (1) 
+Mocedades - DÛnde est·s corazÛn
+Mocedades - Eres t˙ (1)
+Mocedades- AsÌ fue nuestro amor (1) 
 Monica Naranjo - Que Imposible
-M√≥nica Naranjo - Des√°tame (4)
-M√≥nica Naranjo - Empiezo a recordarte (3)
-M√≥nica Naranjo - Las campanas del amor (4)
-M√≥nica Naranjo - Miedo
-M√≥nica Naranjo - Sobrevivir√© (4)
+MÛnica Naranjo - Des·tame (4)
+MÛnica Naranjo - Empiezo a recordarte (3)
+MÛnica Naranjo - Las campanas del amor (4)
+MÛnica Naranjo - Miedo
+MÛnica Naranjo - SobrevivirÈ (4)
 NATALIA - Vas a volverme loca
 NAVAJITA PLATEA - Noches de bohemia
-Nek - Laura no est√° (4)
-Nino Bravo - Am√©rica
+Nek - Laura no est· (4)
+Nino Bravo - AmÈrica
 Nino Bravo - Cartas amarillas
-Nino Bravo - Esa ser√° mi casa (9)
+Nino Bravo - Esa ser· mi casa (9)
 Nino Bravo - Libre
 Nino Bravo - Un beso y una flor (16)
 Nino Bravo - Un Beso y una Flor
 Nino Bravo- Noelia
-Ni√±a Pastori - √âchame una mano prima (4)
+NiÒa Pastori - …chame una mano prima (4)
 OBK - Dicen
 OBK - El cielo no entiende
 OBK - Tu sigue asi
-OBK - ¬øDe qu√© me sirve llorar!
+OBK - øDe quÈ me sirve llorar!
 Paulina Rubio - El ultimo adios
 Paulina Rubio - Si tu te vas
 Paulina Rubio - Y yo sigo aqui
 Peret - Borriquito
 Pocahontas - COLORES EN EL VIENTO
-Rebeca - Coraz√≥n coraz√≥n (4)
+Rebeca - CorazÛn corazÛn (4)
 Rebeca - Duro de pelar
 Rosana - A fuego lento tu mirada
 Sergio Dalma - Bailar pegados (1)
@@ -2577,7 +2215,7 @@ Sergio Dalma - Solo para ti
 Shakira - Ojos Asi
 Shakira - Pies descalzos (4)
 Shakira - Suerte
-Shakira - T√∫ (4)
+Shakira - T˙ (4)
 Shakira - Un poco de amor (16)
 Ska-p - Cannabis
 Tam tam go - Atrapados en la red (8)
@@ -2954,27 +2592,6 @@ Paul Anka - Lonely Boy (I'm Just A)
 Paul Anka - Puppy Love
 Paul Anka - Put Your Head On My Shoulder
 Paul Anka - You Are My Destiny
-Paul Mccartney - Another Day
-Paul Mccartney - Baby I'm Amazed
-Paul Mccartney - Band On The Run
-Paul Mccartney - Ebony And Ivory
-Paul Mccartney - Every Night
-Paul Mccartney - Golden Earth Girl
-Paul Mccartney - Goodnigh Tonight
-Paul Mccartney - Heart Of The Country
-Paul Mccartney - Junk
-Paul Mccartney - Long Haired Lady
-Paul Mccartney - Love In Song
-Paul Mccartney - Monkberry Moon Delight
-Paul Mccartney - My Brave Face
-Paul Mccartney - No More Lonely Night
-Paul Mccartney - Silly Love Songs
-Paul Mccartney - Take It Away
-Paul Mccartney - This One
-Paul Mccartney - Three Legs
-Paul Mccartney - Treat Her Gently
-Paul Mccartney - Uncle Albert
-Paul Mccartney - We Got Married
 Paul Revere & Raiders - Indian Reservation
 Paul Simon - A Hazy Shade Of Winter
 Paul Simon - Duncan
@@ -3029,19 +2646,6 @@ Phil Collins - The Roof Is Leaking
 Pink - Don't Let Me Get Me
 Pink - Get This Party Started
 Pink - Most Girls
-Pink Floyd - Another Brick In The Wall (Part2)
-Pink Floyd - Another Brick In The Wall 2
-Pink Floyd - Brain Damage
-Pink Floyd - Comfortably Numb
-Pink Floyd - Dark Side Of The Moon
-Pink Floyd - Echoes
-Pink Floyd - Empty Spaces
-Pink Floyd - Hey You
-Pink Floyd - High Hopes
-Pink Floyd - Money 2
-Pink Floyd - Money
-Pink Floyd - Thin Ice
-Pink Floyd - Wish You Were Here
 Pirates Of The Mississippi - Oh Lonesome Me
 Platters - Magic Touch
 Platters - Only You
@@ -3148,10 +2752,6 @@ Rick Astley - Never Gonna Give You Up
 Ricky Martin - Living La Vida Loca
 Ricky Martin - Private Emotion
 Ricky Martin - She Bangs
-Ricky Nelson - It's Up To You
-Ricky Nelson - Lonesome Town
-Ricky Nelson - Travelin Man
-Ricky Nelson - Travelin' Man 2
 Ricky Scaggs - Highway Forty Blues
 Ricky Scaggs - Honey Wont You Open That Door
 Ricky Scaggs - Honey
@@ -3191,30 +2791,6 @@ Rod Stewart - Tonight's The Night
 Rod Stewart - You're In My Heart
 Roger Miller - King Of The Road
 Rolf Harris - Jake The Peg
-Rolling Stones - All Over Now
-Rolling Stones - Angel
-Rolling Stones - Anybody Seen My Baby
-Rolling Stones - As Tears Go By
-Rolling Stones - Beast Of Burden 2
-Rolling Stones - Beast Of Burden
-Rolling Stones - Brown Sugar
-Rolling Stones - Citadel
-Rolling Stones - Cry To Me
-Rolling Stones - Fool To Cry
-Rolling Stones - Gimme Shelter
-Rolling Stones - Honky Tonk Women
-Rolling Stones - I'm Free
-Rolling Stones - Lady Jane
-Rolling Stones - Nineteenth Nervous Breakdown
-Rolling Stones - Paint It Black
-Rolling Stones - Ruby Tuesday
-Rolling Stones - Satisfaction
-Rolling Stones - Start Me Up
-Rolling Stones - The Last Time
-Rolling Stones - Time Is On My Side
-Rolling Stones - Waiting On A Friend
-Rolling Stones - Wild Horses
-Rolling Stones - You Can't Always Get What You Want
 Ronan Keating - Way You Make Me Feel
 Ronan Keating - When You Say Nothing At All 2
 Ronan Keating - When You Say Nothing At All
@@ -3487,13 +3063,6 @@ Styx - Babe
 Styx - Boat On The River
 Styx - Sail Away
 Styx - Suite Madame Blue
-Supertramp - Bloody Well Right
-Supertramp - Breakfast In America
-Supertramp - Give A Little Bit
-Supertramp - It's Raining Again
-Supertramp - School
-Supertramp - Take The Long Way Home
-Supertramp - The Logical Song
 Supremes - Baby Love
 Supremes - I Hear A Symphony
 Supremes - Love Child

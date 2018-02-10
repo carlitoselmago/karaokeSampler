@@ -25,7 +25,7 @@ from PIL import Image
 class karaokesampler():
 	
 	#config
-	KinectMode=False
+	KinectMode=True
 	Vdevice = 0
 	synth = False
 	#end config
@@ -195,7 +195,7 @@ class karaokesampler():
 			mouth=self.midpoint(head,neck)
 			#radius=abs(int(head[0]-neck[0]))
 			radius=self.getdistance(head,neck)
-			radiusExtra=int(radius*4)
+			radius=int(radius*1.6) #padding for the head
 
 			screenProportion=[16,9]
 
@@ -497,7 +497,14 @@ class karaokesampler():
 						self.recordings.append([name,0])
 						filename = self.recordingsFolder + name
 						outputsink = aubio.sink(filename+".wav", samplerate)
-						cv2.imwrite(filename+".jpg",self.img)
+						#resize image
+						if self.KinectMode:
+							
+							imgRes=cv2.resize(self.img,(self.imgResizeSize[0], self.imgResizeSize[1]))
+						else:
+							imgRes=self.img
+						#imgRes=self.img.resize((self.imgResizeSize[0], self.imgResizeSize[1]), PIL.Image.ANTIALIAS)
+						cv2.imwrite(filename+".jpg",imgRes)
 					else:
 						#same pitch, recording
 						self.recordings[-1][1]+=1

@@ -2,7 +2,8 @@
 #import sys
 #reload(sys)
 #sys.setdefaultencoding('utf-8')
-
+import time, numpy, pygame.mixer, pygame.sndarray
+from scikits.samplerate import resample
 import cv2
 import time, datetime
 #from tools import midifile
@@ -34,12 +35,16 @@ class samplerPlayer():
 	blockLines=4
 	blockLineCounter=0
 	lineJumpCounter=0
+	blackListRecordings=[]
 
 	
 	
 	def __init__(self,windowName):
 		print ("sampler Player init")
-		self.secondaryDisplay=[1024,768]
+		self.sounds=[]
+		self.notes=[]
+		self.secondaryDisplay=[1680,1050]
+		self.moveUp=1050
 		fonts_path = "fonts"#os.path.join(os.path.dirname(os.path.dirname(__file__)), 'fonts')
 		print fonts_path
 		self.fonts=[ 
@@ -62,9 +67,11 @@ class samplerPlayer():
 		pygame.mixer.pre_init(44100, -16, 2, 2048)
 		pygame.mixer.init()
 		self.status="iddle"
+		print __name__
+		if __name__ != "__main__":
 
-		t = threading.Thread(target=self.showImage, args = ("showImage",)) #algo entre 0.1 y 0.8
-		t.start()
+			t = threading.Thread(target=self.showImage, args = ("showImage",)) #algo entre 0.1 y 0.8
+			t.start()
 		#pygame.init()
 			
 	def createBlackImage(self):
@@ -109,6 +116,32 @@ class samplerPlayer():
 		return notes[closestNoteIndex]
 
 	
+	def renewSampler(self,threadName):
+
+		tempNotes=[]
+		tempSounds=[]
+		tempImgs=[]
+		for file in glob.glob("recordings/*.wav"):
+			if file not in self.blackListRecordings:
+				a = pygame.mixer.Sound(file)
+				if a.get_length()>0.2:
+					#good sound
+					tempNotes.append(int(os.path.splitext(basename(file))[0].split("_")[0]))
+					tempSounds.append(a)
+					imagefile=file.replace("wav","jpg")
+					tempImgs.append( cv2.imread(imagefile))
+
+				else:
+					self.blackListRecordings.append(file)
+
+		self.notes=tempNotes
+		self.sounds=tempSounds
+		self.imgs=tempImgs
+
+		return ""
+		
+
+
 	def constructSamplerTrack(self,notesForSampler,totaltime,samplerNumber):
 		
 		preNotes=self.notes
@@ -161,8 +194,41 @@ class samplerPlayer():
 		self.loadSampler(samplerNumber)
 		self.loadImagesSampler(samplerNumber)
 
+	def calculateSemioctavesToPercent(self,origin,destination):
+		cents=(origin-destination)*100.0
+		percent=(1000000*pow(2,(cents/100/12)))/1000000
+
+		"""
+		s= 0.99994 
+		semitones=(origin-destination)
+		percent=semitones/12
+		#f2 = f1 * 2^( C / semitones )
+		"""
+		
+		return percent
+
 	def playSamplerNotewithDelay(self,message,delayTime):
+		
 		sleep(delayTime)
+		note=message.note
+
+		if note not in self.notes:
+			#create the note
+			chosenStartNote=random.choice(self.notes)
+			soundIndex=self.notes.index(chosenStartNote)
+			chosenStartSound=self.sounds[soundIndex]
+			snd_array = pygame.sndarray.array(chosenStartSound)
+			percent=self.calculateSemioctavesToPercent(chosenStartNote,note)
+
+			snd_resample = resample(snd_array,percent, "sinc_fastest").astype(snd_array.dtype)
+			# take the resampled array, make it an object and stop playing after 2 seconds.
+			snd_out = pygame.sndarray.make_sound(snd_resample)
+			#snd_out.play()
+			#self.notes
+			self.notes.append(note)
+			self.sounds.append(snd_out)
+		
+		#play or stop the note
 		soundIndex=self.notes.index(message.note)
 		if message.type=="note_off" or message.velocity==0:
 			#note off
@@ -171,8 +237,12 @@ class samplerPlayer():
 		else:
 			#note on
 			self.img=random.choice(self.imgs)
-			self.sounds[soundIndex].set_volume(message.velocity/127.0)
+			volume=(message.velocity/127.0)*1.5
+			if volume>1:
+				volume=1
+			self.sounds[soundIndex].set_volume(volume)
 			self.sounds[soundIndex].play()
+		return
 
 	def find_nearest(self,array,value): #returns index of nearest number in array
 		return min(range(len(array)), key=lambda i: abs(array[i]-value))
@@ -394,6 +464,10 @@ class samplerPlayer():
 			
 
 	def playSong(self,filename,songpath,samplerNumber,customText):
+		self.notes=[]
+		self.sounds=[]
+		renewRound=0
+		self.blackListRecordings=[]
 		self.lastLyrics=[]
 		self.lyricMessageCount=0
 		filename=filename.decode("utf-8")
@@ -408,16 +482,12 @@ class samplerPlayer():
 
 		
 	
-		
-		#self.m=midifile.midifile()
-		#print "SONG HAS ",mid.tracks," TRACKS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 		midfileTrackNumber,notesForSampler,mid=self.getTrackNumbers(mid)
 
-		#TODO: quitar dependencia de midifile.py
-		#samplerTrack=self.m.load_file((songpath).encode("latin1"),midfileTrackNumber) #TODO: atención esto seguramente dará error cuando cambie de canción
+	
 		
-		self.prepareSampler(str(samplerNumber))
-		self.constructSamplerTrack(notesForSampler,songDuration,str(samplerNumber))#max(m.kartimes))
+		#self.prepareSampler(str(samplerNumber))
+		#self.constructSamplerTrack(notesForSampler,songDuration,str(samplerNumber))#max(m.kartimes)) #!!!!!!!!!!!!!!
 
 		start=datetime.datetime.now()
 		
@@ -429,8 +499,6 @@ class samplerPlayer():
 		
 		playDelay=1.7
 		img=self.lastImage
-		#print mido.get_output_names()
-		#otherOutput=mido.open_output("loopMIDI Port 1 3") 
 		
 		self.status="ready"
 
@@ -459,21 +527,26 @@ class samplerPlayer():
 				nowNoteNames=[]
 
 				dt+=message.time
-
+				
 				#self.m.update_karaoke(dt)
 
 				if message.type=="note_on" or message.type=="note_off":
 					
 					if message.channel==15:#MidoTrackNumber:#midfileTrackNumber:
-						
-						t = threading.Thread(target=self.playSamplerNotewithDelay, args = (message,0.1)) #algo entre 0.1 y 0.8
-						t.start()
+						if len(self.notes)>0:
+							try:
+								t = threading.Thread(target=self.playSamplerNotewithDelay, args = (message,0.1)) #algo entre 0.1 y 0.8
+								t.start()
+							except:
+								pass
 						
 
 				
 				if not self.isLyricsMessage(message):
 					if message.type=="marker" or message.type=="note_on" or message.type=="note_off" or message.type=="sysex" or  message.type=="program_change" or message.type=="control_change" or message.type=="pitchwheel" or message.type=="sysex":
-			
+						if hasattr(message, 'velocity'):
+							
+							message.velocity=int(message.velocity/2)
 						output.send(message)
 				else:
 					if hasattr(message, 'text'):
@@ -490,6 +563,12 @@ class samplerPlayer():
 					for syl in sylabs:
 						self.lyricMessageCount+=1
 					"""
+			
+				if dt>20.0 and dt>renewRound:
+					renewRound=dt+10.0
+					print "sampler renewed!!"
+					r = threading.Thread(target=self.renewSampler, args = ("renewSampler",)) #algo entre 0.1 y 0.8
+					r.start()
 			
 
 			
@@ -691,7 +770,7 @@ class samplerPlayer():
 		
 		cv2.resizeWindow(self.windowName, self.secondaryDisplay[0], self.secondaryDisplay[1])
 		
-		#cv2.moveWindow(self.windowName,0,-780)
+		cv2.moveWindow(self.windowName,0,-self.moveUp)
 		running=True
 		
 		while running:
