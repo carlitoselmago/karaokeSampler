@@ -43,8 +43,8 @@ class samplerPlayer():
 		print ("sampler Player init")
 		self.sounds=[]
 		self.notes=[]
-		self.secondaryDisplay=[1680,1050]
-		self.moveUp=1050
+		self.secondaryDisplay=[1600,900]
+		self.moveUp=0#900
 		fonts_path = "fonts"#os.path.join(os.path.dirname(os.path.dirname(__file__)), 'fonts')
 		print fonts_path
 		self.fonts=[ 
@@ -70,7 +70,7 @@ class samplerPlayer():
 		print __name__
 		if __name__ != "__main__":
 
-			t = threading.Thread(target=self.showImage, args = ("showImage",)) #algo entre 0.1 y 0.8
+			t = threading.Thread(target=self.showImage, args = ("showImage",)) 
 			t.start()
 		#pygame.init()
 			
@@ -211,6 +211,12 @@ class samplerPlayer():
 		
 		sleep(delayTime)
 		note=message.note
+		
+		
+
+		if int(note)<60:
+			#add octaves
+			note=note+24
 
 		if note not in self.notes:
 			#create the note
@@ -229,7 +235,7 @@ class samplerPlayer():
 			self.sounds.append(snd_out)
 		
 		#play or stop the note
-		soundIndex=self.notes.index(message.note)
+		soundIndex=self.notes.index(note)
 		if message.type=="note_off" or message.velocity==0:
 			#note off
 			self.sounds[soundIndex].stop()
@@ -237,7 +243,7 @@ class samplerPlayer():
 		else:
 			#note on
 			self.img=random.choice(self.imgs)
-			volume=(message.velocity/127.0)*1.5
+			volume=(message.velocity/127.0)#*1.5
 			if volume>1:
 				volume=1
 			self.sounds[soundIndex].set_volume(volume)
@@ -484,10 +490,10 @@ class samplerPlayer():
 	
 		midfileTrackNumber,notesForSampler,mid=self.getTrackNumbers(mid)
 
-	
-		
-		#self.prepareSampler(str(samplerNumber))
-		#self.constructSamplerTrack(notesForSampler,songDuration,str(samplerNumber))#max(m.kartimes)) #!!!!!!!!!!!!!!
+		if samplerNumber:
+			print "USING RECORDED SAMPLER!!!"
+			self.prepareSampler(str(samplerNumber))
+			self.constructSamplerTrack(notesForSampler,songDuration,str(samplerNumber))#max(m.kartimes)) #!!!!!!!!!!!!!!
 
 		start=datetime.datetime.now()
 		
@@ -563,12 +569,12 @@ class samplerPlayer():
 					for syl in sylabs:
 						self.lyricMessageCount+=1
 					"""
-			
-				if dt>20.0 and dt>renewRound:
-					renewRound=dt+10.0
-					print "sampler renewed!!"
-					r = threading.Thread(target=self.renewSampler, args = ("renewSampler",)) #algo entre 0.1 y 0.8
-					r.start()
+				if not samplerNumber:
+					if dt>20.0 and dt>renewRound:
+						renewRound=dt+10.0
+						print "sampler renewed!!"
+						r = threading.Thread(target=self.renewSampler, args = ("renewSampler",)) #algo entre 0.1 y 0.8
+						r.start()
 			
 
 			
@@ -720,6 +726,7 @@ class samplerPlayer():
 		singed=(0,255,255)
 		toSing=(255,255,255)
 		color=singed
+		shadowcolor="black"
 		y0, dy = 50, 40
 		sylabCount=0
 		
@@ -746,6 +753,13 @@ class samplerPlayer():
 					#cordinates=((self.windowSize[0]-w)/2,cordinates[1])
 					
 					cordinates=(lineX,y)
+
+					#shadow
+					#pil_d.text((lineX-1, y), cleanSylab, font=self.fonts[0], fill=shadowcolor)
+					pil_d.text((lineX+1, y), cleanSylab, font=self.fonts[0], fill=shadowcolor)
+					#pil_d.text((lineX, y-1), cleanSylab, font=self.fonts[0], fill=shadowcolor)
+					pil_d.text((lineX, y+1), cleanSylab, font=self.fonts[0], fill=shadowcolor)
+
 					pil_d.text(cordinates,cleanSylab,color,font=self.fonts[0])
 					imgCtext = np.array(pil_im)
 					lineX+=w

@@ -25,7 +25,7 @@ from PIL import Image
 class karaokesampler():
 	
 	#config
-	KinectMode=True
+	KinectMode=False
 	Vdevice = 0
 	synth = False
 	#end config
@@ -275,8 +275,8 @@ class karaokesampler():
 
 	def startVision(self,name):
 
-		cv2.namedWindow(self.windowName,cv2.WINDOW_NORMAL)
-		cv2.resizeWindow(self.windowName,self.windowSize[0],self.windowSize[1])
+		#cv2.namedWindow(self.windowName,cv2.WINDOW_NORMAL)
+		#cv2.resizeWindow(self.windowName,self.windowSize[0],self.windowSize[1])
 
 		#print "START VISION THREAD!!"
 		if self.KinectMode:
@@ -376,7 +376,7 @@ class karaokesampler():
 			self.img=img
 			try:
 				pass
-				cv2.imshow(self.windowName, img)
+				#cv2.imshow(self.windowName, img)
 			except:
 				pass
 			if cv2.waitKey(100) == 27:
