@@ -79,6 +79,7 @@ body{
 }
 
 #samplerlist{
+    display:none;
 	float:left;
 	width: 40%;
 	overflow-y: scroll;
@@ -87,8 +88,15 @@ body{
 	    margin-left: 40px;
 	    cursor: pointer;
 }
+#singerlist{
+    width: 40%;
+    overflow-y: scroll;
+    height: calc(100vh - 213px);
+    background-color: white;
+        margin-left: 40px;
+}
 .control{
-	    float: left;
+    float: left;
     padding: 12px;
     border: 1px solid white;
     color: white;
@@ -97,7 +105,22 @@ body{
     margin-bottom: 15px;
     cursor: pointer;
 }
+.control.important{
+    background-color:black;
+    color:white;
+}
 .control:hover{
 	background-color: white;
 	color:black;
+}
+.singer{
+    font-size: 12px;
+    border-bottom: solid 1px;
+    padding: 17px 13px;
+}
+.singer:nth-of-type(1){
+    background-color:yellow;
+}
+#controlssingers{
+    height: 90px;
 }

@@ -8,6 +8,13 @@ $( document ).ready(function() {
 
  	loadKarSongs();
  	loadSamplers();
+ 	loadSingers();
+ 	//setInterval(loadSingers, 10000);
+ 	
+ 	$( function() {
+   	 	$( ".sortable" ).sortable();
+   		 $( ".sortable" ).disableSelection();
+  	} );
 
  	$('#songlist').on('click', '.song', function(){
     	var songName=$(this).text();
@@ -57,6 +64,49 @@ $( document ).ready(function() {
 
 		
 	});
+
+	$('#controlssingers').on('click', '#nextSinger', function(){
+		var url='http://htmlfiesta.com/karaoke/deletesinger.php';
+		$.ajax({
+			    url:url,
+			    method:"GET",
+			    data:{"singerid":$(".singer").first().attr("singerid")},
+			    success: function(data) { 
+
+			    	$("#customtext").val($(".singer").first().attr("singer"));
+			    	$(".song#"+$(".singer").first().attr("songid")).trigger("click");
+
+			    	//delete
+			    	$(".singer").first().remove();
+			    }
+			});
+		
+	});
+
+	$('#controlssingers').on('click', '#updatesingers', function(){
+			loadSingers();
+	});
+	$('#controlssingers').on('click', '#sendsongs', function(){
+		var songlist=[];
+		$( "#songlist li" ).each(function( index ) {
+			songlist.push({"songid":$(this).attr("id"),"title":$(this).text()});
+		});
+		var url='http://htmlfiesta.com/karaoke/updatesonglist.php';
+		$.ajax(url, {
+		    data : JSON.stringify(songlist),
+		    contentType : 'application/json',
+		    type : 'POST',
+		    success: function (data) {
+		    	console.log(data);
+        		alert("Updated songs"); 
+        	}
+		});
+
+		console.log(songlist);
+	});
+
+
+
 
 	$('#controls').on('click', '#play', function(){
 		playSong();
@@ -159,4 +209,18 @@ function loadSamplers(){
  });
  
 
+}
+
+function loadSingers(){
+	var url="http://htmlfiesta.com/karaoke/listsingers.php";
+	$.getJSON( url, function( data ) {
+	  //var items = [];
+	  $("#singerlist").html("");
+	  $.each( data, function( key, val ) {
+	  	 var songname=$(".song#"+val["songid"]).text();
+	   $("#singerlist").append('<div singerid="'+val["singerid"]+'" songid="'+val["songid"]+'" singer="'+val["name"]+'" class="singer">'+val["name"]+' - '+songname+'</div>');
+	  });
+   });
+ 
+ 
 }

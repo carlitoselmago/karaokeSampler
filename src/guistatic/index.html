@@ -2,6 +2,7 @@
    <meta charset="UTF-8">
     <link rel="stylesheet" href="styles.css">
     <script src="jquery-3.2.1.min.js"></script>
+    <script src="jquery-ui/jquery-ui.js"></script>
     <script charset="UTF-8" src="script.js"></script>
 </head>
 <body>
@@ -12,7 +13,7 @@
 
    <div id="selected">
    	<div id="selsong" class="selmod" filename="KARsongs/A-B/A-B/A Ha - Take On Me.kar" path="">Take on me</div>
-   	<div id="selsampler" class="selmod" samplerName="30">30</div>
+   	<div id="selsampler" class="selmod" samplerName=""></div>
    	<input type="text" id="customtext" class="selmod" placeholder="custom text" value="carlos"/>
    	<div class="clearfix"></div>
    </div>
@@ -26,11 +27,20 @@
    	<div class="clearfix"></div>
    </div>
 
+   <div id="controlssingers">
+        <div class="control" id="sendsongs">Send songs</div>
+        <div class="control" id="updatesingers">Update singers</div>
+        <div class="control important" id="nextSinger">Set NEXT singer</div>
+   </div>
+
    <div id="songlist">
    		
    </div>
    <div id="samplerlist">
    		
+   </div>
+   <div id="singerlist" class="sortable">
+      
    </div>
 
 </body>

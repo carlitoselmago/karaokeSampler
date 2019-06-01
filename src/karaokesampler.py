@@ -15,9 +15,12 @@ import shutil
 import os
 import pygame
 from pydub import AudioSegment
-from pykinect2 import PyKinectV2
-from pykinect2.PyKinectV2 import *
-from pykinect2 import PyKinectRuntime
+try:
+	from pykinect2 import PyKinectV2
+	from pykinect2.PyKinectV2 import *
+	from pykinect2 import PyKinectRuntime
+except:
+	print("Could not load kinect runtime")
 import math
 import PIL
 from PIL import Image
@@ -26,7 +29,7 @@ class karaokesampler():
 	
 	#config
 	KinectMode=False
-	Vdevice = 0
+	Vdevice = 1 #default 0
 	synth = False
 	#end config
 	windowName = "recorder"
@@ -65,6 +68,7 @@ class karaokesampler():
 	#event = threading.Event()
 	
 	def __init__(self):
+		
 		
 		print("init karaokesampler")
 
@@ -597,7 +601,12 @@ class karaokesampler():
 			selected,selectedFiles=self.findFarestNoteWithLongestDuration(recordings)
 
 			#prepare sampler folder
-			numOfSamplers=len(os.walk(self.samplersFolder).next()[1])+1
+			#
+			try:
+				numOfSamplers=len(os.walk(self.samplersFolder).next()[1])+1 #python 2.7
+				#numOfSamplers=next(len(os.walk(self.samplersFolder))[1])+1
+			except:
+				numOfSamplers=0
 			newsamplerDir=self.samplersFolder+str(numOfSamplers)
 
 			#createfolder
@@ -624,7 +633,7 @@ class karaokesampler():
 					img2=img.resize((self.imgResizeSize[0], self.imgResizeSize[1]), PIL.Image.ANTIALIAS)
 					img2.save(destination)
 				except:
-					print "skipping ",source
+					print ("skipping ",source)
 
 				
 				#os.rename(source,destination)
