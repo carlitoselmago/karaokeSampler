@@ -540,7 +540,7 @@ class samplerPlayer():
 					if message.channel==15:#MidoTrackNumber:#midfileTrackNumber:
 						if len(self.notes)>0:
 							try:
-								t = threading.Thread(target=self.playSamplerNotewithDelay, args = (message,0.1)) #algo entre 0.1 y 0.8
+								t = threading.Thread(target=self.playSamplerNotewithDelay, args = (message,0.12)) #algo entre 0.1 y 0.8
 								t.start()
 							except:
 								pass

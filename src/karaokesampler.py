@@ -28,7 +28,7 @@ from PIL import Image
 class karaokesampler():
 	
 	#config
-	KinectMode=False
+	KinectMode=True
 	Vdevice = 1
 	synth = False
 	showScreenRecorder=False
@@ -269,7 +269,7 @@ class karaokesampler():
 			return []
 
 	def getSubRegion(self,img,cordinates):
-		img = img[cordinates[1] :cordinates[1] +  cordinates[3] , cordinates[0] : cordinates[0] + cordinates[2]]
+		img = img[int(cordinates[1]) :int(cordinates[1]) +  int(cordinates[3]) , int(cordinates[0]) : int(cordinates[0]) + int(cordinates[2])]
 		
 		return img
 	
