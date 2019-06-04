@@ -3,8 +3,10 @@
 #reload(sys)
 #sys.setdefaultencoding('utf-8')
 import time, numpy, pygame.mixer, pygame.sndarray
-#from scikits.samplerate import resample
-from samplerate import resample
+try:
+	from scikits.samplerate import resample
+except:
+	from samplerate import resample
 import cv2
 import time, datetime
 #from tools import midifile
@@ -38,16 +40,19 @@ class samplerPlayer():
 	lineJumpCounter=0
 	blackListRecordings=[]
 
+	minNote=30
+	minNoteUp=24
 	
 	
 	def __init__(self,windowName):
 		print ("sampler Player init")
 		self.sounds=[]
 		self.notes=[]
-		self.secondaryDisplay=[1600,900]
-		self.moveUp=0#900
+		self.secondaryDisplay=[1680,1050]
+		self.moveUp=0
+		#self.moveUp=1050
 		fonts_path = "fonts"#os.path.join(os.path.dirname(os.path.dirname(__file__)), 'fonts')
-		#print fonts_path
+		
 		self.fonts=[ 
 		ImageFont.truetype(os.path.join(fonts_path, 'garamondbold.ttf'), 32), 
 		ImageFont.truetype(os.path.join(fonts_path, 'garamond.ttf'), 32),
@@ -57,7 +62,7 @@ class samplerPlayer():
 		self.customText=""
 		
 		self.resolution=6 #sampler score resolution, the bigger the more precise
-		pygame.mixer.pre_init(44100, -16, 1, 512)
+		#pygame.mixer.pre_init(44100, -16, 1, 512)
 		self.windowName=windowName
 		self.lastImage=self.createBlackImage()
 		self.img=self.lastImage
@@ -68,10 +73,10 @@ class samplerPlayer():
 		pygame.mixer.pre_init(44100, -16, 2, 2048)
 		pygame.mixer.init()
 		self.status="iddle"
-		#print __name__
+		
 		if __name__ != "__main__":
 
-			t = threading.Thread(target=self.showImage, args = ("showImage",)) 
+			t = threading.Thread(target=self.showImage, args = ("showImage",)) #algo entre 0.1 y 0.8
 			t.start()
 		#pygame.init()
 			
@@ -88,9 +93,7 @@ class samplerPlayer():
 		for file in glob.glob("samplers/"+samplerNumber+"/*.wav"):
 			self.sounds.append(pygame.mixer.Sound(file))#AudioSegment.from_file(file))
 			self.notes.append(int(os.path.splitext(basename(file))[0].split("_")[0]))
-			
-		#print self.notes
-		#print self.sounds
+
 		
 	
 	def loadImagesSampler(self,samplerNumber):
@@ -99,7 +102,7 @@ class samplerPlayer():
 			self.imgs.append( cv2.imread(file))
 	
 	def findClosestNote(self,notes,note):
-		#print notes,note,"BAAAA"
+
 		closestNoteIndex=0
 		closestDistance=999999999
 		closesNote=0
@@ -125,16 +128,18 @@ class samplerPlayer():
 		for file in glob.glob("recordings/*.wav"):
 			if file not in self.blackListRecordings:
 				file=file.replace("\\","/")
-				print ("file",file)
-				a = pygame.mixer.Sound(file)
-				if a.get_length()>0.2:
-					#good sound
-					tempNotes.append(int(os.path.splitext(basename(file))[0].split("_")[0]))
-					tempSounds.append(a)
-					imagefile=file.replace("wav","jpg")
-					tempImgs.append( cv2.imread(imagefile))
+				try:
+					a = pygame.mixer.Sound(file)
+					if a.get_length()>0.2:
+						#good sound
+						tempNotes.append(int(os.path.splitext(basename(file))[0].split("_")[0]))
+						tempSounds.append(a)
+						imagefile=file.replace("wav","jpg")
+						tempImgs.append( cv2.imread(imagefile))
 
-				else:
+					else:
+						self.blackListRecordings.append(file)
+				except:
 					self.blackListRecordings.append(file)
 
 		self.notes=tempNotes
@@ -148,14 +153,15 @@ class samplerPlayer():
 	def constructSamplerTrack(self,notesForSampler,totaltime,samplerNumber):
 		
 		preNotes=self.notes
-		
-		#print (notesForSampler,"NOTES REQUIRED")
-		#print (preNotes,"ALL NOTES AT START")
 
 		for n in notesForSampler: #parse all notes
 			
 			if int(n) not in self.notes:
-				#print "CREATING NOTES"
+				
+				if int(n)<self.minNote:
+					n=int(n)+self.minNoteUp
+				
+
 				closestNote=random.choice(preNotes)
 				#closestNote=self.findClosestNote(preNotes,n)
 				closestNoteFilename="samplers/"+samplerNumber+"/"+str(closestNote)+".wav"
@@ -165,7 +171,6 @@ class samplerPlayer():
 				self.notes.append(int(n))
 				self.sounds.append(pygame.mixer.Sound("samplers/"+samplerNumber+"/"+str(n)+".wav"))
 
-		#print(self.notes,"NOTES AFTER PROCESSED")
 		return True
 	
 	def soxPitch(self,inputFile,destinationFile,originPitch,destinationPitch):
@@ -177,8 +182,7 @@ class samplerPlayer():
 		return True#process.returncode
   
 	def getStepIndex(self,dt,totalSteps,totalTime):
-		
-		#print "dt,totalSteps,totalTime",dt,totalSteps,totalTime
+
 		return int((totalSteps*dt)/totalTime)
 	
 	def dump(self,obj):
@@ -214,12 +218,12 @@ class samplerPlayer():
 		
 		sleep(delayTime)
 		note=message.note
-		
-		
-
-		if int(note)<60:
-			#add octaves
-			note=note+24
+	
+		if note<self.minNote:
+			print("changing pitch",note)
+			note=int(note)+self.minNoteUp
+			print("resulting note",note)
+		#print ("note",note)
 
 		if note not in self.notes:
 			#create the note
@@ -246,7 +250,7 @@ class samplerPlayer():
 		else:
 			#note on
 			self.img=random.choice(self.imgs)
-			volume=(message.velocity/127.0)#*1.5
+			volume=(message.velocity/127.0)*1.5
 			if volume>1:
 				volume=1
 			self.sounds[soundIndex].set_volume(volume)
@@ -343,9 +347,7 @@ class samplerPlayer():
 
 		trackWithMostLyrics=lyricsAlltracks[mostWordsIndex]
 
-		#print "lyricsAlltracks",lyricsAlltracks
-
-		#print "trackWithMostLyrics",trackWithMostLyrics
+		
 
 		"""
 		print tracks
@@ -402,7 +404,6 @@ class samplerPlayer():
 
 		#construct a list of all notes that will be required during playback
 		for i,message in enumerate(midiSong.tracks[midfileTrackNumber]):
-			#print dir(midiSong.tracks[midfileTrackNumber][i])
 
 			if hasattr(message, 'channel'):
 				midiSong.tracks[midfileTrackNumber][i].channel=15
@@ -479,7 +480,7 @@ class samplerPlayer():
 		self.blackListRecordings=[]
 		self.lastLyrics=[]
 		self.lyricMessageCount=0
-		#filename=filename.decode("utf-8") only for python 2.7
+		#filename=filename.decode("utf-8")
 		#print filename,"filename"
 		self.status="loading"
 		self.customText=customText
@@ -489,14 +490,10 @@ class samplerPlayer():
 		mid = MidiFile(songpath)
 		songDuration=mid.length
 
-		
-	
 		midfileTrackNumber,notesForSampler,mid=self.getTrackNumbers(mid)
 
-		if samplerNumber:
-			#print "USING RECORDED SAMPLER!!!"
-			self.prepareSampler(str(samplerNumber))
-			self.constructSamplerTrack(notesForSampler,songDuration,str(samplerNumber))#max(m.kartimes)) #!!!!!!!!!!!!!!
+		#self.prepareSampler(str(samplerNumber))
+		#self.constructSamplerTrack(notesForSampler,songDuration,str(samplerNumber))#max(m.kartimes)) #!!!!!!!!!!!!!!
 
 		start=datetime.datetime.now()
 		
@@ -513,7 +510,6 @@ class samplerPlayer():
 
 		while self.status=="ready":
 			sleep(1)
-		
 		
 		dt=0.0
 
@@ -572,12 +568,12 @@ class samplerPlayer():
 					for syl in sylabs:
 						self.lyricMessageCount+=1
 					"""
-				if not samplerNumber:
-					if dt>20.0 and dt>renewRound:
-						renewRound=dt+10.0
-						#print "sampler renewed!!"
-						r = threading.Thread(target=self.renewSampler, args = ("renewSampler",)) #algo entre 0.1 y 0.8
-						r.start()
+			
+				if dt>20.0 and dt>renewRound:
+					renewRound=dt+10.0
+					#print "sampler renewed!!"
+					r = threading.Thread(target=self.renewSampler, args = ("renewSampler",)) #algo entre 0.1 y 0.8
+					r.start()
 			
 
 			
@@ -780,6 +776,8 @@ class samplerPlayer():
 
 
 
+
+
 	def showImage(self,threadName):
 		cv2.namedWindow(self.windowName, cv2.WND_PROP_FULLSCREEN)          
 		cv2.setWindowProperty(self.windowName, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
@@ -802,9 +800,8 @@ class samplerPlayer():
 				#self.songName.encode("ascii","ignore")
 
 				imgCtext=self.putTextPIL(imgCtext,self.songName,(10,190),1,True,(0,255,255))
-				#imgCtext=self.putTextPIL(imgCtext,"CANTA: "+self.customText.decode("utf-8").upper(),(10,230),2,True) # python 2.7x
+				#imgCtext=self.putTextPIL(imgCtext,"CANTA: "+self.customText.decode("utf-8").upper(),(10,230),2,True)
 				imgCtext=self.putTextPIL(imgCtext,"CANTA: "+self.customText.upper(),(10,230),2,True)
-
 				#cv2.putText(imgCtext, ord(u"É"), (10,40), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255),1)
 				#cv2.putText(imgCtext,"CANTA: "+self.customText, (10,60), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255),1)
 				

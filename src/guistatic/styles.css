@@ -124,3 +124,8 @@ body{
 #controlssingers{
     height: 90px;
 }
+.deletesinger{
+    float: right;
+font-weight: bold;
+cursor: pointer;
+}

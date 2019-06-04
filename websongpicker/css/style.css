@@ -1,0 +1,96 @@
+html{
+  min-height: 100%;
+}
+body{
+  background-color:black;
+  color:white;
+font-family: 'Source Code Pro', monospace;
+  text-align: center;
+  height: 100vh;
+
+  padding-top: 15px;
+}
+body.fuego{
+  background-image: url(http://htmlfiesta.com/site/assets/files/1374/shutterstock_119642269-lr-1.1200x700.jpg);
+
+  background-size:cover;
+  background-position: center;
+}
+
+#songlist{
+  height: 65vh;
+  overflow-y: scroll;
+  margin-bottom: 20px;
+}
+.song{
+  font-size: 21px;
+border-bottom: solid 1px;
+
+cursor:pointer;
+padding: 6px;
+}
+.btn,input.form-control {
+  background-color:transparent;
+  border:solid 1px white;
+  border-radius:0px;
+  color:white;
+      font-size: 26px;
+      width: 100%;
+}
+.song.selected{
+  background-color: white;
+  color:black;
+}
+#KO,#OK{
+  display: none;
+  height: 93vh;
+}
+.col-md-12,.row{
+  height: 100vh;
+  width: 100%;
+}
+.btn{
+  position: absolute;
+  bottom: 20px;
+right: 20px;
+left: 20px;
+width: 88vw;
+}
+.center{
+  height: 82vh;
+}
+.vert{
+  position: relative;
+ top: 50%;
+ transform: translateY(-50%);
+}
+.hidden{
+display: none;
+}
+.custom p{
+  font-weight: 900;
+  font-size:40px;
+  line-height: 32px;
+}
+.custom h3{
+    font-size:30px;
+    font-weight: 100;
+    color: yellow;
+}
+.yourname {
+  display: none;
+}
+#submit{
+background-color:pink;
+border:none;
+color:black;
+}
+#searchbar{
+margin-bottom: 10px;
+}
+.stop{
+  padding: 40px;
+}
+.stop h2{
+line-height: 47px;
+}

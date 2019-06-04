@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*- 
 import sys
+#reload(sys)
+#sys.setdefaultencoding('utf-8')
 import os
 import glob
 
@@ -9,8 +11,8 @@ class GUIutils():
 	samplerFolder="samplers"
 
 	def __init__(self):
-		#print "init GUI utils"
 		pass
+		#print ("init GUI utils")
 
 	def getSongList(self):
 		songlist=[]
@@ -41,7 +43,4 @@ class GUIutils():
 		return samplerlist
 
 	def getFirstImageInFolder(self,folderURI):
-		firstimage=glob.glob(folderURI+"/*.jpg")[0]
-		firstimage=firstimage.replace("\\","/")
-		print("firstimage",firstimage)
-		return firstimage
+		return glob.glob(folderURI+"/*.jpg")[0]

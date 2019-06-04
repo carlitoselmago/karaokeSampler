@@ -105,6 +105,19 @@ $( document ).ready(function() {
 		console.log(songlist);
 	});
 
+	$('#singerlist').on('click', '.deletesinger', function(){
+		var singerid=$(this).closest(".singer").attr("singerid");
+		var url='http://htmlfiesta.com/karaoke/deletesinger.php';
+		$.ajax({
+			    url:url,
+			    method:"GET",
+			    data:{"singerid":singerid},
+			    success: function(data) { 
+			    	//delete
+			    	$(".singer[singerid="+singerid+"]").remove();
+			    }
+			});
+	});
 
 
 
@@ -218,7 +231,7 @@ function loadSingers(){
 	  $("#singerlist").html("");
 	  $.each( data, function( key, val ) {
 	  	 var songname=$(".song#"+val["songid"]).text();
-	   $("#singerlist").append('<div singerid="'+val["singerid"]+'" songid="'+val["songid"]+'" singer="'+val["name"]+'" class="singer">'+val["name"]+' - '+songname+'</div>');
+	   $("#singerlist").append('<div singerid="'+val["singerid"]+'" songid="'+val["songid"]+'" singer="'+val["name"]+'" class="singer">'+val["name"]+' - '+songname+'<span class="deletesinger">X</span></div>');
 	  });
    });
  

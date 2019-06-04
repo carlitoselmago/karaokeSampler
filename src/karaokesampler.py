@@ -20,7 +20,7 @@ try:
 	from pykinect2.PyKinectV2 import *
 	from pykinect2 import PyKinectRuntime
 except:
-	print("Could not load kinect runtime")
+	pass
 import math
 import PIL
 from PIL import Image
@@ -29,8 +29,9 @@ class karaokesampler():
 	
 	#config
 	KinectMode=False
-	Vdevice = 1 #default 0
+	Vdevice = 1
 	synth = False
+	showScreenRecorder=False
 	#end config
 	windowName = "recorder"
 	selectLimit=8 #number of audio samples to collect after recording
@@ -68,7 +69,6 @@ class karaokesampler():
 	#event = threading.Event()
 	
 	def __init__(self):
-		
 		
 		print("init karaokesampler")
 
@@ -278,9 +278,9 @@ class karaokesampler():
 		return resized
 
 	def startVision(self,name):
-
-		#cv2.namedWindow(self.windowName,cv2.WINDOW_NORMAL)
-		#cv2.resizeWindow(self.windowName,self.windowSize[0],self.windowSize[1])
+		if self.showScreenRecorder:
+			cv2.namedWindow(self.windowName,cv2.WINDOW_NORMAL)
+			cv2.resizeWindow(self.windowName,self.windowSize[0],self.windowSize[1])
 
 		#print "START VISION THREAD!!"
 		if self.KinectMode:
@@ -379,8 +379,8 @@ class karaokesampler():
 							print ("could not print pitch line")
 			self.img=img
 			try:
-				pass
-				#cv2.imshow(self.windowName, img)
+				if self.showScreenRecorder:
+					cv2.imshow(self.windowName, img)
 			except:
 				pass
 			if cv2.waitKey(100) == 27:
@@ -481,8 +481,6 @@ class karaokesampler():
 			volume=round(float("{:6f}".format(volume)),4)
 			volume=self.remap(volume, 0.0,0.8, 0.0, 1.0)
 			self.volume=volume
-			
-			
    
 			confidence=1
   
@@ -576,7 +574,7 @@ class karaokesampler():
 					duration=rec[1]
 					noteDistance=abs(baseNote-note)
 					score= noteDistance*(duration/5)
-					print ("score",score)
+					#print ("score",score)
 					if score>bestScore:
 						bestScore=score
 						bestIndex=i
@@ -601,12 +599,13 @@ class karaokesampler():
 			selected,selectedFiles=self.findFarestNoteWithLongestDuration(recordings)
 
 			#prepare sampler folder
-			#
-			try:
-				numOfSamplers=len(os.walk(self.samplersFolder).next()[1])+1 #python 2.7
-				#numOfSamplers=next(len(os.walk(self.samplersFolder))[1])+1
-			except:
-				numOfSamplers=0
+			#numOfSamplers=len(os.walk(self.samplersFolder).next()[1])+1
+
+			#numOfSamplers=len(list(os.walk(self.samplersFolder)).next()[1])+1
+			#numOfSamplers=next(len(list(os.walk(self.samplersFolder)))[1])+1
+
+			numOfSamplers=(len(next(os.walk(self.samplersFolder))[1]))+1
+			print("numOfSamplers",numOfSamplers)
 			newsamplerDir=self.samplersFolder+str(numOfSamplers)
 
 			#createfolder

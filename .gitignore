@@ -5,4 +5,6 @@
 /src/samplers/*
 /src/KARsongs
 /src/guistatic/samplers
-/src/Thumbs.db
+
+/websongpicker/songs.json
+/websongpicker/singers/*
