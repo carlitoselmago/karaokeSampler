@@ -1,7 +1,7 @@
 <?php
 if (isset($_GET["songid"])){
   $songid=$_GET["songid"];
-  $name=$_GET["name"];
+  $name=urldecode ($_GET["name"]);
   $fecha = new DateTime();
 $ts= $fecha->getTimestamp();
   $fichero="singers/".$ts.".txt";

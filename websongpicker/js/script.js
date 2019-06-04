@@ -39,7 +39,7 @@ $(document).ready(function() {
 
 
   function saveSinger(songid, name) {
-    $("#dummy").load("savesinger.php?songid=" + songid + "&name=" + name, function(response, status, xhr) {
+    $("#dummy").load("savesinger.php?songid=" + songid + "&name=" + encodeURI(name), function(response, status, xhr) {
       console.log(response);
         if (response == "1") {
           return true;
@@ -65,6 +65,7 @@ $(document).ready(function() {
     $("body").addClass("fuego");
     var song = $(".song.selected").attr("songid");
     var name = $("#nombre").val();
+    //alert(name);
     console.log(song);
     console.log(name);
 
