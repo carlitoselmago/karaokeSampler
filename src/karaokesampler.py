@@ -15,9 +15,6 @@ import shutil
 import os
 import pygame
 from pydub import AudioSegment
-from pykinect2 import PyKinectV2
-from pykinect2.PyKinectV2 import *
-from pykinect2 import PyKinectRuntime
 try:
 	from pykinect2 import PyKinectV2
 	from pykinect2.PyKinectV2 import *
@@ -31,8 +28,8 @@ from PIL import Image
 class karaokesampler():
 
 	#config
-	KinectMode=True
-	Vdevice = 1
+	KinectMode=False
+	Vdevice = 0
 	synth = False
 	showScreenRecorder=False
 	#end config
@@ -42,7 +39,7 @@ class karaokesampler():
 	recordingsFolder = "recordings/"
 	samplersFolder="samplers/"
 
-	lowCut = 0.0174 #volumen
+	lowCut = 0.0100#0.0174 #volumen
 	lowToneCut=20 #pitch
 	capW = 0
 	capH = 0
@@ -74,12 +71,6 @@ class karaokesampler():
 	def __init__(self):
 
 		print("init karaokesampler")
-
-		if not os.path.exists(self.recordingsFolder):
-			os.mkdir(self.recordingsFolder)
-
-		if not os.path.exists(self.samplersFolder):
-			os.mkdir(self.samplersFolder)
 
 		self.windowSize=[1920,1080]
 		self.imgResizeSize=[800,450]
@@ -230,48 +221,7 @@ class karaokesampler():
 
 
 			ROI=[x,y,width,height]
-			#ROI=[mouth[0]-(radius*2), mouth[1]-radius, int(radius*2)+mouth[0]-radius, int(radius*2)+mouth[1]-radius]
-			#ROI=[mouth[0]-300,mouth[1]-300,600,300]
 
-		"""
-		if mouth:
-			#print(mouth)
-			#print(radius)
-			radius=self.getdistance(head,neck)
-			radiusExtra=int(radius*2)
-			cv2.circle(frame,mouth, radius, (255,0,255), 2)
-		"""
-
-		#lefthand=self.getJointPosition(joints, jointPoints, PyKinectV2.JointType_HandLeft)
-		#righthand=self.getJointPosition(joints, jointPoints, PyKinectV2.JointType_HandRight)
-		"""
-		if lefthand and mouth:
-			cv2.circle(frame,lefthand, radius, (255,0,0), 2)
-			if self.getdistance(lefthand,mouth)<(radius):
-				#hand on mouth
-				handonmouth[index]=delaytime
-
-		if righthand and mouth:
-			cv2.circle(frame,righthand, radius, (0,0,255), 2)
-			if self.getdistance(righthand,mouth)<(radius):
-				#hand on mouth
-				handonmouth[index]=delaytime
-
-
-		if handonmouth[index]>0:
-			cv2.circle(frame,mouth, int(radius/2), (255,255,255), 8)
-			#case hand disapears (bug)
-			if not lefthand or not righthand:
-				handonmouth[index]=delaytime
-
-
-			ROI=[mouth[0]-radius, mouth[1]-radius, int(radius*2), int(radius*2)]
-
-
-		print handonmouth
-		if handonmouth[index]>0:
-			handonmouth[index]-=1
-		"""
 		if ROI:
 			return ROI
 		else:

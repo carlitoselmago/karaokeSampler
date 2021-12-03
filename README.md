@@ -19,6 +19,6 @@ https://www.microsoft.com/en-us/download/confirmation.aspx?id=44561
 
 ##Songs
 This software works with .kar files wich are like a matroska file for karaoke (.mid + .txt combined)
-You can find them in some abandonware sites
+You can find them in some abandonware sites like http://www.vanbasco.com/
 
 Create a folder named "scr/KARsongs/" and drop them there, the code will traverse subfolders inside that folder

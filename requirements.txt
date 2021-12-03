@@ -1,4 +1,4 @@
-opecv #conda install -c conda-forge opencv
+opencv==3.3.1 #conda install -c conda-forge opencv==3.3.1
 pillow #conda install -c anaconda pillow
 aubio #conda install -c conda-forge aubio
 pyaudio #conda install -c anaconda pyaudio

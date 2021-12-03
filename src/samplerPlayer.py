@@ -48,8 +48,9 @@ class samplerPlayer():
 		print ("sampler Player init")
 		self.sounds=[]
 		self.notes=[]
-		self.secondaryDisplay=[1680,1050]
-		self.moveUp=0
+		self.secondaryDisplay=[1024,768]
+		self.moveUp=768
+		self.moveLeft=20
 		#self.moveUp=1050
 		fonts_path = "fonts"#os.path.join(os.path.dirname(os.path.dirname(__file__)), 'fonts')
 
@@ -57,7 +58,7 @@ class samplerPlayer():
 		ImageFont.truetype(os.path.join(fonts_path, 'garamondbold.ttf'), 32),
 		ImageFont.truetype(os.path.join(fonts_path, 'garamond.ttf'), 32),
 		ImageFont.truetype(os.path.join(fonts_path, 'garamondbold.ttf'), 32)]
-		self.windowSize=[800,450]
+		self.windowSize=[800,450]#[800,450]
 		self.percentageOfmessagesForLeadTrack=5.9
 		self.customText=""
 
@@ -474,7 +475,6 @@ class samplerPlayer():
 
 
 	def playSong(self,filename,songpath,samplerNumber,customText):
-		print("PLAY SONG:",filename)
 		self.notes=[]
 		self.sounds=[]
 		renewRound=0
@@ -507,11 +507,7 @@ class samplerPlayer():
 		playDelay=1.7
 		img=self.lastImage
 
-
 		self.status="ready"
-
-		if (customText=="development"):
-			self.status="iddle"
 
 		while self.status=="ready":
 			sleep(1)
@@ -586,7 +582,6 @@ class samplerPlayer():
 		return True
 
 	def putTextPIL(self,img,text,cordinates,font=0,centered=False,color=(255,255,255)):
-		#print("puttextpil...")
 		pil_im = Image.fromarray(img)
 		pil_d = ImageDraw.Draw(pil_im)
 		if centered:
@@ -611,7 +606,7 @@ class samplerPlayer():
 				return False
 
 	def printLyrics(self,imgCtext):
-		print("printLyrics")
+
 		#self.lyricMessageCount
 		#self.lyrics
 		#print self.lyrics[self.lyricMessageCount]
@@ -786,15 +781,13 @@ class samplerPlayer():
 
 
 	def showImage(self,threadName):
-		"""
-		print("show Image......")
 		cv2.namedWindow(self.windowName, cv2.WND_PROP_FULLSCREEN)
 		cv2.setWindowProperty(self.windowName, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 		cv2.imshow(self.windowName,self.img)
 
 		cv2.resizeWindow(self.windowName, self.secondaryDisplay[0], self.secondaryDisplay[1])
 
-		cv2.moveWindow(self.windowName,0,-self.moveUp)
+		cv2.moveWindow(self.windowName,self.moveLeft,-self.moveUp)
 		running=True
 
 		while running:
@@ -830,7 +823,8 @@ class samplerPlayer():
 
 			self.opencvReady=True
 		cv2.destroyAllWindows()
-		"""
+
+
 
 	def speedx(self,sound_array, factor):
 		""" Multiplies the sound's speed by some `factor` """
@@ -896,4 +890,4 @@ if __name__ == "__main__":
 	#K.playSong("bellabestia","bellabestia.kar",20,"carlos")
 	#K.playSong("bellabestia.kar",12,"custom text ñ here")
 	#K.playSong("toxic","KARsongs/A-B/A-B/Britney Spears - Toxic.kar",20,"custom text here ñññ Á")
-	K.playSong("mamma mia","KARsongs/A-B/A-B/Abba - Mamma Mia.kar",2,"development")
+	K.playSong("mamma mia","KARsongs/A-B/A-B/Abba - Mamma Mia.kar",20,"development")
