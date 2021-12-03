@@ -2,6 +2,15 @@
 
 http://htmlfiesta.com/xtreme/karaoke-sampler/
 
+##Config
+Edit settings in karaokesampler.py
+
+KinectMode=True -> enables kinect mode or webcam mode
+Vdevice = 1 -> check this if in webcam mode doesn't work play with values between 0 and 1
+
+(In Windows) The recording audio device will be the system's default
+
+#Requirements
 Python 3.6
 Recomended Conda 32 bits (there's a workaround for 64 bits in https://github.com/Kinect/PyKinect2/issues/37 )
 

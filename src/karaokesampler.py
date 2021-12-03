@@ -28,8 +28,8 @@ from PIL import Image
 class karaokesampler():
 
 	#config
-	KinectMode=False
-	Vdevice = 0
+	KinectMode=True
+	Vdevice = 1
 	synth = False
 	showScreenRecorder=False
 	#end config
