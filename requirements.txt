@@ -1,0 +1,13 @@
+opecv #conda install -c conda-forge opencv
+pillow #conda install -c anaconda pillow
+aubio #conda install -c conda-forge aubio
+pyaudio #conda install -c anaconda pyaudio
+pydub #conda install -c conda-forge pydub
+
+numpy
+pygame
+samplerate
+mido
+aubio
+comtypes==1.1.4
+python-rtmidi

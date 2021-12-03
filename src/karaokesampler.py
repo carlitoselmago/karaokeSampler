@@ -15,6 +15,9 @@ import shutil
 import os
 import pygame
 from pydub import AudioSegment
+from pykinect2 import PyKinectV2
+from pykinect2.PyKinectV2 import *
+from pykinect2 import PyKinectRuntime
 try:
 	from pykinect2 import PyKinectV2
 	from pykinect2.PyKinectV2 import *
@@ -26,7 +29,7 @@ import PIL
 from PIL import Image
 
 class karaokesampler():
-	
+
 	#config
 	KinectMode=True
 	Vdevice = 1
@@ -38,39 +41,45 @@ class karaokesampler():
 
 	recordingsFolder = "recordings/"
 	samplersFolder="samplers/"
-	
+
 	lowCut = 0.0174 #volumen
 	lowToneCut=20 #pitch
 	capW = 0
 	capH = 0
-	
+
 	pitchGL=30
 	pitchGH=80
-	
+
 	lastPitch = 0
 	lastPitchConfidence = 0
-	
+
 	noteTargets=[] #the notes we are gonna try to record
 	recordings=[]
 	isrecording=False
 	volume=5
 	checkingVolume=False
-	
+
 	amountToAvergeVolume=2
 	averageCounter=0
 	lastVolumes=[]
 	paint="none" #none,graph
 	singing=False
 	opencvReady=False
-	
+
 	graph = []
-	
+
 	#finished_threads=[]
 	#event = threading.Event()
-	
+
 	def __init__(self):
-		
+
 		print("init karaokesampler")
+
+		if not os.path.exists(self.recordingsFolder):
+			os.mkdir(self.recordingsFolder)
+
+		if not os.path.exists(self.samplersFolder):
+			os.mkdir(self.samplersFolder)
 
 		self.windowSize=[1920,1080]
 		self.imgResizeSize=[800,450]
@@ -82,21 +91,21 @@ class karaokesampler():
 		self.p = pyaudio.PyAudio()
 
 
-		
+
 		for i in range(self.amountToAvergeVolume+1):
 			self.lastVolumes.append(0)
 
 
-		
+
 		t = threading.Thread(target=self.startVision, args = ("vision",))
 		t.start()
 
-   
-	
+
+
 	def createNoteTargets(self):
 		#based on midi notes
 		self.noteTargets=[48,53,60,65,72,77,84,89]
-		
+
 	def drawNoteTargets(self,img):
 		for t in self.noteTargets:
 			pitchH = int(self.remap(t, self.pitchGL, self.pitchGH, 0.0, self.capH))
@@ -105,7 +114,7 @@ class karaokesampler():
 			lineP2 = (700, pitchH)
 			cv2.line(img,lineP1, lineP2, [40, 40, 120], 4)
 		return img
-	
+
 	def remap(self, value, OldMin, OldMax, NewMin, NewMax):
 		NewValue = (abs(abs(value - OldMin) * abs(NewMax - NewMin)) / abs(OldMax - OldMin)) + abs(NewMin)
 		if NewValue < NewMin:
@@ -115,16 +124,16 @@ class karaokesampler():
 			#print("refine oldMax in remap")
 			NewValue = 1.0
 		return NewValue
-		
+
 	def getAudioDevies(self):
 		info = self.p.get_host_api_info_by_index(0)
 		numdevices = info.get('deviceCount')
 		for i in range(0, numdevices):
 			#if (self.p.get_device_info_by_host_api_device_index(0, i).get('maxInputChannels')) > 0:
 			print ("Input Device id ", i, " - ", self.p.get_device_info_by_host_api_device_index(0, i).get('name'))
-	
+
 	def generateTone(self, FREQUENCY=500):
-		BITRATE = 44100     #number of frames per second/frameset.      
+		BITRATE = 44100     #number of frames per second/frameset.
 
 		#FREQUENCY = 500     #Hz, waves per second, 261.63=C4-note.
 		LENGTH = 0.1   #seconds to play sound
@@ -134,16 +143,16 @@ class karaokesampler():
 
 		NUMBEROFFRAMES = int(BITRATE * LENGTH)
 		RESTFRAMES = NUMBEROFFRAMES % BITRATE
-		WAVEDATA = ''    
+		WAVEDATA = ''
 
 		#generating wawes
 		for x in xrange(NUMBEROFFRAMES):
-			WAVEDATA = WAVEDATA + chr(int(math.sin(x / ((BITRATE / FREQUENCY) / math.pi)) * 127 + 128))    
+			WAVEDATA = WAVEDATA + chr(int(math.sin(x / ((BITRATE / FREQUENCY) / math.pi)) * 127 + 128))
 
-		for x in xrange(RESTFRAMES): 
+		for x in xrange(RESTFRAMES):
 			WAVEDATA = WAVEDATA + chr(128)
 		return WAVEDATA
-	
+
 	def calculateVolume(self,CHUNK,audiobuffer):
 		#if not self.checkingVolume:
 		self.checkingVolume=True
@@ -158,20 +167,20 @@ class karaokesampler():
 		#sleep(1)
 		#self.checkingVolume=False
 		self.checkingVolume=False
-		
+
 
 	def getJointPosition(self,joints, jointPoints, joint):
 		joint0State = joints[joint].TrackingState;
 
 		# both joints are not tracked
-		if (joint0State == PyKinectV2.TrackingState_NotTracked): 
+		if (joint0State == PyKinectV2.TrackingState_NotTracked):
 			return
 
 		# both joints are not *really* tracked
 		if (joint0State == PyKinectV2.TrackingState_Inferred):
 			return
 
-		# ok, at least one is good 
+		# ok, at least one is good
 		try:
 			position = (int(jointPoints[joint].x), int(jointPoints[joint].y))
 			return position
@@ -187,10 +196,10 @@ class karaokesampler():
 		return dist
 
 	def getFaceROI(self,index,frame, joints, jointPoints):
-		
-		
+
+
 		ROI=False
-		
+
 
 		head=self.getJointPosition(joints, jointPoints, PyKinectV2.JointType_Head)
 		neck=self.getJointPosition(joints, jointPoints, PyKinectV2.JointType_Neck)
@@ -248,17 +257,17 @@ class karaokesampler():
 				#hand on mouth
 				handonmouth[index]=delaytime
 
-		
+
 		if handonmouth[index]>0:
 			cv2.circle(frame,mouth, int(radius/2), (255,255,255), 8)
 			#case hand disapears (bug)
 			if not lefthand or not righthand:
 				handonmouth[index]=delaytime
 
-			
+
 			ROI=[mouth[0]-radius, mouth[1]-radius, int(radius*2), int(radius*2)]
 
-		
+
 		print handonmouth
 		if handonmouth[index]>0:
 			handonmouth[index]-=1
@@ -270,9 +279,9 @@ class karaokesampler():
 
 	def getSubRegion(self,img,cordinates):
 		img = img[int(cordinates[1]) :int(cordinates[1]) +  int(cordinates[3]) , int(cordinates[0]) : int(cordinates[0]) + int(cordinates[2])]
-		
+
 		return img
-	
+
 	def resizeImage(self,img,width,height):
 		resized=cv2.resize(img,width,height, interpolation = cv2.INTER_CUBIC)
 		return resized
@@ -294,11 +303,11 @@ class karaokesampler():
 			_bodies=None
 			sleep(2)
 			bodyIndex=5
-		 
+
 		else:
 			self.capW = int(self.cap.get(3))
 			self.capH = int(self.cap.get(4))
-		
+
 		while True:
 
 			if self.KinectMode:
@@ -308,29 +317,29 @@ class karaokesampler():
 					self.cleanimage=img.copy()
 
 				 #get skeletons
-				if _kinect.has_new_body_frame(): 
+				if _kinect.has_new_body_frame():
 					_bodies = _kinect.get_last_body_frame()
 
 				#print skeletons
 				if _bodies is not None:
 					for i in range(0, _kinect.max_body_count):
 
-					   
+
 						body = _bodies.bodies[i]
-						if body.is_tracked: 
-							
-							
-							joints = body.joints 
-							# convert joint coordinates to color space 
+						if body.is_tracked:
+
+
+							joints = body.joints
+							# convert joint coordinates to color space
 							joint_points = _kinect.body_joints_to_color_space(joints)
 							#draw_body(frame,joints, joint_points, (255,255,255))
 
 							faceROI=self.getFaceROI(i,img,joints, joint_points)
 
 							if faceROI:
-							
+
 								img=self.getSubRegion(self.cleanimage,faceROI)#[faceROI,faceROI,faceROI,faceROI])
-						
+
 								#img=cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 
@@ -350,7 +359,7 @@ class karaokesampler():
 					except:
 						print ("could not print note targets")
 				   	"""
-				
+
 				volume=self.volume
 
 				volH = int(self.remap(volume, 0.0, 0.2, 0.0, self.capH))
@@ -363,8 +372,8 @@ class karaokesampler():
 						cv2.line(img, lineV1, lineV2, [255, 0, 255], 2)
 					except:
 						print ("could not print volume line")
-				
-			
+
+
 				if volume>self.lowCut:
 					#   pitch
 					pitch=self.pitch
@@ -386,15 +395,15 @@ class karaokesampler():
 			if cv2.waitKey(100) == 27:
 				self.singing=False
 				break  # esc to quit
-				
+
 			self.opencvReady=True
-		
-		self.opencvReady=False  
+
+		self.opencvReady=False
 		#self.cap.release()
 		#cv2.destroyAllWindows()
 		return ""
-		
-	
+
+
 	def recordKaraoke(self):
 		recFolder=self.recordingsFolder
 		shutil.rmtree(recFolder)
@@ -403,7 +412,7 @@ class karaokesampler():
 		self.singing=True
 
 		# open stream
-		
+
 		buffer_size = 1024
 		CHUNK = buffer_size * 2
 		pyaudio_format = pyaudio.paFloat32
@@ -427,18 +436,18 @@ class karaokesampler():
 		PERIOD_SIZE_IN_FRAME    = HOP_SIZE
 
 		 # setup pitch
-		
+
 		tolerance = 0.8
 		win_s = 4096 # fft size
 		hop_s = buffer_size # hop size
 		pitch_o = aubio.pitch("default", win_s, hop_s, samplerate)
 		pitch_o.set_unit("midi")
 		pitch_o.set_tolerance(tolerance)
-		
+
 		print("*** starting recording")
 
 		pitch = 0
-		
+
 		# Initiating PyAudio object.
 		pA = pyaudio.PyAudio()
 		# Open the microphone stream.
@@ -454,13 +463,13 @@ class karaokesampler():
 		# Frequency under -40 dB will considered
 		# as a silence.
 		pDetection.set_silence(-40)
-		
-	   
-		
+
+
+
 		lastPitch=pitch
-		
+
 		while self.singing:
-			
+
 			#audio
 			# Always listening to the microphone.
 			data = mic.read(PERIOD_SIZE_IN_FRAME)
@@ -475,17 +484,17 @@ class karaokesampler():
 			# of the current frame.
 			volume = float(np.sum(signal**2)/len(signal))
 
-					
+
 			# Format the volume output so it only
 			# displays at most six numbers behind 0.
 			volume=round(float("{:6f}".format(volume)),4)
 			volume=self.remap(volume, 0.0,0.8, 0.0, 1.0)
 			self.volume=volume
-   
+
 			confidence=1
-  
+
 			if self.opencvReady:
-			
+
 				if volume>self.lowCut and pitch>self.lowToneCut:
 
 					#record if match
@@ -494,14 +503,14 @@ class karaokesampler():
 						#pitch has changed create new audio clip
 						if 'outputsink' in locals():
 							outputsink.close()
-						
+
 						name=str(int(pitch))+"_"+str(len(self.recordings))
 						self.recordings.append([name,0])
 						filename = self.recordingsFolder + name
 						outputsink = aubio.sink(filename+".wav", samplerate)
 						#resize image
 						if self.KinectMode:
-							
+
 							imgRes=cv2.resize(self.img,(self.imgResizeSize[0], self.imgResizeSize[1]))
 						else:
 							imgRes=self.img
@@ -514,15 +523,15 @@ class karaokesampler():
 						outputsink(signal, len(signal))
 
 					lastPitch=pitch
-					
-			
+
+
 			#self.S.out()
 			self.lastPitch = 0
 			self.lastPitchConfidence = 0
-			
+
 			#if pitch > 0:
 			#    stream.write(self.generateTone(pitch))
-			
+
 		try:
 			outputsink.close()
 		except:
@@ -539,12 +548,12 @@ class karaokesampler():
 		except:
 			print ("could not process recordings")
 		"""
-		return 
-		
+		return
+
 	def deleteAllshorterNotes(self,selectedRecodingNote):
-		
+
 		selectedNote=selectedRecodingNote.split("_")[0]
-		
+
 		for i,rec in enumerate(self.recordings):
 			recordingName=rec[0]
 			note=recordingName.split("_")[0]
@@ -552,20 +561,20 @@ class karaokesampler():
 				#delete note
 				print ("delete note index ",i)
 				del self.recordings[i]
-		
+
 	def findFarestNoteWithLongestDuration(self,recordings):
-		
+
 		selectLimit=self.selectLimit
-		
+
 		selected=[int(recordings[0][0].split("_")[0])]
 		selectedFiles=[recordings[0][0]]
-	
+
 		bestScore=0
 		bestIndex=0
 		index=0
-		
+
 		while len(selected)<selectLimit:
-			
+
 			baseNote=int(recordings[index][0].split("_")[0])
 
 			for i,rec in enumerate(recordings):
@@ -578,21 +587,21 @@ class karaokesampler():
 					if score>bestScore:
 						bestScore=score
 						bestIndex=i
-						
+
 			index=bestIndex
-			
+
 			selected.append(int(recordings[bestIndex][0].split("_")[0]))
 			selectedFiles.append(recordings[bestIndex][0])
 			bestScore=0
-			
+
 		return selected,selectedFiles
-	
+
 	def processRecordings(self,recordings):
 		print("***Process recordings")
 		recFolder=self.recordingsFolder
-		
+
 		if len(recordings)>self.selectLimit:
-		
+
 			recordings=list(reversed(sorted(recordings, key=itemgetter(1))))
 
 			#now fill the list
@@ -634,7 +643,7 @@ class karaokesampler():
 				except:
 					print ("skipping ",source)
 
-				
+
 				#os.rename(source,destination)
 
 			#remove all files in recordings folder
@@ -645,22 +654,21 @@ class karaokesampler():
 			print ("selected files",selectedFiles)
 			#print ("all recordings",recordings)
 			return True
-			
+
 		else:
 			print ("not enough samples recorded!!!!!! sampler won't be created")
 			#remove all files in recordings folder
-			
-			return False
-				
 
-		
-		
+			return False
+
+
+
+
 
 if __name__ == "__main__":
-	
-	
+
+
 	k = karaokesampler()
 	#k.getAudioDevies()
-	
+
 	k.recordKaraoke()
-	
