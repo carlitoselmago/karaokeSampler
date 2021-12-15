@@ -11,3 +11,5 @@ mido
 aubio
 comtypes==1.1.4
 python-rtmidi
+flask
+pykinect2

@@ -30,6 +30,10 @@ from PIL import ImageDraw
 
 class samplerPlayer():
 
+
+	samplerdelay=0.16 #algo entre 0.1 y 0.8
+	samplerVolume=1.5	#1.5
+
 	preparedSounds=[]
 	lyricMessageCount=0
 	lyricMessageCountInBlocks=0
@@ -49,7 +53,7 @@ class samplerPlayer():
 		self.sounds=[]
 		self.notes=[]
 		self.secondaryDisplay=[1024,768]
-		self.moveUp=768
+		self.moveUp=1080#768
 		self.moveLeft=20
 		#self.moveUp=1050
 		fonts_path = "fonts"#os.path.join(os.path.dirname(os.path.dirname(__file__)), 'fonts')
@@ -58,7 +62,7 @@ class samplerPlayer():
 		ImageFont.truetype(os.path.join(fonts_path, 'garamondbold.ttf'), 32),
 		ImageFont.truetype(os.path.join(fonts_path, 'garamond.ttf'), 32),
 		ImageFont.truetype(os.path.join(fonts_path, 'garamondbold.ttf'), 32)]
-		self.windowSize=[800,450]#[800,450]
+		self.windowSize=[1920,1080]#[800,450]#[800,450]
 		self.percentageOfmessagesForLeadTrack=5.9
 		self.customText=""
 
@@ -251,7 +255,7 @@ class samplerPlayer():
 		else:
 			#note on
 			self.img=random.choice(self.imgs)
-			volume=(message.velocity/127.0)*1.5
+			volume=(message.velocity/127.0)*self.samplerVolume
 			if volume>1:
 				volume=1
 			self.sounds[soundIndex].set_volume(volume)
@@ -541,7 +545,7 @@ class samplerPlayer():
 					if message.channel==15:#MidoTrackNumber:#midfileTrackNumber:
 						if len(self.notes)>0:
 							try:
-								t = threading.Thread(target=self.playSamplerNotewithDelay, args = (message,0.12)) #algo entre 0.1 y 0.8
+								t = threading.Thread(target=self.playSamplerNotewithDelay, args = (message,self.samplerdelay)) #algo entre 0.1 y 0.8
 								t.start()
 							except:
 								pass

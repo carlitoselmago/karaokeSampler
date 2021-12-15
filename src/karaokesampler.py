@@ -53,7 +53,7 @@ class karaokesampler():
 	noteTargets=[] #the notes we are gonna try to record
 	recordings=[]
 	isrecording=False
-	volume=5
+	volume=5#5
 	checkingVolume=False
 
 	amountToAvergeVolume=2
@@ -72,6 +72,8 @@ class karaokesampler():
 
 		print("init karaokesampler")
 
+
+
 		self.windowSize=[1920,1080]
 		self.imgResizeSize=[800,450]
 
@@ -86,7 +88,11 @@ class karaokesampler():
 		for i in range(self.amountToAvergeVolume+1):
 			self.lastVolumes.append(0)
 
+		if not os.path.exists(self.recordingsFolder):
+			os.makedirs(self.recordingsFolder)
 
+		if not os.path.exists(self.samplersFolder):
+			os.makedirs(self.samplersFolder)
 
 		t = threading.Thread(target=self.startVision, args = ("vision",))
 		t.start()
