@@ -27,6 +27,7 @@ import  PIL
 from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw
+import operator
 
 class samplerPlayer():
 
@@ -53,8 +54,8 @@ class samplerPlayer():
 		self.sounds=[]
 		self.notes=[]
 		self.secondaryDisplay=[1024,768]
-		self.moveUp=1080#768
-		self.moveLeft=20
+		self.moveUp=5#1080#768
+		self.moveLeft=1400#0
 		#self.moveUp=1050
 		fonts_path = "fonts"#os.path.join(os.path.dirname(os.path.dirname(__file__)), 'fonts')
 
@@ -64,6 +65,7 @@ class samplerPlayer():
 		ImageFont.truetype(os.path.join(fonts_path, 'garamondbold.ttf'), 32)]
 		self.windowSize=[1920,1080]#[800,450]#[800,450]
 		self.percentageOfmessagesForLeadTrack=5.9
+		self.percentageOfspreadNotesForLeadTrack=69.0
 		self.customText=""
 
 		self.resolution=6 #sampler score resolution, the bigger the more precise
@@ -265,6 +267,18 @@ class samplerPlayer():
 	def find_nearest(self,array,value): #returns index of nearest number in array
 		return min(range(len(array)), key=lambda i: abs(array[i]-value))
 
+	def scoreNearest(self,array,target):
+		#lower is better
+
+		#first normalize the array 
+		norm = [float(i)/max(array) for i in array]
+
+		scores=[]
+		for v in norm:
+			distance=abs(target-v)
+			scores.append(distance)
+		return scores
+
 	def find_between(self, s, first, last ):
 	    try:
 	        start = s.index( first ) + len( first )
@@ -291,34 +305,61 @@ class samplerPlayer():
 		return sylabs
 
 
-	def getTrackNumbers(self,midiSong):
-
+	def getTrackNumbers(self,midiSong,songTempo):
+		#Analizes midi file and finds the apropiate track for midi sampler
+		
 		tracks=[]
 		notasInTrack=[]
 		self.lyrics=[]
 		lyricsAlltracks=[]
 		self.typeOfLineJump="dashes"
+		
+		trackstepdivision=300
+		trackstep=(midiSong.length/trackstepdivision)
+		trackspreadScores=[]
+		print("SONG LENGTH",midiSong.length)
+		sleep(5)
 
+		# CHOOSE THE SAMPLER MIDI TRACK:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+		trackScores=[] # add scores to each track based on: amount of notes, spread over the song, spread over pitch (avoid drums and continuous note bass), ban keywords like "bass" or "percussion"
 
 		for i, track in enumerate(midiSong.tracks):
-
-
 			messagesTypes=[0,0]#normal,lyrics
-			messagesLimit=150
+			messagesLimit=40
 			newLtrack=MidiTrack()
 			newLtrack.name="LETRASSSS"
 			lyricsAlltracks.append(newLtrack)
+			currenttrackprogress=0.0
+			
+			steptrackcount=0
+			trackBlocks=[0] * trackstepdivision
+			
+			#print(track)
+			#messagessorted=track.sort(key=operator.attrgetter('time'))
+			#print(messagessorted)
+			#if messagessorted:
 			for c,message in enumerate(track):
 
 				if not self.isLyricsMessage(message):
-					#normal message
+					#normal music message
+					#print(c,message)
+					currenttrackprogress+=(mido.tick2second(message.time,midiSong.ticks_per_beat,songTempo))
+					#print("currenttrackprogress",currenttrackprogress)
+					current_step=currenttrackprogress/trackstep
+					#TODO: aumentar resolucion de steps para evitar violines y pads (tener en cuenta los porcentajes que utilizo luego abajo)
+					try:
+						trackBlocks[int(current_step)]=1
+					except:
+						pass
+					
+					#if currenttrackprogress
 					if c<messagesLimit:
 						messagesTypes[0]+=1
 					#trackType="standard"
 				else:
 					if c<messagesLimit:
 						messagesTypes[1]+=1
-
 
 					text=message.text#self.getTextFromMessage(message)
 
@@ -330,16 +371,19 @@ class samplerPlayer():
 					sylabs=self.unifyText(text)
 					for syl in sylabs:
 						self.lyrics.append(syl)
-					"""
-
-
-
+				"""
+			#else:
+			#	print("NOT SORTED TRACK")
+			spreadScore=sum(trackBlocks)
+			print("trackBlocks",trackBlocks)
+			
+			print(track.name,"spreadScore",spreadScore)
 			trackType=messagesTypes.index(max(messagesTypes))
-
-
+			#if trackType==0:
+			trackspreadScores.append(spreadScore)
 			tracks.append([track.name,trackType,len(track)])
 
-
+		#TODO: todos estos loops creo que son redundantes y se podrían incluir en anteriores para optimizar el tiempo de carga
 		#check what is the lyrics track with more words
 		mostWords=0
 		mostWordsIndex=0
@@ -351,18 +395,14 @@ class samplerPlayer():
 				mostWordsIndex=i
 
 		trackWithMostLyrics=lyricsAlltracks[mostWordsIndex]
-
-
-
-		"""
-		print tracks
-		print "###"
-		print lyricsAlltracks
-		print "###"
-		print messagesTypes
-		sys.exit()
-		"""
-
+		#print ("### tracks")
+		#print (tracks)
+		#print ("### lyricsAlltracks")
+		#print (lyricsAlltracks)
+		#print ("###")
+		#print (messagesTypes)
+		#sys.exit()
+		
 		#count all standard messages
 		totalMessages=0.0
 		for i,track in enumerate(tracks):
@@ -376,13 +416,11 @@ class samplerPlayer():
 				del midiSong.tracks[i]
 			"""
 
-
 		#add most lyrics track back the file object
 		#midiSong.tracks.append(trackWithMostLyrics)
 
-
-
-		#print self.lyrics
+		
+		
 		#get track percentages
 		percentages=[]
 		for i,track in enumerate(tracks):
@@ -393,8 +431,41 @@ class samplerPlayer():
 			else:
 				percentages.append(0.0)
 
-		leadTrackIndex=self.find_nearest(percentages,self.percentageOfmessagesForLeadTrack)
+		print("percentages",len(percentages))
+		print("trackspreadScores",len(trackspreadScores))
+
+		#combine scores 
+		#finalscores=[]
+		#finalscores.append(self.scoreNearest(trackspreadScores,0.69))
+		#finalscores.append(self.scoreNearest(percentages,0.59))
+		scoresSpread=self.scoreNearest(trackspreadScores,0.69)
+		scoresPercent=self.scoreNearest(percentages,0.59)
+		results=list(np.multiply(scoresSpread,scoresPercent))
+
+		min_value = min(results)
+		min_index = results.index(min_value)
+
+		leadTrackIndex=min_index
+
+		#scoresmixed = np.array(finalscores)
+		#from operator import mul
+		#from functools import reduce
+		#results=[reduce(mul, x) for x in finalscores]#np.prod(scoresmixed,axis=1)
+		#results=list(np.multiply(tuple(finalscores)))
+		#results=np.transpose(np.multiply(np.transpose(a),test_y))
+		#results=[]
+		#for i in range(len(finalscores[0])):
+
+
+		#print("results",results)
+		
+		
+		#leadTrackIndex=self.find_nearest(percentages,self.percentageOfmessagesForLeadTrack)
+		#leadTrackIndex=self.find_nearest(trackspreadScores,self.percentageOfspreadNotesForLeadTrack)
 		leadTrackName=tracks[leadTrackIndex][0]
+		print("LEAD TRACK NAME: ",leadTrackName)
+
+		#END  CHOOSE THE SAMPLER MIDI TRACK::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 		count=0
 		for i,track in enumerate(tracks):
@@ -402,7 +473,6 @@ class samplerPlayer():
 				if i==leadTrackIndex:
 					MidoTrackNumber=count
 					break
-
 				count+=1
 
 		midfileTrackNumber=leadTrackIndex
@@ -420,7 +490,6 @@ class samplerPlayer():
 					notasInTrack.append(message.note)
 
 		for i,message in enumerate(midiSong.tracks[mostWordsIndex]):
-
 
 			if hasattr(message, 'text'):
 				text=message.text
@@ -494,8 +563,8 @@ class samplerPlayer():
 		#get the real duration of the song
 		mid = MidiFile(songpath)
 		songDuration=mid.length
-
-		midfileTrackNumber,notesForSampler,mid=self.getTrackNumbers(mid)
+		songTempo=self.get_tempo(mid)
+		midfileTrackNumber,notesForSampler,mid=self.getTrackNumbers(mid,songTempo)
 
 		#self.prepareSampler(str(samplerNumber))
 		#self.constructSamplerTrack(notesForSampler,songDuration,str(samplerNumber))#max(m.kartimes)) #!!!!!!!!!!!!!!
@@ -523,8 +592,6 @@ class samplerPlayer():
 		with mido.open_output("Microsoft GS Wavetable Synth 0") as output:
 
 		#while pygame.mixer.music.get_busy():
-
-
 			for message in mid.play(meta_messages=True):#meta_messages=True):
 
 				#if message.type=="lyrics":
@@ -886,6 +953,18 @@ class samplerPlayer():
 		# you set it too low - 44.1k is plenty) this should now noticeable change how the audio sounds.
 		chipmunk_ready_to_export = chipmunk_sound.set_frame_rate(44100)
 		return chipmunk_ready_to_export
+
+	def get_tempo(self,mid):
+		for track in mid:
+			try:
+				for msg in track:
+					if msg.type == 'set_tempo':
+						return msg.tempo
+			except:
+				pass
+		else:
+			# Default tempo.
+			return 500000
 
 
 
