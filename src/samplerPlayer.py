@@ -53,7 +53,8 @@ class samplerPlayer():
 		print ("sampler Player init")
 		self.sounds=[]
 		self.notes=[]
-		self.secondaryDisplay=[1024,768]
+		#self.secondaryDisplay=[1024,768]
+		self.windowSize=[1024,768]#[1920,1080]#[800,450]#[800,450]
 		self.moveUp=5#1080#768
 		self.moveLeft=1400#0
 		#self.moveUp=1050
@@ -63,7 +64,6 @@ class samplerPlayer():
 		ImageFont.truetype(os.path.join(fonts_path, 'garamondbold.ttf'), 32),
 		ImageFont.truetype(os.path.join(fonts_path, 'garamond.ttf'), 32),
 		ImageFont.truetype(os.path.join(fonts_path, 'garamondbold.ttf'), 32)]
-		self.windowSize=[1920,1080]#[800,450]#[800,450]
 		self.percentageOfmessagesForLeadTrack=5.9
 		self.percentageOfspreadNotesForLeadTrack=69.0
 		self.customText=""
@@ -317,6 +317,9 @@ class samplerPlayer():
 		trackstepdivision=300
 		trackstep=(midiSong.length/trackstepdivision)
 		trackspreadScores=[]
+		trackaverageNotes=[]
+
+		trackNotes=[]
 		print("SONG LENGTH",midiSong.length)
 		sleep(5)
 
@@ -334,6 +337,7 @@ class samplerPlayer():
 			
 			steptrackcount=0
 			trackBlocks=[0] * trackstepdivision
+			notesintrack=[]
 			
 			#print(track)
 			#messagessorted=track.sort(key=operator.attrgetter('time'))
@@ -353,6 +357,10 @@ class samplerPlayer():
 					except:
 						pass
 					
+					try:
+						notesintrack.append(message.note)
+					except:
+						pass
 					#if currenttrackprogress
 					if c<messagesLimit:
 						messagesTypes[0]+=1
@@ -375,11 +383,16 @@ class samplerPlayer():
 			#else:
 			#	print("NOT SORTED TRACK")
 			spreadScore=sum(trackBlocks)
-			print("trackBlocks",trackBlocks)
-			
-			print(track.name,"spreadScore",spreadScore)
+			#print("trackBlocks",trackBlocks)
+			#print(track.name)
+			#print(track.name,"spreadScore",spreadScore)
 			trackType=messagesTypes.index(max(messagesTypes))
 			#if trackType==0:
+			notesarray = numpy.array(notesintrack)
+			if (len(notesarray)==0):
+				trackaverageNotes.append(0)
+			else:	
+				trackaverageNotes.append(numpy.mean(notesarray))
 			trackspreadScores.append(spreadScore)
 			tracks.append([track.name,trackType,len(track)])
 
@@ -423,7 +436,9 @@ class samplerPlayer():
 		
 		#get track percentages
 		percentages=[]
+		
 		for i,track in enumerate(tracks):
+			
 			if track[1]==0:
 				percentage=(track[2]*100.0)/totalMessages
 				percentages.append(percentage)
@@ -431,35 +446,29 @@ class samplerPlayer():
 			else:
 				percentages.append(0.0)
 
-		print("percentages",len(percentages))
-		print("trackspreadScores",len(trackspreadScores))
+		print("percentages",(percentages))
+		print("trackspreadScores",(trackspreadScores))
 
 		#combine scores 
-		#finalscores=[]
-		#finalscores.append(self.scoreNearest(trackspreadScores,0.69))
-		#finalscores.append(self.scoreNearest(percentages,0.59))
-		scoresSpread=self.scoreNearest(trackspreadScores,0.69)
-		scoresPercent=self.scoreNearest(percentages,0.59)
-		results=list(np.multiply(scoresSpread,scoresPercent))
+		norm = [float(i)/max(trackaverageNotes) for i in trackaverageNotes]
+		norm2 = [float(i)/max(trackspreadScores) for i in trackspreadScores]
+		norm3 = [float(i)/max(percentages) for i in percentages]
 
+		for i,track in enumerate(tracks):
+			print(track[0],"avgnotes",str(round(norm[i],2)),"spread",str(round(norm2[i],2)),"percent",str(round(norm3[i],2)))
+
+		#print("trackaverageNotes",trackaverageNotes)
+		scoresSpread=np.array(self.scoreNearest(trackspreadScores,0.9))
+		scoresPercent=np.array(self.scoreNearest(percentages,0.5))
+		scoresNotes=np.array(self.scoreNearest(trackaverageNotes,0.9))
+		#print("scoresNotes",scoresNotes)
+		results=list(np.multiply(scoresPercent,scoresSpread))
+		results=list(np.multiply(results,scoresNotes*.6))
 		min_value = min(results)
 		min_index = results.index(min_value)
 
 		leadTrackIndex=min_index
 
-		#scoresmixed = np.array(finalscores)
-		#from operator import mul
-		#from functools import reduce
-		#results=[reduce(mul, x) for x in finalscores]#np.prod(scoresmixed,axis=1)
-		#results=list(np.multiply(tuple(finalscores)))
-		#results=np.transpose(np.multiply(np.transpose(a),test_y))
-		#results=[]
-		#for i in range(len(finalscores[0])):
-
-
-		#print("results",results)
-		
-		
 		#leadTrackIndex=self.find_nearest(percentages,self.percentageOfmessagesForLeadTrack)
 		#leadTrackIndex=self.find_nearest(trackspreadScores,self.percentageOfspreadNotesForLeadTrack)
 		leadTrackName=tracks[leadTrackIndex][0]
@@ -856,7 +865,7 @@ class samplerPlayer():
 		cv2.setWindowProperty(self.windowName, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 		cv2.imshow(self.windowName,self.img)
 
-		cv2.resizeWindow(self.windowName, self.secondaryDisplay[0], self.secondaryDisplay[1])
+		cv2.resizeWindow(self.windowName, self.windowSize[0], self.windowSize[1])
 
 		cv2.moveWindow(self.windowName,self.moveLeft,-self.moveUp)
 		running=True
