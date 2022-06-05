@@ -322,6 +322,11 @@ class samplerPlayer():
 		trackaverageNotes=[]
 		musictracks=[0] * len(midiSong.tracks)
 		trackmessages=0
+		trackfound=False
+
+		#track title based filter
+		blacklist=["DRUMS","BATER","BATTER","HIHAT"]
+		whitelist=["MELOD","VOC","VOZ"]
 
 		trackNotes=[]
 		print("SONG LENGTH",midiSong.length)
@@ -329,7 +334,7 @@ class samplerPlayer():
 
 		# CHOOSE THE SAMPLER MIDI TRACK:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-		trackScores=[] # add scores to each track based on: amount of notes, spread over the song, spread over pitch (avoid drums and continuous note bass), ban keywords like "bass" or "percussion"
+		# add scores to each track based on: amount of notes, spread over the song, spread over pitch (avoid drums and continuous note bass), ban keywords like "bass" or "percussion"
 
 		for i, track in enumerate(midiSong.tracks):
 			messagesTypes=[0,0]#normal,lyrics
@@ -388,7 +393,9 @@ class samplerPlayer():
 					for syl in sylabs:
 						self.lyrics.append(syl)
 					"""
-			
+			for t in blacklist:
+				if  t.upper() in track.name.upper():
+					ismusictrack=False
 			#else:
 			#	print("NOT SORTED TRACK")
 			spreadScore=sum(trackBlocks)
@@ -450,6 +457,12 @@ class samplerPlayer():
 		percentages=[]
 		
 		for i,track in enumerate(tracks):
+			
+			#Whitelist trick 
+			for t in whitelist:
+				if t.upper() in track[0].upper():
+					trackfound=i
+
 			if musictracks[i]==1:
 			#if track[1]==0:
 				percentage=(track[2]*100.0)/totalMessages
@@ -461,46 +474,43 @@ class samplerPlayer():
 		print("percentages",(percentages))
 		print("trackspreadScores",(trackspreadScores))
 
-		#combine scores 
-		norm = [float(i)/max(trackaverageNotes) for i in trackaverageNotes]
-		norm2 = [float(i)/max(trackspreadScores) for i in trackspreadScores]
-		norm3 = [float(i)/max(percentages) for i in percentages]
-		
-		print(" ")
-		for i,track in enumerate(norm):
-		
-			print(tracks[mtracki[i]][0],"avgnotes",str(round(norm[i],2)),"spread",str(round(norm2[i],2)),"percent",str(round(norm3[i],2)))
+		if trackfound:
+			leadTrackIndex=trackfound
+		else:
 
-		scoresNotes=np.array(self.scoreNearest(trackaverageNotes,0.75))
-		scoresSpread=np.array(self.scoreNearest(trackspreadScores,0.75))
-		scoresPercent=np.array(self.scoreNearest(percentages,0.51))
-		
-		#print("AAAA",np.where(scoresSpread==min(scoresSpread))[0][0])
-		print("BEST spread",tracks[ mtracki[np.where(scoresSpread==min(scoresSpread))[0][0] ]][0],"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-		print("BEST percent",tracks[  mtracki[np.where(scoresPercent==min(scoresPercent))[0][0] ]][0],"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-		print("BEST notes",tracks[  mtracki[np.where(scoresNotes==min(scoresNotes))[0][0] ]][0],"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-		#print("scoresNotes",scoresNotes)
-		#results=list(np.multiply(scoresPercent,scoresSpread))#
-		#results=list(np.multiply(scoresPercent,scoresSpread))
-		#results=list(np.multiply(results,scoresNotes*1.5))
+			#combine scores 
+			norm = [float(i)/max(trackaverageNotes) for i in trackaverageNotes]
+			norm2 = [float(i)/max(trackspreadScores) for i in trackspreadScores]
+			norm3 = [float(i)/max(percentages) for i in percentages]
+			
+			print(" ")
+			for i,track in enumerate(norm):
+				print(tracks[mtracki[i]][0],"avgnotes",str(round(norm[i],2)),"spread",str(round(norm2[i],2)),"percent",str(round(norm3[i],2)))
 
-		results=scoresNotes.tolist()
-		print("results",results)
-		for i,r in enumerate(results):
-			if scoresSpread[i]<0.32:
-				results[i]=results[i]*100
-			if scoresPercent[i]>0.8:
-				results[i]=results[i]*100
-		print("results AFTER",results)
-		#for i,r in enumerate(results):
-			#print(tracks[i][0],"\t\t\t",str(round(r,2)))
-		min_value = min(results)
-		min_index = results.index(min_value)
+			scoresNotes=np.array(self.scoreNearest(trackaverageNotes,0.75))
+			scoresSpread=np.array(self.scoreNearest(trackspreadScores,0.75))
+			scoresPercent=np.array(self.scoreNearest(percentages,0.51))
 
-		leadTrackIndex=mtracki[min_index]#self.trackIndex(musictracks,min_index)
+			print("BEST spread",tracks[ mtracki[np.where(scoresSpread==min(scoresSpread))[0][0] ]][0],"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+			print("BEST percent",tracks[  mtracki[np.where(scoresPercent==min(scoresPercent))[0][0] ]][0],"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+			print("BEST notes",tracks[  mtracki[np.where(scoresNotes==min(scoresNotes))[0][0] ]][0],"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
-		#leadTrackIndex=self.find_nearest(percentages,self.percentageOfmessagesForLeadTrack)
-		#leadTrackIndex=self.find_nearest(trackspreadScores,self.percentageOfspreadNotesForLeadTrack)
+			results=scoresNotes.tolist()
+			print("results",results)
+			for i,r in enumerate(results):
+				if scoresSpread[i]<0.32:
+					results[i]=results[i]*100
+				if scoresPercent[i]>0.8:
+					results[i]=results[i]*100
+			print("results AFTER",results)
+
+			min_value = min(results)
+			min_index = results.index(min_value)
+
+			leadTrackIndex=mtracki[min_index]#self.trackIndex(musictracks,min_index)
+
+			#leadTrackIndex=self.find_nearest(percentages,self.percentageOfmessagesForLeadTrack)
+			#leadTrackIndex=self.find_nearest(trackspreadScores,self.percentageOfspreadNotesForLeadTrack)
 		leadTrackName=tracks[leadTrackIndex][0]
 		print("LEAD TRACK NAME: ",leadTrackName)
 
