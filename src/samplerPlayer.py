@@ -28,9 +28,11 @@ from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw
 import operator
+import zmq
 
 class samplerPlayer():
 
+	mode="upbge" #modes: opencv, upbge
 
 	samplerdelay=0.16 #algo entre 0.1 y 0.8
 	samplerVolume=1.5	#1.5
@@ -81,8 +83,33 @@ class samplerPlayer():
 		pygame.mixer.init()
 		self.status="iddle"
 
-		if __name__ != "__main__":
+		if self.mode=="upbge":
+			ctx = zmq.Context.instance()
+			self.s = ctx.socket(zmq.PUSH)
+			url = 'tcp://127.0.0.1:5558'
+			self.s.connect(url)
+			self.s.send_json({"text":"hola"})
+			#while True:
+			#msg = input(b"msg > ")
+			
+			
+			"""
+			context = zmq.Context()
+			socket = context.socket(zmq.REP)
+			socket.bind("tcp://*:5555")
 
+			while True:
+				#  Wait for next request from client
+				message = socket.recv()
+				print("Received request: %s" % message)
+
+				#  Do some 'work'
+				time.sleep(1)
+			"""
+
+
+
+		if __name__ != "__main__":
 			t = threading.Thread(target=self.showImage, args = ("showImage",)) #algo entre 0.1 y 0.8
 			t.start()
 		#pygame.init()
@@ -619,6 +646,8 @@ class samplerPlayer():
 		self.customText=customText
 		self.songName=filename.split(".")[0]
 
+		self.s.send_json({"event":"playsong","songname":self.songName.replace("KARsongs/", "").split("/")[-1],"customtext":self.customText})
+
 		#get the real duration of the song
 		mid = MidiFile(songpath)
 		songDuration=mid.length
@@ -762,10 +791,13 @@ class samplerPlayer():
 				sylabCounter+=1
 				if len(self.lyrics)>(s):
 					currentSylab=self.lyrics[s]
+					#print("currentSylab",currentSylab)
+					self.s.send_json({"currentSylab":currentSylab})
 					#print "index",s,"currentSylab",currentSylab
 					#print currentSylab
 					if (self.isLineJump(currentSylab)) or (s==0): #end of block!
 
+						self.s.send_json({"event":"linejump"})
 						self.lineJumpCounter+=1
 
 						if self.lineJumpCounter==self.blockLines or (s==0):
@@ -900,13 +932,10 @@ class samplerPlayer():
 				#if self.lastSylab<self.lyricMessageCount:
 				#	print sylab
 
-
-
+		
 		self.lastLyrics=threelines
 
 		return imgCtext
-
-
 
 
 
@@ -939,10 +968,7 @@ class samplerPlayer():
 
 			#if 'm' in self.__dict__ and self.status=="playing":
 			if self.status=="playing":
-
 				imgCtext=self.printLyrics(imgCtext)
-
-
 
 			cv2.imshow(self.windowName,imgCtext)
 			if cv2.waitKey(1) == 27:
@@ -953,7 +979,6 @@ class samplerPlayer():
 
 			self.opencvReady=True
 		cv2.destroyAllWindows()
-
 
 
 	def speedx(self,sound_array, factor):

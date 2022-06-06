@@ -72,8 +72,6 @@ class karaokesampler():
 
 		print("init karaokesampler")
 
-
-
 		self.windowSize=[1920,1080]
 		self.imgResizeSize=[800,450]
 
@@ -280,11 +278,8 @@ class karaokesampler():
 				if _bodies is not None:
 					for i in range(0, _kinect.max_body_count):
 
-
 						body = _bodies.bodies[i]
 						if body.is_tracked:
-
-
 							joints = body.joints
 							# convert joint coordinates to color space
 							joint_points = _kinect.body_joints_to_color_space(joints)
@@ -293,11 +288,8 @@ class karaokesampler():
 							faceROI=self.getFaceROI(i,img,joints, joint_points)
 
 							if faceROI:
-
 								img=self.getSubRegion(self.cleanimage,faceROI)#[faceROI,faceROI,faceROI,faceROI])
-
 								#img=cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
 
 			else:
 				#print "singing is true in vision"
@@ -305,8 +297,6 @@ class karaokesampler():
 				self.cleanimage=img.copy()
 
 			if self.singing:
-
-
 				if self.paint=="graph":
 					img=self.drawNoteTargets(img)
 					"""
@@ -420,8 +410,6 @@ class karaokesampler():
 		# as a silence.
 		pDetection.set_silence(-40)
 
-
-
 		lastPitch=pitch
 
 		while self.singing:
@@ -439,8 +427,6 @@ class karaokesampler():
 			# Compute the energy (volume)
 			# of the current frame.
 			volume = float(np.sum(signal**2)/len(signal))
-
-
 			# Format the volume output so it only
 			# displays at most six numbers behind 0.
 			volume=round(float("{:6f}".format(volume)),4)
@@ -466,7 +452,6 @@ class karaokesampler():
 						outputsink = aubio.sink(filename+".wav", samplerate)
 						#resize image
 						if self.KinectMode:
-
 							imgRes=cv2.resize(self.img,(self.imgResizeSize[0], self.imgResizeSize[1]))
 						else:
 							imgRes=self.img
