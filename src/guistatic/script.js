@@ -3,7 +3,7 @@ $( document ).ready(function() {
 
 	window.selecteSongPath=""
 	//DELETE THIS
-	window.selecteSongPath="KARsongs/A-B/A-B/A Ha - Take On Me.kar";
+	window.selecteSongPath="KARsongs/LATINAS/Bella y bestia son.kar";
 	//DELETE THIS
 
  	loadKarSongs();
@@ -63,6 +63,20 @@ $( document ).ready(function() {
 		}
 
 		
+	});
+
+	$('#controls').on('click', '#pause', function(){
+		$.ajax({
+			url: 'pausesong',
+			success: function(data) { 
+				setTimeout(function(){
+					//loadSamplers();
+					$("#status").text("PAUSED");
+				 }, 2000);
+				
+
+			}
+		});
 	});
 
 	$('#controlssingers').on('click', '#nextSinger', function(){

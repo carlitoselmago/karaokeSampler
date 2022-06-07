@@ -88,7 +88,7 @@ class samplerPlayer():
 			self.s = ctx.socket(zmq.PUSH)
 			url = 'tcp://127.0.0.1:5558'
 			self.s.connect(url)
-			self.s.send_json({"text":"hola"})
+			#self.s.send_json({"text":"hola"})
 			#while True:
 			#msg = input(b"msg > ")
 			
@@ -646,13 +646,14 @@ class samplerPlayer():
 		self.customText=customText
 		self.songName=filename.split(".")[0]
 
-		self.s.send_json({"event":"playsong","songname":self.songName.replace("KARsongs/", "").split("/")[-1],"customtext":self.customText})
-
+		self.s.send_json({"event":"loadsong","songname":self.songName.replace("KARsongs/", "").split("/")[-1],"customtext":self.customText})
+		
 		#get the real duration of the song
 		mid = MidiFile(songpath)
 		songDuration=mid.length
 		songTempo=self.get_tempo(mid)
 		midfileTrackNumber,notesForSampler,mid=self.getTrackNumbers(mid,songTempo)
+		self.s.send_json({"lyrics":self.lyrics})
 
 		#self.prepareSampler(str(samplerNumber))
 		#self.constructSamplerTrack(notesForSampler,songDuration,str(samplerNumber))#max(m.kartimes)) #!!!!!!!!!!!!!!
@@ -675,6 +676,8 @@ class samplerPlayer():
 
 		dt=0.0
 
+		self.s.send_json({"event":"playsong"})
+
 		self.customText=""
 		#while True:
 		with mido.open_output("Microsoft GS Wavetable Synth 0") as output:
@@ -687,6 +690,7 @@ class samplerPlayer():
 				#print message.type,message
 				if self.status=="stop":
 					#stop the song
+					self.s.send_json({"event":"stopsong"})
 					break
 
 				nowNoteNames=[]
@@ -787,12 +791,13 @@ class samplerPlayer():
 			threelines=self.lastLyrics
 			self.lastLyrics=[]
 			for s in steps:
+				#LIVE LYRICS LOOP
 				#print "STEP",s
 				sylabCounter+=1
 				if len(self.lyrics)>(s):
 					currentSylab=self.lyrics[s]
 					#print("currentSylab",currentSylab)
-					self.s.send_json({"currentSylab":currentSylab})
+					self.s.send_json({"currentSylab":currentSylab,"sylabindex":s})
 					#print "index",s,"currentSylab",currentSylab
 					#print currentSylab
 					if (self.isLineJump(currentSylab)) or (s==0): #end of block!
@@ -802,7 +807,7 @@ class samplerPlayer():
 
 						if self.lineJumpCounter==self.blockLines or (s==0):
 							self.lineJumpCounter=0
-
+							
 							#if self.blockLineCounter==0:
 
 							#print "BUILDING NEW BLOCK OF LYRICS!!!!!!"
@@ -855,6 +860,7 @@ class samplerPlayer():
 										lineCounter+=1
 										threelines.append([])
 										#LINE JUMP!
+										
 										self.blockLineCounter+=1
 									#if advancedSylab=="\n":
 									if (self.blockLineCounter==self.blockLines):# or (s==0):
