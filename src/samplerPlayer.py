@@ -28,9 +28,11 @@ from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw
 import operator
+import zmq
 
 class samplerPlayer():
 
+	mode="upbge" #modes: opencv, upbge
 
 	samplerdelay=0.16 #algo entre 0.1 y 0.8
 	samplerVolume=1.5	#1.5
@@ -81,8 +83,33 @@ class samplerPlayer():
 		pygame.mixer.init()
 		self.status="iddle"
 
-		if __name__ != "__main__":
+		if self.mode=="upbge":
+			ctx = zmq.Context.instance()
+			self.s = ctx.socket(zmq.PUSH)
+			url = 'tcp://127.0.0.1:5558'
+			self.s.connect(url)
+			#self.s.send_json({"text":"hola"})
+			#while True:
+			#msg = input(b"msg > ")
+			
+			
+			"""
+			context = zmq.Context()
+			socket = context.socket(zmq.REP)
+			socket.bind("tcp://*:5555")
 
+			while True:
+				#  Wait for next request from client
+				message = socket.recv()
+				print("Received request: %s" % message)
+
+				#  Do some 'work'
+				time.sleep(1)
+			"""
+
+
+
+		if __name__ != "__main__":
 			t = threading.Thread(target=self.showImage, args = ("showImage",)) #algo entre 0.1 y 0.8
 			t.start()
 		#pygame.init()
@@ -277,6 +304,8 @@ class samplerPlayer():
 		for v in norm:
 			distance=abs(target-v)
 			scores.append(distance)
+		
+		scores = [float(i)/max(scores) for i in scores]
 		return scores
 
 	def find_between(self, s, first, last ):
@@ -314,18 +343,25 @@ class samplerPlayer():
 		lyricsAlltracks=[]
 		self.typeOfLineJump="dashes"
 		
-		trackstepdivision=300
+		trackstepdivision=50
 		trackstep=(midiSong.length/trackstepdivision)
 		trackspreadScores=[]
 		trackaverageNotes=[]
+		musictracks=[0] * len(midiSong.tracks)
+		trackmessages=0
+		trackfound=False
+
+		#track title based filter
+		blacklist=["DRUMS","BATER","BATTER","HIHAT"]
+		whitelist=["MELOD","VOC","VOZ"]
 
 		trackNotes=[]
 		print("SONG LENGTH",midiSong.length)
-		sleep(5)
+		print("SONG TEMPO",songTempo)
 
 		# CHOOSE THE SAMPLER MIDI TRACK:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-		trackScores=[] # add scores to each track based on: amount of notes, spread over the song, spread over pitch (avoid drums and continuous note bass), ban keywords like "bass" or "percussion"
+		# add scores to each track based on: amount of notes, spread over the song, spread over pitch (avoid drums and continuous note bass), ban keywords like "bass" or "percussion"
 
 		for i, track in enumerate(midiSong.tracks):
 			messagesTypes=[0,0]#normal,lyrics
@@ -343,11 +379,15 @@ class samplerPlayer():
 			#messagessorted=track.sort(key=operator.attrgetter('time'))
 			#print(messagessorted)
 			#if messagessorted:
+			ismusictrack=False
 			for c,message in enumerate(track):
 
 				if not self.isLyricsMessage(message):
 					#normal music message
-					#print(c,message)
+					if hasattr(message, 'note'):
+						ismusictrack=True
+						trackmessages+=1
+					
 					currenttrackprogress+=(mido.tick2second(message.time,midiSong.ticks_per_beat,songTempo))
 					#print("currenttrackprogress",currenttrackprogress)
 					current_step=currenttrackprogress/trackstep
@@ -356,7 +396,6 @@ class samplerPlayer():
 						trackBlocks[int(current_step)]=1
 					except:
 						pass
-					
 					try:
 						notesintrack.append(message.note)
 					except:
@@ -366,6 +405,7 @@ class samplerPlayer():
 						messagesTypes[0]+=1
 					#trackType="standard"
 				else:
+					
 					if c<messagesLimit:
 						messagesTypes[1]+=1
 
@@ -374,27 +414,40 @@ class samplerPlayer():
 					#TODO:CLEAN HERE MESSAGE IF NECESSARY
 
 					lyricsAlltracks[i].append(message)
-
+					
 					"""
 					sylabs=self.unifyText(text)
 					for syl in sylabs:
 						self.lyrics.append(syl)
-				"""
+					"""
+			for t in blacklist:
+				if  t.upper() in track.name.upper():
+					ismusictrack=False
 			#else:
 			#	print("NOT SORTED TRACK")
 			spreadScore=sum(trackBlocks)
+			print("MUSIC TRACK:",track.name,ismusictrack,trackBlocks)
 			#print("trackBlocks",trackBlocks)
 			#print(track.name)
 			#print(track.name,"spreadScore",spreadScore)
 			trackType=messagesTypes.index(max(messagesTypes))
 			#if trackType==0:
-			notesarray = numpy.array(notesintrack)
-			if (len(notesarray)==0):
-				trackaverageNotes.append(0)
-			else:	
-				trackaverageNotes.append(numpy.mean(notesarray))
-			trackspreadScores.append(spreadScore)
+			if ismusictrack:
+				musictracks[i]=1
+				notesarray = numpy.array(notesintrack)
+				if (len(notesarray)==0):
+					trackaverageNotes.append(0)
+				else:	
+					trackaverageNotes.append(numpy.mean(notesarray))
+				trackspreadScores.append(spreadScore)
 			tracks.append([track.name,trackType,len(track)])
+
+		#create a equivalence list of index for onlymusic tracks over the overall tracks 
+		musiccount=0
+		mtracki=[]
+		for i,t in enumerate(musictracks):
+			if t==1:
+				mtracki.append(i)
 
 		#TODO: todos estos loops creo que son redundantes y se podrían incluir en anteriores para optimizar el tiempo de carga
 		#check what is the lyrics track with more words
@@ -417,65 +470,79 @@ class samplerPlayer():
 		#sys.exit()
 		
 		#count all standard messages
-		totalMessages=0.0
+		totalMessages=trackmessages#0.0
+		"""
 		for i,track in enumerate(tracks):
 			if track[1]==0:
 				#normal track
 				totalMessages+=track[2]
-			"""
-			else:
-				print "REMOVING TRACK NUM "+str(i),"NAMED: ",track.name
-				#remove all text tracks
-				del midiSong.tracks[i]
-			"""
-
+		"""
 		#add most lyrics track back the file object
 		#midiSong.tracks.append(trackWithMostLyrics)
 
-		
-		
 		#get track percentages
 		percentages=[]
 		
 		for i,track in enumerate(tracks):
 			
-			if track[1]==0:
+			#Whitelist trick 
+			for t in whitelist:
+				if t.upper() in track[0].upper():
+					trackfound=i
+
+			if musictracks[i]==1:
+			#if track[1]==0:
 				percentage=(track[2]*100.0)/totalMessages
 				percentages.append(percentage)
 				tracks[i].append(percentage)
-			else:
-				percentages.append(0.0)
+			#else:
+			#	percentages.append(0.0)
 
 		print("percentages",(percentages))
 		print("trackspreadScores",(trackspreadScores))
 
-		#combine scores 
-		norm = [float(i)/max(trackaverageNotes) for i in trackaverageNotes]
-		norm2 = [float(i)/max(trackspreadScores) for i in trackspreadScores]
-		norm3 = [float(i)/max(percentages) for i in percentages]
+		if trackfound:
+			leadTrackIndex=trackfound
+		else:
 
-		for i,track in enumerate(tracks):
-			print(track[0],"avgnotes",str(round(norm[i],2)),"spread",str(round(norm2[i],2)),"percent",str(round(norm3[i],2)))
+			#combine scores 
+			norm = [float(i)/max(trackaverageNotes) for i in trackaverageNotes]
+			norm2 = [float(i)/max(trackspreadScores) for i in trackspreadScores]
+			norm3 = [float(i)/max(percentages) for i in percentages]
+			
+			print(" ")
+			for i,track in enumerate(norm):
+				print(tracks[mtracki[i]][0],"avgnotes",str(round(norm[i],2)),"spread",str(round(norm2[i],2)),"percent",str(round(norm3[i],2)))
 
-		#print("trackaverageNotes",trackaverageNotes)
-		scoresSpread=np.array(self.scoreNearest(trackspreadScores,0.9))
-		scoresPercent=np.array(self.scoreNearest(percentages,0.5))
-		scoresNotes=np.array(self.scoreNearest(trackaverageNotes,0.9))
-		#print("scoresNotes",scoresNotes)
-		results=list(np.multiply(scoresPercent,scoresSpread))
-		results=list(np.multiply(results,scoresNotes*.6))
-		min_value = min(results)
-		min_index = results.index(min_value)
+			scoresNotes=np.array(self.scoreNearest(trackaverageNotes,0.75))
+			scoresSpread=np.array(self.scoreNearest(trackspreadScores,0.75))
+			scoresPercent=np.array(self.scoreNearest(percentages,0.51))
 
-		leadTrackIndex=min_index
+			print("BEST spread",tracks[ mtracki[np.where(scoresSpread==min(scoresSpread))[0][0] ]][0],"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+			print("BEST percent",tracks[  mtracki[np.where(scoresPercent==min(scoresPercent))[0][0] ]][0],"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+			print("BEST notes",tracks[  mtracki[np.where(scoresNotes==min(scoresNotes))[0][0] ]][0],"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
-		#leadTrackIndex=self.find_nearest(percentages,self.percentageOfmessagesForLeadTrack)
-		#leadTrackIndex=self.find_nearest(trackspreadScores,self.percentageOfspreadNotesForLeadTrack)
+			results=scoresNotes.tolist()
+			print("results",results)
+			for i,r in enumerate(results):
+				if scoresSpread[i]<0.32:
+					results[i]=results[i]*100
+				if scoresPercent[i]>0.8:
+					results[i]=results[i]*100
+			print("results AFTER",results)
+
+			min_value = min(results)
+			min_index = results.index(min_value)
+
+			leadTrackIndex=mtracki[min_index]#self.trackIndex(musictracks,min_index)
+
+			#leadTrackIndex=self.find_nearest(percentages,self.percentageOfmessagesForLeadTrack)
+			#leadTrackIndex=self.find_nearest(trackspreadScores,self.percentageOfspreadNotesForLeadTrack)
 		leadTrackName=tracks[leadTrackIndex][0]
 		print("LEAD TRACK NAME: ",leadTrackName)
 
 		#END  CHOOSE THE SAMPLER MIDI TRACK::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
+		
 		count=0
 		for i,track in enumerate(tracks):
 			if track[1]==0:
@@ -528,7 +595,17 @@ class samplerPlayer():
 			for c,message in enumerate(track):
 				pass
 
+	def trackIndex(self,musictracks,index):
+		musiccount=0
+		for i,t in enumerate(musictracks):
+			if musiccount==index:
+				return i
+			if t==1:
+				musiccount+=1
+			
+
 	def isLyricsMessage(self,message):
+		#if isinstance(mido.midifiles.meta.MetaMessage):
 		if hasattr(message, 'text'):
 			return True
 		else:
@@ -569,11 +646,14 @@ class samplerPlayer():
 		self.customText=customText
 		self.songName=filename.split(".")[0]
 
+		self.s.send_json({"event":"loadsong","songname":self.songName.replace("KARsongs/", "").split("/")[-1],"customtext":self.customText})
+		
 		#get the real duration of the song
 		mid = MidiFile(songpath)
 		songDuration=mid.length
 		songTempo=self.get_tempo(mid)
 		midfileTrackNumber,notesForSampler,mid=self.getTrackNumbers(mid,songTempo)
+		self.s.send_json({"lyrics":self.lyrics})
 
 		#self.prepareSampler(str(samplerNumber))
 		#self.constructSamplerTrack(notesForSampler,songDuration,str(samplerNumber))#max(m.kartimes)) #!!!!!!!!!!!!!!
@@ -596,6 +676,8 @@ class samplerPlayer():
 
 		dt=0.0
 
+		self.s.send_json({"event":"playsong"})
+
 		self.customText=""
 		#while True:
 		with mido.open_output("Microsoft GS Wavetable Synth 0") as output:
@@ -608,6 +690,7 @@ class samplerPlayer():
 				#print message.type,message
 				if self.status=="stop":
 					#stop the song
+					self.s.send_json({"event":"stopsong"})
 					break
 
 				nowNoteNames=[]
@@ -666,7 +749,7 @@ class samplerPlayer():
 		pil_d = ImageDraw.Draw(pil_im)
 		if centered:
 			w, h = pil_d.textsize(text,font=self.fonts[font])
-			cordinates=((self.windowSize[0]-w)/2,cordinates[1])
+			cordinates=((self.windowSize[1]-w)/2,cordinates[1])
 		pil_d.text(cordinates,text,color,font=self.fonts[font])
 		imgWithText = np.array(pil_im)
 		return imgWithText
@@ -708,19 +791,23 @@ class samplerPlayer():
 			threelines=self.lastLyrics
 			self.lastLyrics=[]
 			for s in steps:
+				#LIVE LYRICS LOOP
 				#print "STEP",s
 				sylabCounter+=1
 				if len(self.lyrics)>(s):
 					currentSylab=self.lyrics[s]
+					#print("currentSylab",currentSylab)
+					self.s.send_json({"currentSylab":currentSylab,"sylabindex":s})
 					#print "index",s,"currentSylab",currentSylab
 					#print currentSylab
 					if (self.isLineJump(currentSylab)) or (s==0): #end of block!
 
+						self.s.send_json({"event":"linejump"})
 						self.lineJumpCounter+=1
 
 						if self.lineJumpCounter==self.blockLines or (s==0):
 							self.lineJumpCounter=0
-
+							
 							#if self.blockLineCounter==0:
 
 							#print "BUILDING NEW BLOCK OF LYRICS!!!!!!"
@@ -773,6 +860,7 @@ class samplerPlayer():
 										lineCounter+=1
 										threelines.append([])
 										#LINE JUMP!
+										
 										self.blockLineCounter+=1
 									#if advancedSylab=="\n":
 									if (self.blockLineCounter==self.blockLines):# or (s==0):
@@ -850,13 +938,10 @@ class samplerPlayer():
 				#if self.lastSylab<self.lyricMessageCount:
 				#	print sylab
 
-
-
+		
 		self.lastLyrics=threelines
 
 		return imgCtext
-
-
 
 
 
@@ -877,7 +962,7 @@ class samplerPlayer():
 
 			#check if karaoke lyrics exist
 			if self.customText!="" and self.status!="playing":
-				self.songName=self.songName.replace("KARsongs/", "")
+				self.songName=self.songName.replace("KARsongs/", "").split("/")[-1]
 				#print "show singer text"
 				#self.songName.encode("ascii","ignore")
 
@@ -889,10 +974,7 @@ class samplerPlayer():
 
 			#if 'm' in self.__dict__ and self.status=="playing":
 			if self.status=="playing":
-
 				imgCtext=self.printLyrics(imgCtext)
-
-
 
 			cv2.imshow(self.windowName,imgCtext)
 			if cv2.waitKey(1) == 27:
@@ -903,7 +985,6 @@ class samplerPlayer():
 
 			self.opencvReady=True
 		cv2.destroyAllWindows()
-
 
 
 	def speedx(self,sound_array, factor):
@@ -964,16 +1045,10 @@ class samplerPlayer():
 		return chipmunk_ready_to_export
 
 	def get_tempo(self,mid):
-		for track in mid:
-			try:
-				for msg in track:
-					if msg.type == 'set_tempo':
-						return msg.tempo
-			except:
-				pass
-		else:
-			# Default tempo.
-			return 500000
+		for msg in mid:# Search for tempo
+			if msg.type == 'set_tempo':
+				return msg.tempo
+		return 500000       # If not found return default tempo
 
 
 

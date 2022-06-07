@@ -142,6 +142,13 @@ def playsong():
 
 	return "recorded"
 
+@server.route("/pausesong")
+def pausesong():
+	K.singing=False
+	S.status="pause"
+	
+	return "paused"
+
 @server.route("/stopsong")
 def stopsong():
 	K.singing=False
