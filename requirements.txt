@@ -1,8 +1,8 @@
-opencv==3.3.1 #conda install -c conda-forge opencv==3.3.1
-pillow #conda install -c anaconda pillow
-aubio #conda install -c conda-forge aubio
-pyaudio #conda install -c anaconda pyaudio
-pydub #conda install -c conda-forge pydub
+#conda install -c conda-forge opencv==3.3.1
+#conda install -c anaconda pillow
+#conda install -c conda-forge aubio
+#conda install -c anaconda pyaudio
+#conda install -c conda-forge pydub
 
 numpy
 pygame
