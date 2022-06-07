@@ -129,11 +129,12 @@ class samplerPlayer():
 			self.notes.append(int(os.path.splitext(basename(file))[0].split("_")[0]))
 
 
-
 	def loadImagesSampler(self,samplerNumber):
+		#Creo que esta funcion ya no se ejecuta
 		self.imgs=[]
 		for file in glob.glob("samplers/"+samplerNumber+"/*.jpg"):
 			self.imgs.append( cv2.imread(file))
+			
 
 	def findClosestNote(self,notes,note):
 
@@ -159,6 +160,7 @@ class samplerPlayer():
 		tempNotes=[]
 		tempSounds=[]
 		tempImgs=[]
+		scount=0
 		for file in glob.glob("recordings/*.wav"):
 			if file not in self.blackListRecordings:
 				file=file.replace("\\","/")
@@ -170,7 +172,8 @@ class samplerPlayer():
 						tempSounds.append(a)
 						imagefile=file.replace("wav","jpg")
 						tempImgs.append( cv2.imread(imagefile))
-
+						self.s.send_json({"loadimage":os.getcwd()+"/"+imagefile,"index":scount})
+						scount+=1
 					else:
 						self.blackListRecordings.append(file)
 				except:
@@ -283,6 +286,7 @@ class samplerPlayer():
 			#self.sounds[soundIndex].set_volume(0)
 		else:
 			#note on
+			self.s.send_json({"event":"playnote"})
 			self.img=random.choice(self.imgs)
 			volume=(message.velocity/127.0)*self.samplerVolume
 			if volume>1:
@@ -704,6 +708,7 @@ class samplerPlayer():
 					if message.channel==15:#MidoTrackNumber:#midfileTrackNumber:
 						if len(self.notes)>0:
 							try:
+								#PLAY NOTE FROM SAMPLER
 								t = threading.Thread(target=self.playSamplerNotewithDelay, args = (message,self.samplerdelay)) #algo entre 0.1 y 0.8
 								t.start()
 							except:

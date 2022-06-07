@@ -68,7 +68,7 @@ class karaokesampler():
 	#finished_threads=[]
 	#event = threading.Event()
 
-	def __init__(self):
+	def __init__(self,karaokePlayer):
 
 		print("init karaokesampler")
 
@@ -91,6 +91,8 @@ class karaokesampler():
 
 		if not os.path.exists(self.samplersFolder):
 			os.makedirs(self.samplersFolder)
+
+		self.KP=karaokePlayer
 
 		t = threading.Thread(target=self.startVision, args = ("vision",))
 		t.start()
@@ -457,6 +459,7 @@ class karaokesampler():
 							imgRes=self.img
 						#imgRes=self.img.resize((self.imgResizeSize[0], self.imgResizeSize[1]), PIL.Image.ANTIALIAS)
 						cv2.imwrite(filename+".jpg",imgRes)
+						#XXX self.KP
 					else:
 						#same pitch, recording
 						self.recordings[-1][1]+=1

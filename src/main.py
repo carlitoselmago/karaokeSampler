@@ -36,7 +36,7 @@ server.config["SEND_FILE_MAX_AGE_DEFAULT"] = 1  # disable caching
 server.config['JSON_AS_ASCII'] = False
 
 S=samplerPlayer(windowName)
-K=karaokesampler()
+K=karaokesampler(S)
 
 def crossdomain(origin=None, methods=None, headers=None, max_age=21600, attach_to_all=True, automatic_options=True):  
 	try:
