@@ -88,24 +88,6 @@ class samplerPlayer():
 			self.s = ctx.socket(zmq.PUSH)
 			url = 'tcp://127.0.0.1:5558'
 			self.s.connect(url)
-			#self.s.send_json({"text":"hola"})
-			#while True:
-			#msg = input(b"msg > ")
-			
-			
-			"""
-			context = zmq.Context()
-			socket = context.socket(zmq.REP)
-			socket.bind("tcp://*:5555")
-
-			while True:
-				#  Wait for next request from client
-				message = socket.recv()
-				print("Received request: %s" % message)
-
-				#  Do some 'work'
-				time.sleep(1)
-			"""
 
 		if __name__ != "__main__":
 			#if self.mode=="upbg":
@@ -638,7 +620,12 @@ class samplerPlayer():
 		songTempo=self.get_tempo(mid)
 		midfileTrackNumber,notesForSampler,mid=self.getTrackNumbers(mid,songTempo)
 		self.s.send_json({"lyrics":self.lyrics})
+		print(self.lyrics)
 
+		#prepare lyrics blocks
+		self.lyricblocks=self.prepareLyricBlocks(self.lyrics)
+		self.currentlyricblock=0
+		self.lastsylabplayed=-1
 		#self.prepareSampler(str(samplerNumber))
 		#self.constructSamplerTrack(notesForSampler,songDuration,str(samplerNumber))#max(m.kartimes)) #!!!!!!!!!!!!!!
 
@@ -661,6 +648,10 @@ class samplerPlayer():
 		dt=0.0
 
 		self.s.send_json({"event":"playsong"})
+		try:
+			self.s.send_json({"event":"newblockoflyrics","lyrics":self.LyricBlocks[0]})
+		except:
+			pass
 
 		self.customText=""
 		#while True:
@@ -727,7 +718,45 @@ class samplerPlayer():
 
 
 		self.status="iddle"
+		self.s.send_json({"event":"stopsong"})
 		return True
+
+	def prepareLyricBlocks(self,lyrics):
+		#XXXXXX
+		#prebuilds lyrics into blocks of lines based on self.blockLines
+		lyricblocks=[]
+		block=[]
+		line=[]
+		linecounter=0
+		apiscore={}
+		pastcredits=False
+		self.LyricBlocks=[]
+		self.apiscore={} #list of events: 0 word, 1 line break, 2 block break
+
+		for i,syl in enumerate(lyrics):
+			next_syl=lyrics[i]
+			if self.hasLineJump(next_syl):
+				#create new line
+				linecounter+=1
+				if len(line)>0:
+					block.append(line)
+					apiscore[i]=1
+				line=[]
+			if linecounter==self.blockLines:
+				#create new block
+				lyricblocks.append(block)
+				apiscore[i]=2
+				block=[]
+				linecounter=0
+			line.append(syl)
+		
+		
+		print("lyricblocks length:",len(lyricblocks))
+		print("::::::::::::::::::")
+		for b in lyricblocks:
+			print(b)
+		self.LyricBlocks=lyricblocks
+		self.apiscore=apiscore
 
 	def putTextPIL(self,img,text,cordinates,font=0,centered=False,color=(255,255,255)):
 		pil_im = Image.fromarray(img)
@@ -740,15 +769,17 @@ class samplerPlayer():
 		return imgWithText
 
 
-	def isLineJump(self,text):
-		if "\n" or "\r" in text:
-			return True 
-		if "\\" in text or "/" in text:
+	def hasLineJump(self,text):
+		#if "\n" or "\r" in text:
+		#	return True 
+		if "\n" in text or "\r" in text or "\\" in text or "/" in text or "@" in text:
+			print("si lj:",text)
 			return True
-
+		#print("no lj:",text)
 		return False
+		
+		
 		"""
-
 		if self.typeOfLineJump=="dashes":
 			if "\\" in text or "/" in text:
 				return True
@@ -757,11 +788,12 @@ class samplerPlayer():
 		else:
 
 			if "\n" in text or "\r" in text:# or "\\" in text or "/" in text:# or text=="":
-				#print text ,"isLineJump"
+				#print text ,"hasLineJump"
 				return True
 			else:
 				return False
 		"""
+		
 	"""
 	def manageLyrics(self,threadName):
 		running=True
@@ -792,13 +824,13 @@ class samplerPlayer():
 							self.s.send_json({"currentSylab":currentSylab,"sylabindex":s})
 							#print "index",s,"currentSylab",currentSylab
 							#print currentSylab
-							if (self.isLineJump(currentSylab)) or (s==0): #end of block!
+							if (self.hasLineJump(currentSylab)) or (s==0): #end of block!
 								self.s.send_json({"event":"linejump"})
 								self.lineJumpCounter+=1
 								
 	"""
 	def printLyrics(self,imgCtext):
-		
+		#X
 		#self.lyricMessageCount
 		#self.lyrics
 		#print self.lyrics[self.lyricMessageCount]
@@ -821,103 +853,30 @@ class samplerPlayer():
 			self.lastLyrics=[]
 			for s in steps:
 				#LIVE LYRICS LOOP
-				#print "STEP",s
 				sylabCounter+=1
 				if len(self.lyrics)>(s):
-					currentSylab=self.lyrics[s]
-					#print("currentSylab",currentSylab)
-					self.s.send_json({"currentSylab":currentSylab,"sylabindex":s})
-					#print "index",s,"currentSylab",currentSylab
-					#print currentSylab
-					if (self.isLineJump(currentSylab)) or (s==0): #end of block!
+					if self.lastsylabplayed!=s:
+						print(s)
+						currentSylab=self.lyrics[s]
 
-						self.s.send_json({"event":"linejump"})
-						self.lineJumpCounter+=1
-						sendnewblocklyrics=False
-						if self.lineJumpCounter==self.blockLines or (s==0):
-							self.lineJumpCounter=0
-							
-							#if self.blockLineCounter==0:
+						self.s.send_json({"currentSylab":currentSylab,"sylabindex":s})
+						print("currentSylab",currentSylab)
+						if s in self.apiscore:
+							if self.apiscore[s]==2:
+								#block change
+								print("self.currentlyricblock",self.currentlyricblock)
+								try:
+									self.s.send_json({"event":"newblockoflyrics","lyrics":self.LyricBlocks[self.currentlyricblock+1]})
+								except:
+									pass
+								self.currentlyricblock+=1
+							if self.apiscore[s]==1:
+								#line jump
+								self.s.send_json({"event":"linejump"})
+						self.lastsylabplayed=s
+				self.lastSylab=s
 
-							#print "BUILDING NEW BLOCK OF LYRICS!!!!!!"
-
-
-							self.lyricMessageCountInBlocks=self.lyricMessageCount
-
-							#let's build the new block of lyrics
-							#find how many sillabs till next new block
-							parsingBlock=True
-
-							lineCounter=0
-							multiplelines=[[]]
-							sendnewblocklyrics=True
-
-							#check next syllab after last break (in case it's not the first block)
-							if s!=0:
-								#not first block
-								parser=0
-								advancedSylab=self.lyrics[s]
-								findingNextSylab=True
-								while findingNextSylab:
-									if self.isLineJump(advancedSylab):
-										findingNextSylab=False
-									"""
-									if self.typeOfLineJump=="dashes":
-										if "\\" in advancedSylab or "/" in advancedSylab:
-											findingNextSylab=False
-									else:
-										if "\n" in advancedSylab or "\r" in advancedSylab:
-											findingNextSylab=False
-									"""
-									advancedSylab=self.lyrics[s+parser]
-									s+=1
-									parser+=1
-
-
-							parser=0
-							while parsingBlock:
-								#print "s+parser",s+parser
-								#print "self.lyricMessageCount+parser",s+parser
-								#print "len lyrics",len(self.lyrics)
-								#print "s+parser",s+prepareSampler
-
-								if len(self.lyrics)<=(s+parser):
-									parsingBlock=False
-									self.blockLineCounter=0
-								else:
-
-									advancedSylab=self.lyrics[s+parser]
-									#print "advancedSylab:",advancedSylab,"s+parser:",s+parser
-									#print advancedSylab
-									if self.isLineJump(advancedSylab):
-
-										lineCounter+=1
-										multiplelines.append([])
-										#LINE JUMP!
-										
-										self.blockLineCounter+=1
-									#if advancedSylab=="\n":
-									if (self.blockLineCounter==self.blockLines):# or (s==0):
-										parsingBlock=False
-										self.blockLineCounter=0
-										#print "END OF BLOCK"
-									#elif advancedSylab=="\r":
-										#new line
-
-									#else:
-									multiplelines[lineCounter].append(advancedSylab)
-
-									parser+=1
-							if sendnewblocklyrics:
-								self.s.send_json({"event":"newblockoflyrics","lyrics":multiplelines})
-							print("multiplelines",multiplelines)
-							self.lastLyrics=multiplelines
-
-
-				#self.lyricMessageCountInBlocks=self.lyricMessageCount-sylabCounter
-
-				self.lastSylab=s#self.lyricMessageCount
-
+		"""
 		else:
 			multiplelines=self.lastLyrics
 		#multiplelines=[["1","2","3"],["4","5","6"],["7","8","9"]]
@@ -975,7 +934,7 @@ class samplerPlayer():
 
 		
 		self.lastLyrics=multiplelines
-
+		"""
 		return imgCtext
 
 
@@ -1024,6 +983,8 @@ class samplerPlayer():
 
 	def speedx(self,sound_array, factor):
 		""" Multiplies the sound's speed by some `factor` """
+		
+		
 		indices = np.round( np.arange(0, len(sound_array), factor) )
 		indices = indices[indices < len(sound_array)].astype(int)
 		return sound_array[ indices.astype(int) ]
