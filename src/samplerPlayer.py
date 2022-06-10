@@ -58,7 +58,7 @@ class samplerPlayer():
 		#self.secondaryDisplay=[1024,768]
 		self.windowSize=[1024,768]#[1920,1080]#[800,450]#[800,450]
 		self.moveUp=5#1080#768
-		self.moveLeft=1400#0
+		self.moveLeft=800#0
 		#self.moveUp=1050
 		fonts_path = "fonts"#os.path.join(os.path.dirname(os.path.dirname(__file__)), 'fonts')
 
@@ -739,7 +739,16 @@ class samplerPlayer():
 		imgWithText = np.array(pil_im)
 		return imgWithText
 
+
 	def isLineJump(self,text):
+		if "\n" or "\r" in text:
+			return True 
+		if "\\" in text or "/" in text:
+			return True
+
+		return False
+		"""
+
 		if self.typeOfLineJump=="dashes":
 			if "\\" in text or "/" in text:
 				return True
@@ -752,6 +761,7 @@ class samplerPlayer():
 				return True
 			else:
 				return False
+		"""
 	"""
 	def manageLyrics(self,threadName):
 		running=True
@@ -849,12 +859,16 @@ class samplerPlayer():
 								advancedSylab=self.lyrics[s]
 								findingNextSylab=True
 								while findingNextSylab:
+									if self.isLineJump(advancedSylab):
+										findingNextSylab=False
+									"""
 									if self.typeOfLineJump=="dashes":
 										if "\\" in advancedSylab or "/" in advancedSylab:
 											findingNextSylab=False
 									else:
 										if "\n" in advancedSylab or "\r" in advancedSylab:
 											findingNextSylab=False
+									"""
 									advancedSylab=self.lyrics[s+parser]
 									s+=1
 									parser+=1
