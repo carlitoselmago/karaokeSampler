@@ -42,7 +42,7 @@ class samplerPlayer():
 	lyricMessageCountInBlocks=0
 	lastLyrics=[]
 	lastSylab=0
-	blockLines=4
+	blockLines=2 #amount of lines per block of lyrics
 	blockLineCounter=0
 	lineJumpCounter=0
 	blackListRecordings=[]
@@ -107,10 +107,12 @@ class samplerPlayer():
 				time.sleep(1)
 			"""
 
-
-
 		if __name__ != "__main__":
-			t = threading.Thread(target=self.showImage, args = ("showImage",)) #algo entre 0.1 y 0.8
+			#if self.mode=="upbg":
+			#	t2 = threading.Thread(target=self.manageLyrics, args = ("manageLyrics",)) 
+			#	t2.start()
+			#else:
+			t = threading.Thread(target=self.showImage, args = ("showImage",))
 			t.start()
 		#pygame.init()
 
@@ -614,28 +616,6 @@ class samplerPlayer():
 			return True
 		else:
 			return False
-		"""
-		if message.type=="lyrics":
-			return True
-		else:
-			return False
-		"""
-		"""
-		if hasattr(message, 'text'):
-			return True
-		else:
-			return False
-		"""
-		"""
-		if message.type=="marker" or message.type=="note_on" or message.type=="note_off" or message.type=="sysex" or  message.type=="program_change" or message.type=="control_change" or message.type=="pitchwheel" or message.type=="sysex":
-			return False
-		else:
-			if hasattr(message, 'text'):
-				return True
-			else:
-				return False
-		"""
-
 
 	def playSong(self,filename,songpath,samplerNumber,customText):
 		self.notes=[]
@@ -772,9 +752,43 @@ class samplerPlayer():
 				return True
 			else:
 				return False
+	"""
+	def manageLyrics(self,threadName):
+		running=True
+		while running:
+			if self.status=="playing":
+				#for UPBGE mode
+				if self.lastSylab<self.lyricMessageCount or self.lyricMessageCount==0:
+					#change of step index in lyrics
 
+					if self.lyricMessageCount-self.lastSylab>1:
+						#we missed a step reproduce both
+						steps=[]
+						for s in range(self.lyricMessageCount-self.lastSylab):
+							steps.append((self.lastSylab+s)+1)
+					else:
+						steps=[self.lyricMessageCount]
+
+					sylabCounter=0
+
+					multiplelines=self.lastLyrics
+					self.lastLyrics=[]
+					for s in steps:
+						#LIVE LYRICS LOOP
+						sylabCounter+=1
+						if len(self.lyrics)>(s):
+							currentSylab=self.lyrics[s]
+							#print("currentSylab",currentSylab)
+							self.s.send_json({"currentSylab":currentSylab,"sylabindex":s})
+							#print "index",s,"currentSylab",currentSylab
+							#print currentSylab
+							if (self.isLineJump(currentSylab)) or (s==0): #end of block!
+								self.s.send_json({"event":"linejump"})
+								self.lineJumpCounter+=1
+								
+	"""
 	def printLyrics(self,imgCtext):
-
+		
 		#self.lyricMessageCount
 		#self.lyrics
 		#print self.lyrics[self.lyricMessageCount]
@@ -793,7 +807,7 @@ class samplerPlayer():
 
 			sylabCounter=0
 
-			threelines=self.lastLyrics
+			multiplelines=self.lastLyrics
 			self.lastLyrics=[]
 			for s in steps:
 				#LIVE LYRICS LOOP
@@ -809,7 +823,7 @@ class samplerPlayer():
 
 						self.s.send_json({"event":"linejump"})
 						self.lineJumpCounter+=1
-
+						sendnewblocklyrics=False
 						if self.lineJumpCounter==self.blockLines or (s==0):
 							self.lineJumpCounter=0
 							
@@ -825,7 +839,8 @@ class samplerPlayer():
 							parsingBlock=True
 
 							lineCounter=0
-							threelines=[[]]
+							multiplelines=[[]]
+							sendnewblocklyrics=True
 
 							#check next syllab after last break (in case it's not the first block)
 							if s!=0:
@@ -863,7 +878,7 @@ class samplerPlayer():
 									if self.isLineJump(advancedSylab):
 
 										lineCounter+=1
-										threelines.append([])
+										multiplelines.append([])
 										#LINE JUMP!
 										
 										self.blockLineCounter+=1
@@ -876,12 +891,13 @@ class samplerPlayer():
 										#new line
 
 									#else:
-									threelines[lineCounter].append(advancedSylab)
+									multiplelines[lineCounter].append(advancedSylab)
 
 									parser+=1
-
-
-							self.lastLyrics=threelines
+							if sendnewblocklyrics:
+								self.s.send_json({"event":"newblockoflyrics","lyrics":multiplelines})
+							print("multiplelines",multiplelines)
+							self.lastLyrics=multiplelines
 
 
 				#self.lyricMessageCountInBlocks=self.lyricMessageCount-sylabCounter
@@ -889,8 +905,8 @@ class samplerPlayer():
 				self.lastSylab=s#self.lyricMessageCount
 
 		else:
-			threelines=self.lastLyrics
-		#threelines=[["1","2","3"],["4","5","6"],["7","8","9"]]
+			multiplelines=self.lastLyrics
+		#multiplelines=[["1","2","3"],["4","5","6"],["7","8","9"]]
 		#self.lastLyrics
 
 
@@ -907,7 +923,7 @@ class samplerPlayer():
 
 
 		#for i, line in enumerate(imgText.split('\n')):
-		for i,line in  enumerate(threelines):
+		for i,line in  enumerate(multiplelines):
 			y = y0 + i*dy
 			lineX=30
 			for e,sylab in enumerate(line):
@@ -944,7 +960,7 @@ class samplerPlayer():
 				#	print sylab
 
 		
-		self.lastLyrics=threelines
+		self.lastLyrics=multiplelines
 
 		return imgCtext
 
