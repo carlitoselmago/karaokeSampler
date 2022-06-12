@@ -648,8 +648,9 @@ class samplerPlayer():
 		dt=0.0
 
 		self.s.send_json({"event":"playsong"})
+		
 		try:
-			self.s.send_json({"event":"newblockoflyrics","lyrics":self.LyricBlocks[0]})
+			self.s.send_json({"event":"newblockoflyrics","lyrics":self.LyricBlocks[0],"nextlyrics":self.LyricBlocks[1]})
 		except:
 			pass
 
@@ -856,17 +857,21 @@ class samplerPlayer():
 				sylabCounter+=1
 				if len(self.lyrics)>(s):
 					if self.lastsylabplayed!=s:
-						print(s)
+						#print(s)
 						currentSylab=self.lyrics[s]
 
 						self.s.send_json({"currentSylab":currentSylab,"sylabindex":s})
-						print("currentSylab",currentSylab)
+						#print("currentSylab",currentSylab)
 						if s in self.apiscore:
 							if self.apiscore[s]==2:
 								#block change
 								print("self.currentlyricblock",self.currentlyricblock)
+								nextblocklyrics=""
+								#if len(self.LyricBlocks)<self.currentlyricblock+2:
+								nextblocklyrics=self.LyricBlocks[self.currentlyricblock+2]
+								print("nextblocklyrics!!!!!",nextblocklyrics)
 								try:
-									self.s.send_json({"event":"newblockoflyrics","lyrics":self.LyricBlocks[self.currentlyricblock+1]})
+									self.s.send_json({"event":"newblockoflyrics","lyrics":self.LyricBlocks[self.currentlyricblock+1],"nextlyrics":nextblocklyrics})
 								except:
 									pass
 								self.currentlyricblock+=1
