@@ -90,12 +90,15 @@ class samplerPlayer():
 			self.s.connect(url)
 
 		if __name__ != "__main__":
-			#if self.mode=="upbg":
-			#	t2 = threading.Thread(target=self.manageLyrics, args = ("manageLyrics",)) 
-			#	t2.start()
-			#else:
-			t = threading.Thread(target=self.showImage, args = ("showImage",))
-			t.start()
+			
+			if self.mode=="upbge":
+				print("mode:","upbge")
+				t = threading.Thread(target=self.manageLyrics, args = ("manageLyrics",)) 
+				t.start()
+			else:
+				print("mode:","openCV")
+				t = threading.Thread(target=self.showImage, args = ("showImage",))
+				t.start()
 		#pygame.init()
 
 	def createBlackImage(self):
@@ -600,6 +603,7 @@ class samplerPlayer():
 			return False
 
 	def playSong(self,filename,songpath,samplerNumber,customText):
+		print("PLAY SONG")
 		self.notes=[]
 		self.sounds=[]
 		renewRound=0
@@ -774,13 +778,26 @@ class samplerPlayer():
 		#if "\n" or "\r" in text:
 		#	return True 
 		if "\n" in text or "\r" in text or "\\" in text or "/" in text or "@" in text:
-			print("si lj:",text)
 			return True
 		#print("no lj:",text)
 		return False
-		
-		
-		"""
+	
+	"""
+	def isLineJump(self,text):
+		if self.typeOfLineJump=="dashes":
+			if "\\" in text or "/" in text:
+				return True
+			else:
+				return False
+		else:
+
+			if "\n" in text or "\r" in text:# or "\\" in text or "/" in text:# or text=="":
+				#print text ,"isLineJump"
+				return True
+			else:
+				return False
+	"""
+	"""
 		if self.typeOfLineJump=="dashes":
 			if "\\" in text or "/" in text:
 				return True
@@ -793,44 +810,23 @@ class samplerPlayer():
 				return True
 			else:
 				return False
-		"""
+	"""
 		
-	"""
+	
 	def manageLyrics(self,threadName):
+	
 		running=True
+
 		while running:
+			imgText=""
+
 			if self.status=="playing":
-				#for UPBGE mode
-				if self.lastSylab<self.lyricMessageCount or self.lyricMessageCount==0:
-					#change of step index in lyrics
-
-					if self.lyricMessageCount-self.lastSylab>1:
-						#we missed a step reproduce both
-						steps=[]
-						for s in range(self.lyricMessageCount-self.lastSylab):
-							steps.append((self.lastSylab+s)+1)
-					else:
-						steps=[self.lyricMessageCount]
-
-					sylabCounter=0
-
-					multiplelines=self.lastLyrics
-					self.lastLyrics=[]
-					for s in steps:
-						#LIVE LYRICS LOOP
-						sylabCounter+=1
-						if len(self.lyrics)>(s):
-							currentSylab=self.lyrics[s]
-							#print("currentSylab",currentSylab)
-							self.s.send_json({"currentSylab":currentSylab,"sylabindex":s})
-							#print "index",s,"currentSylab",currentSylab
-							#print currentSylab
-							if (self.hasLineJump(currentSylab)) or (s==0): #end of block!
-								self.s.send_json({"event":"linejump"})
-								self.lineJumpCounter+=1
-								
-	"""
-	def printLyrics(self,imgCtext):
+				self.printLyrics()
+			"""
+			if self.status=="stop":
+				running=False
+			"""
+	def printLyrics(self):
 		#X
 		#self.lyricMessageCount
 		#self.lyrics
@@ -857,7 +853,7 @@ class samplerPlayer():
 				sylabCounter+=1
 				if len(self.lyrics)>(s):
 					if self.lastsylabplayed!=s:
-						#print(s)
+						
 						currentSylab=self.lyrics[s]
 
 						self.s.send_json({"currentSylab":currentSylab,"sylabindex":s})
@@ -865,11 +861,11 @@ class samplerPlayer():
 						if s in self.apiscore:
 							if self.apiscore[s]==2:
 								#block change
-								print("self.currentlyricblock",self.currentlyricblock)
+								#print("self.currentlyricblock",self.currentlyricblock)
 								nextblocklyrics=""
 								#if len(self.LyricBlocks)<self.currentlyricblock+2:
 								nextblocklyrics=self.LyricBlocks[self.currentlyricblock+2]
-								print("nextblocklyrics!!!!!",nextblocklyrics)
+								#print("nextblocklyrics!!!!!",nextblocklyrics)
 								try:
 									self.s.send_json({"event":"newblockoflyrics","lyrics":self.LyricBlocks[self.currentlyricblock+1],"nextlyrics":nextblocklyrics})
 								except:
@@ -880,11 +876,121 @@ class samplerPlayer():
 								self.s.send_json({"event":"linejump"})
 						self.lastsylabplayed=s
 				self.lastSylab=s
+	
 
-		"""
+	def printLyricsOpenCV(self,imgCtext):
+
+		#self.lyricMessageCount
+		#self.lyrics
+		#print self.lyrics[self.lyricMessageCount]
+		#print len(self.lyrics[self.lyricMessageCount]),"index:",self.lyricMessageCount
+
+		if self.lastSylab<self.lyricMessageCount or self.lyricMessageCount==0:
+			#change of step index in lyrics
+
+			if self.lyricMessageCount-self.lastSylab>1:
+				#we missed a step reproduce both
+				steps=[]
+				for s in range(self.lyricMessageCount-self.lastSylab):
+					steps.append((self.lastSylab+s)+1)
+			else:
+				steps=[self.lyricMessageCount]
+
+			sylabCounter=0
+
+			threelines=self.lastLyrics
+			self.lastLyrics=[]
+			for s in steps:
+				#print "STEP",s
+				sylabCounter+=1
+				if len(self.lyrics)>(s):
+					currentSylab=self.lyrics[s]
+					#print "index",s,"currentSylab",currentSylab
+					#print currentSylab
+					if (self.hasLineJump(currentSylab)) or (s==0): #end of block!
+
+						self.lineJumpCounter+=1
+
+						if self.lineJumpCounter==self.blockLines or (s==0):
+							self.lineJumpCounter=0
+
+							#if self.blockLineCounter==0:
+
+							#print "BUILDING NEW BLOCK OF LYRICS!!!!!!"
+
+
+							self.lyricMessageCountInBlocks=self.lyricMessageCount
+
+							#let's build the new block of lyrics
+							#find how many sillabs till next new block
+							parsingBlock=True
+
+							lineCounter=0
+							threelines=[[]]
+
+							#check next syllab after last break (in case it's not the first block)
+							if s!=0:
+								#not first block
+								parser=0
+								advancedSylab=self.lyrics[s]
+								findingNextSylab=True
+								while findingNextSylab:
+									if self.typeOfLineJump=="dashes":
+										if "\\" in advancedSylab or "/" in advancedSylab:
+											findingNextSylab=False
+									else:
+										if "\n" in advancedSylab or "\r" in advancedSylab:
+											findingNextSylab=False
+									advancedSylab=self.lyrics[s+parser]
+									s+=1
+									parser+=1
+
+
+							parser=0
+							while parsingBlock:
+								#print "s+parser",s+parser
+								#print "self.lyricMessageCount+parser",s+parser
+								#print "len lyrics",len(self.lyrics)
+								#print "s+parser",s+prepareSampler
+
+								if len(self.lyrics)<=(s+parser):
+									parsingBlock=False
+									self.blockLineCounter=0
+								else:
+
+									advancedSylab=self.lyrics[s+parser]
+									#print "advancedSylab:",advancedSylab,"s+parser:",s+parser
+									#print advancedSylab
+									if self.hasLineJump(advancedSylab):
+
+										lineCounter+=1
+										threelines.append([])
+										#LINE JUMP!
+										self.blockLineCounter+=1
+									#if advancedSylab=="\n":
+									if (self.blockLineCounter==self.blockLines):# or (s==0):
+										parsingBlock=False
+										self.blockLineCounter=0
+										#print "END OF BLOCK"
+									#elif advancedSylab=="\r":
+										#new line
+
+									#else:
+									threelines[lineCounter].append(advancedSylab)
+
+									parser+=1
+
+
+							self.lastLyrics=threelines
+
+
+				#self.lyricMessageCountInBlocks=self.lyricMessageCount-sylabCounter
+
+				self.lastSylab=s#self.lyricMessageCount
+
 		else:
-			multiplelines=self.lastLyrics
-		#multiplelines=[["1","2","3"],["4","5","6"],["7","8","9"]]
+			threelines=self.lastLyrics
+		#threelines=[["1","2","3"],["4","5","6"],["7","8","9"]]
 		#self.lastLyrics
 
 
@@ -901,7 +1007,7 @@ class samplerPlayer():
 
 
 		#for i, line in enumerate(imgText.split('\n')):
-		for i,line in  enumerate(multiplelines):
+		for i,line in  enumerate(threelines):
 			y = y0 + i*dy
 			lineX=30
 			for e,sylab in enumerate(line):
@@ -937,12 +1043,11 @@ class samplerPlayer():
 				#if self.lastSylab<self.lyricMessageCount:
 				#	print sylab
 
-		
-		self.lastLyrics=multiplelines
-		"""
+
+
+		self.lastLyrics=threelines
+
 		return imgCtext
-
-
 
 	def showImage(self,threadName):
 		cv2.namedWindow(self.windowName, cv2.WND_PROP_FULLSCREEN)
@@ -973,7 +1078,7 @@ class samplerPlayer():
 
 			#if 'm' in self.__dict__ and self.status=="playing":
 			if self.status=="playing":
-				imgCtext=self.printLyrics(imgCtext)
+				imgCtext=self.printLyricsOpenCV(imgCtext)
 
 			cv2.imshow(self.windowName,imgCtext)
 			if cv2.waitKey(1) == 27:
