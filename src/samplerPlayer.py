@@ -32,7 +32,7 @@ import zmq
 
 class samplerPlayer():
 
-	mode="upbge" #modes: opencv, upbge
+	mode="opencv"#"upbge" #modes: opencv, upbge
 
 	samplerdelay=0.16 #algo entre 0.1 y 0.8
 	samplerVolume=1.5	#1.5
@@ -42,7 +42,7 @@ class samplerPlayer():
 	lyricMessageCountInBlocks=0
 	lastLyrics=[]
 	lastSylab=0
-	blockLines=2 #amount of lines per block of lyrics
+	#blockLines=2 #amount of lines per block of lyrics
 	blockLineCounter=0
 	lineJumpCounter=0
 	blackListRecordings=[]
@@ -55,6 +55,10 @@ class samplerPlayer():
 		print ("sampler Player init")
 		self.sounds=[]
 		self.notes=[]
+		if self.mode=="upbge":
+			self.blockLines=2
+		else:
+			self.blockLines=4
 		#self.secondaryDisplay=[1024,768]
 		self.windowSize=[1024,768]#[1920,1080]#[800,450]#[800,450]
 		self.moveUp=5#1080#768
@@ -273,7 +277,8 @@ class samplerPlayer():
 			#self.sounds[soundIndex].set_volume(0)
 		else:
 			#note on
-			self.s.send_json({"event":"playnote"})
+			if self.mode=="upbge":
+				self.s.send_json({"event":"playnote"})
 			self.img=random.choice(self.imgs)
 			volume=(message.velocity/127.0)*self.samplerVolume
 			if volume>1:
@@ -615,16 +620,17 @@ class samplerPlayer():
 		self.status="loading"
 		self.customText=customText
 		self.songName=filename.split(".")[0]
-
-		self.s.send_json({"event":"loadsong","songname":self.songName.replace("KARsongs/", "").split("/")[-1],"customtext":self.customText})
+		if self.mode=="upbge":
+			self.s.send_json({"event":"loadsong","songname":self.songName.replace("KARsongs/", "").split("/")[-1],"customtext":self.customText})
 		
 		#get the real duration of the song
 		mid = MidiFile(songpath)
 		songDuration=mid.length
 		songTempo=self.get_tempo(mid)
 		midfileTrackNumber,notesForSampler,mid=self.getTrackNumbers(mid,songTempo)
-		self.s.send_json({"lyrics":self.lyrics})
-		print(self.lyrics)
+		if self.mode=="upbge":
+			self.s.send_json({"lyrics":self.lyrics})
+		#print(self.lyrics)
 
 		#prepare lyrics blocks
 		self.lyricblocks=self.prepareLyricBlocks(self.lyrics)
@@ -650,11 +656,12 @@ class samplerPlayer():
 			sleep(1)
 
 		dt=0.0
-
-		self.s.send_json({"event":"playsong"})
+		if self.mode=="upbge":
+			self.s.send_json({"event":"playsong"})
 		
 		try:
-			self.s.send_json({"event":"newblockoflyrics","lyrics":self.LyricBlocks[0],"nextlyrics":self.LyricBlocks[1]})
+			if self.mode=="upbge":
+				self.s.send_json({"event":"newblockoflyrics","lyrics":self.LyricBlocks[0],"nextlyrics":self.LyricBlocks[1]})
 		except:
 			pass
 
@@ -670,7 +677,8 @@ class samplerPlayer():
 				#print message.type,message
 				if self.status=="stop":
 					#stop the song
-					self.s.send_json({"event":"stopsong"})
+					if self.mode=="upbge":
+						self.s.send_json({"event":"stopsong"})
 					break
 
 				nowNoteNames=[]
@@ -723,7 +731,8 @@ class samplerPlayer():
 
 
 		self.status="iddle"
-		self.s.send_json({"event":"stopsong"})
+		if self.mode=="upbge":
+			self.s.send_json({"event":"stopsong"})
 		return True
 
 	def prepareLyricBlocks(self,lyrics):

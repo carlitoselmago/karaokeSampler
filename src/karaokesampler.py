@@ -26,10 +26,10 @@ import PIL
 from PIL import Image
 
 class karaokesampler():
-
+	#TODO: move settings to a separate file
 	#config
-	KinectMode=False
-	Vdevice = 0
+	KinectMode=True
+	Vdevice = 1 #usually if kinect mode is true, vdevice should be 1 (second video capture device in case of laptops with webcam)
 	synth = False
 	showScreenRecorder=False
 	#end config
