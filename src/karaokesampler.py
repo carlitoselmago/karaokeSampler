@@ -28,8 +28,8 @@ from PIL import Image
 class karaokesampler():
 	#TODO: move settings to a separate file
 	#config
-	KinectMode=True
-	Vdevice = 1 #usually if kinect mode is true, vdevice should be 1 (second video capture device in case of laptops with webcam)
+	KinectMode=False
+	Vdevice = 0 #usually if kinect mode is true, vdevice should be 1 (second video capture device in case of laptops with webcam)
 	synth = False
 	showScreenRecorder=False
 	#end config
@@ -459,6 +459,7 @@ class karaokesampler():
 							imgRes=self.img
 						#imgRes=self.img.resize((self.imgResizeSize[0], self.imgResizeSize[1]), PIL.Image.ANTIALIAS)
 						cv2.imwrite(filename+".jpg",imgRes)
+						
 						#XXX self.KP
 					else:
 						#same pitch, recording
@@ -576,7 +577,7 @@ class karaokesampler():
 				print ("source,destination",source,destination)
 				try:
 					os.rename(source,destination)
-
+					
 					#jpg
 					source=recFolder+s+".jpg"
 					destination=newsamplerDir+"/"+sWithoutDuration+".jpg"

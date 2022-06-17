@@ -32,7 +32,7 @@ import zmq
 
 class samplerPlayer():
 
-	mode="opencv"#"upbge" #modes: opencv, upbge
+	mode="upbge" #modes: opencv, upbge
 
 	samplerdelay=0.16 #algo entre 0.1 y 0.8
 	samplerVolume=1.5	#1.5
@@ -151,7 +151,7 @@ class samplerPlayer():
 		tempNotes=[]
 		tempSounds=[]
 		tempImgs=[]
-		scount=0
+		apisendimages=[]
 		for file in glob.glob("recordings/*.wav"):
 			if file not in self.blackListRecordings:
 				file=file.replace("\\","/")
@@ -163,13 +163,17 @@ class samplerPlayer():
 						tempSounds.append(a)
 						imagefile=file.replace("wav","jpg")
 						tempImgs.append( cv2.imread(imagefile))
-						self.s.send_json({"loadimage":os.getcwd()+"/"+imagefile,"index":scount})
-						scount+=1
+						apisendimages.append(os.getcwd()+"/"+imagefile)
+						
 					else:
 						self.blackListRecordings.append(file)
 				except:
 					self.blackListRecordings.append(file)
-
+		#print("NEW PHOTO TAKEN!",filename)
+		#send only last 5 photos
+		if self.mode=="upbge":
+			self.s.send_json({"loadimages":apisendimages[-5:]})
+		
 		self.notes=tempNotes
 		self.sounds=tempSounds
 		self.imgs=tempImgs
@@ -725,7 +729,7 @@ class samplerPlayer():
 				if dt>20.0 and dt>renewRound:
 					renewRound=dt+10.0
 					#print "sampler renewed!!"
-					r = threading.Thread(target=self.renewSampler, args = ("renewSampler",)) #algo entre 0.1 y 0.8
+					r = threading.Thread(target=self.renewSampler, args = ("renewSampler",)) 
 					r.start()
 
 
@@ -835,6 +839,7 @@ class samplerPlayer():
 			if self.status=="stop":
 				running=False
 			"""
+			sleep(0.09)
 	def printLyrics(self):
 		#X
 		#self.lyricMessageCount
