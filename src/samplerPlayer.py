@@ -252,9 +252,9 @@ class samplerPlayer():
 		note=message.note
 
 		if note<self.minNote:
-			print("changing pitch",note)
+			#print("changing pitch",note)
 			note=int(note)+self.minNoteUp
-			print("resulting note",note)
+			#print("resulting note",note)
 		#print ("note",note)
 
 		if note not in self.notes:
@@ -287,8 +287,11 @@ class samplerPlayer():
 			volume=(message.velocity/127.0)*self.samplerVolume
 			if volume>1:
 				volume=1
-			self.sounds[soundIndex].set_volume(volume)
-			self.sounds[soundIndex].play()
+			try:
+				self.sounds[soundIndex].set_volume(volume)
+				self.sounds[soundIndex].play()
+			except:
+				pass
 		return
 
 	def find_nearest(self,array,value): #returns index of nearest number in array
@@ -878,7 +881,11 @@ class samplerPlayer():
 								#print("self.currentlyricblock",self.currentlyricblock)
 								nextblocklyrics=""
 								#if len(self.LyricBlocks)<self.currentlyricblock+2:
-								nextblocklyrics=self.LyricBlocks[self.currentlyricblock+2]
+								try:
+									nextblocklyrics=self.LyricBlocks[self.currentlyricblock+2]
+								except:
+									#last block of lyrics
+									pass
 								#print("nextblocklyrics!!!!!",nextblocklyrics)
 								try:
 									self.s.send_json({"event":"newblockoflyrics","lyrics":self.LyricBlocks[self.currentlyricblock+1],"nextlyrics":nextblocklyrics})

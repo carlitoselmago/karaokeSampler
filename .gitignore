@@ -5,6 +5,7 @@
 /src/samplers/*
 /src/KARsongs
 /src/guistatic/samplers
-
+/build/*
 /websongpicker/songs.json
 /websongpicker/singers/*
+GUI_upbge.blend1
