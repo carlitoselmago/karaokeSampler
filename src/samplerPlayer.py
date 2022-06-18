@@ -32,7 +32,7 @@ import zmq
 
 class samplerPlayer():
 
-	mode="upbge" #modes: opencv, upbge
+	mode="opencv" #modes: opencv, upbge
 
 	samplerdelay=0.16 #algo entre 0.1 y 0.8
 	samplerVolume=1.5	#1.5
