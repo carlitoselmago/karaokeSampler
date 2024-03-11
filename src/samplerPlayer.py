@@ -60,9 +60,9 @@ class samplerPlayer():
 		else:
 			self.blockLines=4
 		#self.secondaryDisplay=[1024,768]
-		self.windowSize=[1024,768]#[1920,1080]#[800,450]#[800,450]
-		self.moveUp=5#1080#768
-		self.moveLeft=800#0
+		self.windowSize=[2880,1800]#[1024,768]#[1920,1080]#[800,450]#[800,450]
+		self.moveUp=0#5#1080#768
+		self.moveLeft=0#800#0
 		#self.moveUp=1050
 		fonts_path = "fonts"#os.path.join(os.path.dirname(os.path.dirname(__file__)), 'fonts')
 
