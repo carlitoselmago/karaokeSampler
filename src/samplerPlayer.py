@@ -29,10 +29,11 @@ from PIL import ImageFont
 from PIL import ImageDraw
 import operator
 import zmq
+from pythonosc.udp_client import SimpleUDPClient
 
 class samplerPlayer():
 
-	mode="opencv" #modes: opencv, upbge
+	mode="upbge" #modes: opencv, upbge, touchdesigner
 
 	samplerdelay=0.16 #algo entre 0.1 y 0.8
 	samplerVolume=1.5	#1.5
@@ -55,7 +56,7 @@ class samplerPlayer():
 		print ("sampler Player init")
 		self.sounds=[]
 		self.notes=[]
-		if self.mode=="upbge":
+		if self.mode in ["upbge","touchdesigner"]:
 			self.blockLines=2
 		else:
 			self.blockLines=4
@@ -93,10 +94,15 @@ class samplerPlayer():
 			url = 'tcp://127.0.0.1:5558'
 			self.s.connect(url)
 
+		if self.mode =="touchdesigner":
+			self.s =SimpleUDPClient("127.0.0.1", 8000)
+			self.s.send_message("/start", True)
+			print("emit test")
+
 		if __name__ != "__main__":
 			
-			if self.mode=="upbge":
-				print("mode:","upbge")
+			if self.mode in ["upbge","touchdesigner"]:
+				print("mode:",self.mode)
 				t = threading.Thread(target=self.manageLyrics, args = ("manageLyrics",)) 
 				t.start()
 			else:
@@ -137,11 +143,11 @@ class samplerPlayer():
 			return notes[0]
 
 		for i,n in enumerate(notes):
-		   distance=abs(int(n)-note)
-		   if distance<closestDistance:
-			   closesDistance=distance
-			   closestNoteIndex=i
-			   closesNote=int(n)
+			distance=abs(int(n)-note)
+			if distance<closestDistance:
+				closesDistance=distance
+				closestNoteIndex=i
+			closesNote=int(n)
 
 		return notes[closestNoteIndex]
 
@@ -171,7 +177,7 @@ class samplerPlayer():
 					self.blackListRecordings.append(file)
 		#print("NEW PHOTO TAKEN!",filename)
 		#send only last 5 photos
-		if self.mode=="upbge":
+		if self.mode =="upbge":
 			self.s.send_json({"loadimages":apisendimages[-5:]})
 		
 		self.notes=tempNotes
@@ -219,7 +225,7 @@ class samplerPlayer():
 
 	def dump(self,obj):
 		for attr in dir(obj):
-		  print ("obj.%s = %s" % (attr, getattr(obj, attr)))
+			print ("obj.%s = %s" % (attr, getattr(obj, attr)))
 
 	def playWithDelay(self,output,message,delayTime=.200):
 		sleep(delayTime)
@@ -281,7 +287,7 @@ class samplerPlayer():
 			#self.sounds[soundIndex].set_volume(0)
 		else:
 			#note on
-			if self.mode=="upbge":
+			if self.mode =="upbge":
 				self.s.send_json({"event":"playnote"})
 			self.img=random.choice(self.imgs)
 			volume=(message.velocity/127.0)*self.samplerVolume
@@ -312,12 +318,12 @@ class samplerPlayer():
 		return scores
 
 	def find_between(self, s, first, last ):
-	    try:
-	        start = s.index( first ) + len( first )
-	        end = s.index( last, start )
-	        return s[start:end]
-	    except ValueError:
-	        return ""
+		try:
+			start = s.index( first ) + len( first )
+			end = s.index( last, start )
+			return s[start:end]
+		except ValueError:
+			return ""
 
 	def unifyText(self,text):
 		sylabs=[text]
@@ -429,7 +435,7 @@ class samplerPlayer():
 			#else:
 			#	print("NOT SORTED TRACK")
 			spreadScore=sum(trackBlocks)
-			print("MUSIC TRACK:",track.name,ismusictrack,trackBlocks)
+			#print("MUSIC TRACK:",track.name,ismusictrack,trackBlocks)
 			#print("trackBlocks",trackBlocks)
 			#print(track.name)
 			#print(track.name,"spreadScore",spreadScore)
@@ -627,16 +633,19 @@ class samplerPlayer():
 		self.status="loading"
 		self.customText=customText
 		self.songName=filename.split(".")[0]
-		if self.mode=="upbge":
+		if self.mode =="upbge":
 			self.s.send_json({"event":"loadsong","songname":self.songName.replace("KARsongs/", "").split("/")[-1],"customtext":self.customText})
-		
+		if self.mode =="touchdesigner":
+			self.s.send_message("/newsong",[self.songName.replace("KARsongs/", "").split("/")[-1],"canta: "+self.customText])
 		#get the real duration of the song
 		mid = MidiFile(songpath)
 		songDuration=mid.length
 		songTempo=self.get_tempo(mid)
 		midfileTrackNumber,notesForSampler,mid=self.getTrackNumbers(mid,songTempo)
-		if self.mode=="upbge":
-			self.s.send_json({"lyrics":self.lyrics})
+		if self.mode =="upbge":
+			self.s.send_json({"lyrics":self.lyrics}) 
+		if self.mode =="touchdesigner":
+			self.s.send_message('/lyrics',self.lyrics)
 		#print(self.lyrics)
 
 		#prepare lyrics blocks
@@ -663,11 +672,11 @@ class samplerPlayer():
 			sleep(1)
 
 		dt=0.0
-		if self.mode=="upbge":
+		if self.mode =="upbge":
 			self.s.send_json({"event":"playsong"})
 		
 		try:
-			if self.mode=="upbge":
+			if self.mode =="upbge":
 				self.s.send_json({"event":"newblockoflyrics","lyrics":self.LyricBlocks[0],"nextlyrics":self.LyricBlocks[1]})
 		except:
 			pass
@@ -684,7 +693,7 @@ class samplerPlayer():
 				#print message.type,message
 				if self.status=="stop":
 					#stop the song
-					if self.mode=="upbge":
+					if self.mode =="upbge":
 						self.s.send_json({"event":"stopsong"})
 					break
 
@@ -738,7 +747,7 @@ class samplerPlayer():
 
 
 		self.status="iddle"
-		if self.mode=="upbge":
+		if self.mode =="upbge":
 			self.s.send_json({"event":"stopsong"})
 		return True
 
@@ -775,7 +784,8 @@ class samplerPlayer():
 		print("lyricblocks length:",len(lyricblocks))
 		print("::::::::::::::::::")
 		for b in lyricblocks:
-			print(b)
+			pass
+			#print(b)
 		self.LyricBlocks=lyricblocks
 		self.apiscore=apiscore
 
@@ -872,8 +882,8 @@ class samplerPlayer():
 					if self.lastsylabplayed!=s:
 						
 						currentSylab=self.lyrics[s]
-
-						self.s.send_json({"currentSylab":currentSylab,"sylabindex":s})
+						if self.mode=="upbge":
+							self.s.send_json({"currentSylab":currentSylab,"sylabindex":s})
 						#print("currentSylab",currentSylab)
 						if s in self.apiscore:
 							if self.apiscore[s]==2:
@@ -888,13 +898,15 @@ class samplerPlayer():
 									pass
 								#print("nextblocklyrics!!!!!",nextblocklyrics)
 								try:
-									self.s.send_json({"event":"newblockoflyrics","lyrics":self.LyricBlocks[self.currentlyricblock+1],"nextlyrics":nextblocklyrics})
+									if self.mode=="upbge":
+										self.s.send_json({"event":"newblockoflyrics","lyrics":self.LyricBlocks[self.currentlyricblock+1],"nextlyrics":nextblocklyrics})
 								except:
 									pass
 								self.currentlyricblock+=1
 							if self.apiscore[s]==1:
 								#line jump
-								self.s.send_json({"event":"linejump"})
+								if self.mode=="upbge":
+									self.s.send_json({"event":"linejump"})
 						self.lastsylabplayed=s
 				self.lastSylab=s
 	

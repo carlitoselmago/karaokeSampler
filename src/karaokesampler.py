@@ -29,7 +29,7 @@ class karaokesampler():
 	#TODO: move settings to a separate file or pass them as arguments
 	#config
 	KinectMode=False
-	Vdevice = 0 #usually if kinect mode is true, vdevice should be 1 (second video capture device in case of laptops with webcam)
+	Vdevice = 1 #usually if kinect mode is true, vdevice should be 1 (second video capture device in case of laptops with webcam)
 	synth = False
 	showScreenRecorder=False
 	#end config
@@ -53,7 +53,7 @@ class karaokesampler():
 	noteTargets=[] #the notes we are gonna try to record
 	recordings=[]
 	isrecording=False
-	volume=5#5
+	volume=5
 	checkingVolume=False
 
 	amountToAvergeVolume=2
@@ -440,7 +440,7 @@ class karaokesampler():
 			if self.opencvReady:
 
 				if volume>self.lowCut and pitch>self.lowToneCut:
-
+					
 					#record if match
 					if pitch>(lastPitch+1) or pitch<(lastPitch-1):
 					#if pitch>(lastPitch+1) or pitch<(lastPitch-1):
