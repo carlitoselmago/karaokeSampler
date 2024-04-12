@@ -33,7 +33,7 @@ from pythonosc.udp_client import SimpleUDPClient
 
 class samplerPlayer():
 
-	mode="upbge" #modes: opencv, upbge, touchdesigner
+	mode="touchdesigner" #modes: opencv, upbge, touchdesigner
 
 	samplerdelay=0.16 #algo entre 0.1 y 0.8
 	samplerVolume=1.5	#1.5
@@ -674,10 +674,13 @@ class samplerPlayer():
 		dt=0.0
 		if self.mode =="upbge":
 			self.s.send_json({"event":"playsong"})
-		
+		if self.mode =="touchdesigner":
+			self.s.send_message("/playsong",True)
 		try:
 			if self.mode =="upbge":
 				self.s.send_json({"event":"newblockoflyrics","lyrics":self.LyricBlocks[0],"nextlyrics":self.LyricBlocks[1]})
+			if self.mode =="touchdesigner":
+				self.s.send_message("/newblockoflyrics",self.LyricBlocks[0])
 		except:
 			pass
 
@@ -882,8 +885,7 @@ class samplerPlayer():
 					if self.lastsylabplayed!=s:
 						
 						currentSylab=self.lyrics[s]
-						if self.mode=="upbge":
-							self.s.send_json({"currentSylab":currentSylab,"sylabindex":s})
+						
 						#print("currentSylab",currentSylab)
 						if s in self.apiscore:
 							if self.apiscore[s]==2:
@@ -900,6 +902,8 @@ class samplerPlayer():
 								try:
 									if self.mode=="upbge":
 										self.s.send_json({"event":"newblockoflyrics","lyrics":self.LyricBlocks[self.currentlyricblock+1],"nextlyrics":nextblocklyrics})
+									if self.mode =="touchdesigner":
+										self.s.send_message("/newblockoflyrics",self.LyricBlocks[self.currentlyricblock+1])
 								except:
 									pass
 								self.currentlyricblock+=1
@@ -907,6 +911,12 @@ class samplerPlayer():
 								#line jump
 								if self.mode=="upbge":
 									self.s.send_json({"event":"linejump"})
+								if self.mode =="touchdesigner":
+									self.s.send_message("/linejump",True)
+						if self.mode=="upbge":
+							self.s.send_json({"currentSylab":currentSylab,"sylabindex":s})
+						if self.mode =="touchdesigner":
+							self.s.send_message('/currentSylab',currentSylab)
 						self.lastsylabplayed=s
 				self.lastSylab=s
 	
