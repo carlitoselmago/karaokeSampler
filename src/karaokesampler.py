@@ -1,5 +1,4 @@
 import aubio
-import cv2
 import math
 import numpy as np
 import pyaudio
@@ -71,12 +70,13 @@ class karaokesampler():
 	def __init__(self,karaokePlayer):
 
 		print("init karaokesampler")
-
+		self.KP=karaokePlayer
 		self.windowSize=[1920,1080]
 		self.imgResizeSize=[800,450]
 
 		self.pitch=0
-		if not self.KinectMode:
+		if not self.KinectMode and not (self.KP.mode=="touchdesigner"):
+			import cv2
 			self.cap = cv2.VideoCapture(self.Vdevice)
 		self.createNoteTargets()
 		self.p = pyaudio.PyAudio()
@@ -92,8 +92,8 @@ class karaokesampler():
 		if not os.path.exists(self.samplersFolder):
 			os.makedirs(self.samplersFolder)
 
-		self.KP=karaokePlayer
-
+		
+		self.KP.mode # the interface mode
 		t = threading.Thread(target=self.startVision, args = ("vision",))
 		t.start()
 
@@ -261,11 +261,12 @@ class karaokesampler():
 			bodyIndex=5
 
 		else:
-			self.capW = int(self.cap.get(3))
-			self.capH = int(self.cap.get(4))
+			if self.KP.mode!="touchdesigner":
+				self.capW = int(self.cap.get(3))
+				self.capH = int(self.cap.get(4))
 
 		while True:
-
+			img=False
 			if self.KinectMode:
 				if _kinect.has_new_color_frame():
 					img=_kinect.get_last_color_frame()
@@ -295,10 +296,14 @@ class karaokesampler():
 
 			else:
 				#print "singing is true in vision"
-				ret_val, img = self.cap.read()
-				self.cleanimage=img.copy()
+				if self.KP.mode=="touchdesigner":
+					pass
+				else:
+					ret_val, img = self.cap.read()
+					self.cleanimage=img.copy()
 
 			if self.singing:
+				
 				if self.paint=="graph":
 					img=self.drawNoteTargets(img)
 					"""
@@ -334,15 +339,17 @@ class karaokesampler():
 							cv2.line(img, lineP1, lineP2, [255, 255, 255], 3)
 						except:
 							print ("could not print pitch line")
-			self.img=img
-			try:
-				if self.showScreenRecorder:
-					cv2.imshow(self.windowName, img)
-			except:
-				pass
-			if cv2.waitKey(100) == 27:
-				self.singing=False
-				break  # esc to quit
+			if img:
+				self.img=img
+			if self.KP.mode!="touchdesigner":
+				try:
+					if self.showScreenRecorder:
+						cv2.imshow(self.windowName, img)
+				except:
+					pass
+				if cv2.waitKey(100) == 27:
+					self.singing=False
+					break  # esc to quit
 
 			self.opencvReady=True
 
@@ -456,10 +463,13 @@ class karaokesampler():
 						if self.KinectMode:
 							imgRes=cv2.resize(self.img,(self.imgResizeSize[0], self.imgResizeSize[1]))
 						else:
-							imgRes=self.img
+							if self.KP.mode!="touchdesigner":
+								imgRes=self.img
 						#imgRes=self.img.resize((self.imgResizeSize[0], self.imgResizeSize[1]), PIL.Image.ANTIALIAS)
-						cv2.imwrite(filename+".jpg",imgRes)
-						
+						if self.KP.mode!="touchdesigner":
+							cv2.imwrite(filename+".jpg",imgRes)
+						if self.KP.mode=="touchdesigner":
+							self.KP.s.send_message("/captureimage",True)
 						#XXX self.KP
 					else:
 						#same pitch, recording

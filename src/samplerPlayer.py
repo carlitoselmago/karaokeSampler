@@ -698,6 +698,9 @@ class samplerPlayer():
 					#stop the song
 					if self.mode =="upbge":
 						self.s.send_json({"event":"stopsong"})
+					if self.mode =="touchdesigner":
+						self.s.send_message("/stopsong", True)
+		
 					break
 
 				nowNoteNames=[]
@@ -714,6 +717,9 @@ class samplerPlayer():
 								#PLAY NOTE FROM SAMPLER
 								t = threading.Thread(target=self.playSamplerNotewithDelay, args = (message,self.samplerdelay)) #algo entre 0.1 y 0.8
 								t.start()
+								if message.type=="note_on":
+									if self.mode =="touchdesigner":
+										self.s.send_message("/playnote",self.notes.index( message.note))
 							except:
 								pass
 
@@ -752,6 +758,8 @@ class samplerPlayer():
 		self.status="iddle"
 		if self.mode =="upbge":
 			self.s.send_json({"event":"stopsong"})
+		if self.mode =="touchdesigner":
+			self.s.send_message("/stopsong", True)
 		return True
 
 	def prepareLyricBlocks(self,lyrics):
