@@ -253,7 +253,7 @@ class samplerPlayer():
 		return percent
 
 	def playSamplerNotewithDelay(self,message,delayTime):
-
+		#print("playSamplerNotewithDelay",message)
 		sleep(delayTime)
 		note=message.note
 
@@ -719,6 +719,7 @@ class samplerPlayer():
 								t.start()
 								if message.type=="note_on":
 									if self.mode =="touchdesigner":
+										pass
 										self.s.send_message("/playnote",self.notes.index( message.note))
 							except:
 								pass

@@ -469,6 +469,7 @@ class karaokesampler():
 						if self.KP.mode!="touchdesigner":
 							cv2.imwrite(filename+".jpg",imgRes)
 						if self.KP.mode=="touchdesigner":
+							pass
 							self.KP.s.send_message("/captureimage",True)
 						#XXX self.KP
 					else:
