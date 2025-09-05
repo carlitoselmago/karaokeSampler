@@ -12,7 +12,7 @@ Edit settings in karaokesampler.py
 
 # Requirements
 Python 3.6
-Recomended Conda 32 bits (there's a workaround for 64 bits in https://github.com/Kinect/PyKinect2/issues/37 )
+For Kinect mode : Recomended Conda 32 bits (there's a workaround for 64 bits in https://github.com/Kinect/PyKinect2/issues/37 )
 
 ## Requirements hardware
 Kinect 2 with the proper PC adapter.

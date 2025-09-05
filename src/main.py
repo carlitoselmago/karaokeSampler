@@ -104,7 +104,7 @@ def getkarsongs():
 def getsamplers():
 	#load samplerList
 	samplerList=utils.getSamplerList()
-	print ("samplerList",samplerList)
+	#print ("samplerList",samplerList)
 	return json.dumps(samplerList)
 
 

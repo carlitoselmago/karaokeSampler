@@ -13,3 +13,4 @@ python-rtmidi
 flask
 pykinect2
 zmq
+python-socketio
